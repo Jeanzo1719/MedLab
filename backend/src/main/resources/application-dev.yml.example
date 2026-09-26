@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/
+    username: 
+    password: 
+
+jpa:
+  hibernate:
+    ddl-auto: validate
+    show_sql: true
+    highlight_sql: true
