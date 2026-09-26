@@ -1,0 +1,3 @@
+## Global Git ignore file. please keep here only files
+## related with global project configuration. for any other file 
+## required to be ignored, please add to his respective folder's gitignore
