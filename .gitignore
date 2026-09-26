@@ -1,3 +1,7 @@
 ## Global Git ignore file. please keep here only files
 ## related with global project configuration. for any other file 
 ## required to be ignored, please add to his respective folder's gitignore
+
+## .env file is needed for docker in global context obviously
+## .env file is not versioned in Git, use .env.example instead
+.env

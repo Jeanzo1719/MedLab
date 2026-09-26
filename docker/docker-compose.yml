@@ -1,0 +1,50 @@
+services:
+  mariadb:
+    ## latest LTS version of MariaDB
+    image: mariadb:12.3
+    container_name: medlab-database
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      ## mariadb still uses "mysql" path in Linux systems
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      ## MariaDB brings by default a shell script to test health in containers
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      ## context starts from root folder of the project THIS SHOULD NOT BE CHANGED
+      context: ..
+      dockerfile: docker/dev-backend.Dockerfile
+    container_name: medlab-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      # Spring Boot environment variables
+      ## password and user should be exported from environment (.env file)
+      SPRING_PROFILES_ACTIVE: dev ## spring boot development profile
+      SERVER_ADDRESS: 0.0.0.0
+
+      # Database environment variables
+      DB_HOST: ${DB_HOST:-mariadb}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-medlab-database}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+volumes:
+  mariadb_data:
