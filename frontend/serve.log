@@ -1,0 +1,15 @@
+$ ng serve --port 1420
+❯ Building...
+✔ Building...
+Initial chunk files | Names         | Raw size
+main.js             | main          | 59.53 kB | 
+styles.css          | styles        | 15.96 kB | 
+
+                    | Initial total | 75.49 kB
+
+Application bundle generation complete. [0.761 seconds] - 2026-09-27T20:01:43.572Z
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  ➜  Local:   http://localhost:1420/
+[ELIFECYCLE] Command failed with exit code 143.

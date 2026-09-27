@@ -1,0 +1,100 @@
+/* White band separates this section from the home section background */
+.servicios {
+  background-color: var(--color-superficie);
+  border-top: 1px solid var(--color-borde);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+/* Mobile: one card per row */
+.contenido {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+h2 {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.introduccion {
+  max-width: 40rem;
+  margin: 0 0 2rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--color-texto-secundario);
+}
+
+.tarjetas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tarjeta {
+  padding: 1.5rem;
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: 1rem;
+}
+
+.icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
+  color: #ffffff;
+  background-color: var(--color-marca);
+  border-radius: 0.75rem;
+}
+
+.icono svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.tarjeta p {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--color-texto-secundario);
+}
+
+/* Tablet: two cards per row */
+@media (min-width: 640px) {
+  .contenido {
+    padding: 4rem 1.5rem;
+  }
+
+  h2 {
+    font-size: 2.25rem;
+  }
+
+  .tarjetas {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Desktop: all four services in one row */
+@media (min-width: 1024px) {
+  .tarjetas {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

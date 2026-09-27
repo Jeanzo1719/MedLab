@@ -11,10 +11,11 @@ import { FarmaciaService } from "../../core/services/farmacia.service";
 import { MarcadorMapa } from "../../shared/components/mapa/marcador-mapa.model";
 import { EncabezadoComponent } from "./components/encabezado/encabezado.component";
 import { SeccionInicioComponent } from "./components/seccion-inicio/seccion-inicio.component";
+import { SeccionServiciosComponent } from "./components/seccion-servicios/seccion-servicios.component";
 
 @Component({
   selector: "app-landing",
-  imports: [EncabezadoComponent, SeccionInicioComponent],
+  imports: [EncabezadoComponent, SeccionInicioComponent, SeccionServiciosComponent],
   templateUrl: "./landing.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
