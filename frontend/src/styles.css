@@ -1,8 +1,54 @@
 /* You can add global styles to this file, and also import other style files */
 
+/*
+ * MedLab design tokens, taken from the official logo pack.
+ * Contrast ratios (WCAG AA needs 4.5:1 for normal text) are noted per pair.
+ */
+:root {
+  /* Brand colors: icon, decoration and large shapes only */
+  --color-marca: #159a63;
+  --color-acento: #f2a93b;
+  --color-negro: #131210;
+
+  /* Accessible green for text and buttons: white on it is 5.36:1 */
+  --color-primario: #107a4e;
+  /* Hover/active state of primary: white on it is 6.55:1 */
+  --color-primario-hover: #0d6b44;
+
+  /* Text on --color-fondo: 18.21:1 and 8.31:1 */
+  --color-texto: #101208;
+  --color-texto-secundario: #4a4d45;
+
+  --color-fondo: #fbfbf8;
+  --color-superficie: #ffffff;
+  --color-borde: #e3e4de;
+
+  --fuente-base: "Plus Jakarta Sans Variable", Arial, sans-serif;
+
+  /*
+   * Breakpoints (CSS variables cannot be used inside @media, so use these values):
+   *   mobile:  < 640px   (default styles, mobile first)
+   *   tablet:  >= 640px  @media (min-width: 640px)
+   *   desktop: >= 1024px @media (min-width: 1024px)
+   */
+}
+
 /* Removes the browser default margin so full-screen views have no gaps */
 html,
 body {
   margin: 0;
   height: 100%;
+}
+
+body {
+  font-family: var(--fuente-base);
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Visible keyboard focus on every interactive element */
+:focus-visible {
+  outline: 3px solid var(--color-acento);
+  outline-offset: 2px;
 }
