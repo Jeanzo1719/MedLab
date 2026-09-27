@@ -1,0 +1,111 @@
+/* Mobile: contact items stacked */
+.contenido {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+h2 {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.introduccion {
+  max-width: 40rem;
+  margin: 0 0 2rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--color-texto-secundario);
+}
+
+/* Browsers render <address> in italics by default */
+address {
+  font-style: normal;
+}
+
+.medios {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.medio {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 1rem;
+}
+
+.icono {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--color-primario);
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: 0.75rem;
+}
+
+.icono svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.texto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.titulo {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+/* Long emails wrap instead of overflowing on narrow screens */
+.texto a,
+.texto span:last-child {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.texto a {
+  color: var(--color-primario);
+}
+
+.texto a:hover {
+  color: var(--color-primario-hover);
+}
+
+/* Tablet and desktop: three items in a row */
+@media (min-width: 640px) {
+  .contenido {
+    padding: 4rem 1.5rem;
+  }
+
+  h2 {
+    font-size: 2.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .medios {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

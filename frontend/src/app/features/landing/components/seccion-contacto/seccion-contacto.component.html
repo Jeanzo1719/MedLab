@@ -1,0 +1,32 @@
+<section id="contacto" class="contacto" aria-labelledby="titulo-contacto">
+  <div class="contenido">
+    <h2 id="titulo-contacto">Contacto</h2>
+    <p class="introduccion">
+      ¿Tienes dudas, quieres reportar un problema o registrar tu farmacia como
+      aliada? Escríbenos.
+    </p>
+
+    <!-- <address> marks this block as the platform's contact information -->
+    <address>
+      <ul class="medios">
+        @for (medio of medios; track medio.titulo) {
+          <li class="medio">
+            <span class="icono" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24">
+                <path [attr.d]="medio.icono" />
+              </svg>
+            </span>
+            <span class="texto">
+              <span class="titulo">{{ medio.titulo }}</span>
+              @if (medio.enlace) {
+                <a [href]="medio.enlace">{{ medio.valor }}</a>
+              } @else {
+                <span>{{ medio.valor }}</span>
+              }
+            </span>
+          </li>
+        }
+      </ul>
+    </address>
+  </div>
+</section>

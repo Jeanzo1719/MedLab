@@ -10,12 +10,18 @@ import { catchError, of } from "rxjs";
 import { FarmaciaService } from "../../core/services/farmacia.service";
 import { MarcadorMapa } from "../../shared/components/mapa/marcador-mapa.model";
 import { EncabezadoComponent } from "./components/encabezado/encabezado.component";
+import { SeccionContactoComponent } from "./components/seccion-contacto/seccion-contacto.component";
 import { SeccionInicioComponent } from "./components/seccion-inicio/seccion-inicio.component";
 import { SeccionServiciosComponent } from "./components/seccion-servicios/seccion-servicios.component";
 
 @Component({
   selector: "app-landing",
-  imports: [EncabezadoComponent, SeccionInicioComponent, SeccionServiciosComponent],
+  imports: [
+    EncabezadoComponent,
+    SeccionInicioComponent,
+    SeccionServiciosComponent,
+    SeccionContactoComponent,
+  ],
   templateUrl: "./landing.component.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
