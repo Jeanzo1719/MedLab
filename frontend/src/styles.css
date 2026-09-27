@@ -1,1 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Removes the browser default margin so full-screen views have no gaps */
+html,
+body {
+  margin: 0;
+  height: 100%;
+}

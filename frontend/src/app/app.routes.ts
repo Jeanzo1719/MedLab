@@ -1,3 +1,9 @@
 import { Routes } from "@angular/router";
 
-export const routes: Routes = [];
+import { LandingComponent } from "./features/landing/landing.component";
+
+export const routes: Routes = [
+  // Public route: no auth guard, visitors can browse without an account
+  { path: "", component: LandingComponent, title: "MedLab" },
+  { path: "**", redirectTo: "" },
+];
