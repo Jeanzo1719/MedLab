@@ -1,0 +1,31 @@
+<footer class="pie">
+  <div class="contenido">
+    <div class="marca">
+      <!-- The icon is decorative: the visible text already names the brand -->
+      <img
+        src="assets/images/marca/medlab-icono-oscuro.svg"
+        alt=""
+        width="36"
+        height="36"
+        loading="lazy"
+      />
+      <span class="nombre">MedLab</span>
+    </div>
+    <p class="lema">
+      Disponibilidad de medicamentos en farmacias cercanas, reportada por la
+      comunidad.
+    </p>
+
+    <nav aria-label="Secciones de la página (pie de página)">
+      <ul>
+        @for (seccion of secciones; track seccion.id) {
+          <li>
+            <a routerLink="/" [fragment]="seccion.id">{{ seccion.etiqueta }}</a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <p class="derechos">© {{ anioActual }} MedLab. Todos los derechos reservados.</p>
+  </div>
+</footer>

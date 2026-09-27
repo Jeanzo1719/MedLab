@@ -1,0 +1,94 @@
+/* Dark band with the official dark brand variant.
+   Contrast on --color-negro: text 18.06:1, links 9.37:1, muted 7.87:1 */
+.pie {
+  color: var(--color-fondo);
+  background-color: var(--color-negro);
+}
+
+/* Mobile: everything stacked */
+.contenido {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1rem 2rem;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nombre {
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.lema {
+  max-width: 24rem;
+  margin: 0;
+  line-height: 1.6;
+  color: var(--color-texto-invertido-secundario);
+}
+
+nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Padding keeps a comfortable touch target around short links */
+nav a {
+  display: inline-block;
+  padding: 0.5rem 0;
+  font-weight: 600;
+  color: var(--color-acento);
+  text-decoration: none;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+.derechos {
+  margin: 0;
+  padding-top: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--color-texto-invertido-secundario);
+  border-top: 1px solid rgb(255 255 255 / 0.12);
+}
+
+/* Tablet: same side padding as the sections above */
+@media (min-width: 640px) {
+  .contenido {
+    padding: 3rem 1.5rem 2rem;
+  }
+}
+
+/* Desktop: brand and tagline on the left, navigation on the right */
+@media (min-width: 1024px) {
+  .contenido {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 4rem 1.5rem 2rem;
+  }
+
+  .lema {
+    grid-column: 1;
+  }
+
+  nav {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .derechos {
+    grid-column: 1 / -1;
+  }
+}

@@ -19,6 +19,9 @@
   --color-texto: #101208;
   --color-texto-secundario: #4a4d45;
 
+  /* Muted text on --color-negro (dark bands such as the footer): 7.87:1 */
+  --color-texto-invertido-secundario: #a7a9a1;
+
   /* Error text on --color-fondo: 6.34:1 */
   --color-error: #b42318;
 
