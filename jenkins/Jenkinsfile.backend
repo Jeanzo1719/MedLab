@@ -10,24 +10,13 @@ pipeline {
 
         stage('create environment') {
             steps {
-                withCredentials([
-                    string(
-                        credentialsId: 'mariadb-root-password',
-                        variable: 'MARIADB_ROOT_PASSWORD'
-                    ),
-                    string(
-                        credentialsId: 'db-password',
-                        variable: 'MARIADB_PASSWORD'
-                    )
-                ]) {
-                    sh '''
-                        cp .env.example .env
+                sh '''
+                    cp .env.example .env
 
-                        sed -i "s|^MARIADB_ROOT_PASSWORD=.*|MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}|" .env
-                        sed -i "s|^MARIADB_PASSWORD=.*|MARIADB_PASSWORD=${MARIADB_PASSWORD}|" .env
-                        sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=${MARIADB_PASSWORD}|" .env
-                    '''
-                }
+                    sed -i 's|^MARIADB_ROOT_PASSWORD=.*|MARIADB_ROOT_PASSWORD=root|' .env
+                    sed -i 's|^MARIADB_PASSWORD=.*|MARIADB_PASSWORD=medlab|' .env
+                    sed -i 's|^DB_PASSWORD=.*|DB_PASSWORD=medlab|' .env
+                '''
             }
         }
 
