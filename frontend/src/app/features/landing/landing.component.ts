@@ -8,15 +8,14 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { catchError, of } from "rxjs";
 
 import { FarmaciaService } from "../../core/services/farmacia.service";
-import { MapaComponent } from "../../shared/components/mapa/mapa.component";
 import { MarcadorMapa } from "../../shared/components/mapa/marcador-mapa.model";
 import { EncabezadoComponent } from "./components/encabezado/encabezado.component";
+import { SeccionInicioComponent } from "./components/seccion-inicio/seccion-inicio.component";
 
 @Component({
   selector: "app-landing",
-  imports: [EncabezadoComponent, MapaComponent],
+  imports: [EncabezadoComponent, SeccionInicioComponent],
   templateUrl: "./landing.component.html",
-  styleUrl: "./landing.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingComponent {

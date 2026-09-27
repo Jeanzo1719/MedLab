@@ -1,4 +1,0 @@
-/* Map fills the viewport below the header until the landing sections are added */
-.landing {
-  height: calc(100dvh - var(--alto-encabezado));
-}

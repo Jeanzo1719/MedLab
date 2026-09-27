@@ -1,0 +1,67 @@
+/* Mobile: text, search and map stacked */
+.contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+h1 {
+  margin: 0 0 1rem;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.descripcion {
+  margin: 0 0 2rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--color-texto-secundario);
+}
+
+.mapa {
+  height: 360px;
+  overflow: hidden;
+  border: 1px solid var(--color-borde);
+  border-radius: 1rem;
+}
+
+/* Tablet: bigger title and map */
+@media (min-width: 640px) {
+  .contenido {
+    padding: 3rem 1.5rem;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  .mapa {
+    height: 440px;
+  }
+}
+
+/* Desktop: search on the left, map on the right filling the first screen */
+@media (min-width: 1024px) {
+  .contenido {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    align-items: start;
+    gap: 3rem;
+  }
+
+  h1 {
+    font-size: 3rem;
+  }
+
+  .mapa {
+    position: sticky;
+    top: calc(var(--alto-encabezado) + 1.5rem);
+    height: calc(100dvh - var(--alto-encabezado) - 6rem);
+    min-height: 480px;
+  }
+}
