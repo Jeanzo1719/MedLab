@@ -19,6 +19,9 @@
   --color-texto: #101208;
   --color-texto-secundario: #4a4d45;
 
+  /* Error text on --color-fondo: 6.34:1 */
+  --color-error: #b42318;
+
   --color-fondo: #fbfbf8;
   --color-superficie: #ffffff;
   --color-borde: #e3e4de;
