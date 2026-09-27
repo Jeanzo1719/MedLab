@@ -9,6 +9,14 @@
     "tauri": "tauri"
   },
   "private": true,
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.6.0",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@12.6.0",
   "dependencies": {
     "@angular/common": "^22.0.1",
     "@angular/compiler": "^22.0.1",

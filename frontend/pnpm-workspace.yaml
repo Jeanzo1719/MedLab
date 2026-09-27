@@ -1,5 +1,7 @@
+# Build scripts of these dependencies only compile native fallbacks;
+# prebuilt binaries are already shipped, so they stay blocked for security
 allowBuilds:
-  '@parcel/watcher': set this to true or false
-  esbuild: set this to true or false
-  lmdb: set this to true or false
-  msgpackr-extract: set this to true or false
+  '@parcel/watcher': false
+  esbuild: false
+  lmdb: false
+  msgpackr-extract: false
