@@ -30,6 +30,6 @@ export const ESTILO_MARCADOR: CircleMarkerOptions = {
   radius: 8,
   color: "#ffffff",
   weight: 2,
-  fillColor: "#0f766e",
+  fillColor: "#159a63",
   fillOpacity: 1,
 };
