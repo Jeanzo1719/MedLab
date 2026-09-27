@@ -2,13 +2,13 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Create Environment') {
+        stage('create environment') {
             steps {
                 withCredentials([
                     string(
@@ -31,36 +31,21 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
+        stage('docker build') {
             steps {
-                sh '''
-                    docker compose \
-                        --env-file .env \
-                        -f docker/docker-compose.yml \
-                        build
-                '''
+                sh 'docker compose --env-file .env -f docker/docker-compose.yml build'
             }
         }
 
-        stage('Start Application') {
+        stage('start application') {
             steps {
-                sh '''
-                    docker compose \
-                        --env-file .env \
-                        -f docker/docker-compose.yml \
-                        up -d
-                '''
+                sh 'docker compose --env-file .env -f docker/docker-compose.yml up -d'
             }
         }
 
-        stage('Verify Startup') {
+        stage('verify startup') {
             steps {
-                sh '''
-                    docker compose \
-                        --env-file .env \
-                        -f docker/docker-compose.yml \
-                        ps
-                '''
+                sh 'docker compose --env-file .env -f docker/docker-compose.yml ps'
             }
         }
     }
