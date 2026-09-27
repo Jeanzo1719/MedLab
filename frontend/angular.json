@@ -31,7 +31,11 @@
                 "output": "assets"
               }
             ],
-            "styles": ["node_modules/leaflet/dist/leaflet.css", "src/styles.css"]
+            "styles": [
+              "node_modules/@fontsource-variable/plus-jakarta-sans/index.css",
+              "node_modules/leaflet/dist/leaflet.css",
+              "src/styles.css"
+            ]
           },
           "configurations": {
             "production": {
