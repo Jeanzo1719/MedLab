@@ -1,0 +1,3 @@
+# The landing is public: search engines may index it
+User-agent: *
+Allow: /
