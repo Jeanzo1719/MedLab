@@ -25,6 +25,8 @@
 
   --fuente-base: "Plus Jakarta Sans Variable", Arial, sans-serif;
 
+  --alto-encabezado: 4rem;
+
   /*
    * Breakpoints (CSS variables cannot be used inside @media, so use these values):
    *   mobile:  < 640px   (default styles, mobile first)
@@ -38,6 +40,17 @@ html,
 body {
   margin: 0;
   height: 100%;
+}
+
+/* Anchor jumps (/#servicios) land below the sticky header, not under it */
+html {
+  scroll-padding-top: var(--alto-encabezado);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {

@@ -10,10 +10,11 @@ import { catchError, of } from "rxjs";
 import { FarmaciaService } from "../../core/services/farmacia.service";
 import { MapaComponent } from "../../shared/components/mapa/mapa.component";
 import { MarcadorMapa } from "../../shared/components/mapa/marcador-mapa.model";
+import { EncabezadoComponent } from "./components/encabezado/encabezado.component";
 
 @Component({
   selector: "app-landing",
-  imports: [MapaComponent],
+  imports: [EncabezadoComponent, MapaComponent],
   templateUrl: "./landing.component.html",
   styleUrl: "./landing.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,

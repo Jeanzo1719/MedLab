@@ -1,0 +1,53 @@
+<header class="encabezado">
+  <div class="contenido">
+    <!-- The icon is decorative: the visible text already names the link -->
+    <a class="marca" routerLink="/" fragment="inicio" (click)="cerrarMenu()">
+      <img
+        src="assets/images/marca/medlab-icono.svg"
+        alt=""
+        width="36"
+        height="36"
+      />
+      <span>MedLab</span>
+    </a>
+
+    <button
+      type="button"
+      class="boton-menu"
+      aria-controls="menu-principal"
+      [attr.aria-expanded]="menuAbierto()"
+      [attr.aria-label]="menuAbierto() ? 'Cerrar menú' : 'Abrir menú'"
+      (click)="alternarMenu()"
+    >
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        @if (menuAbierto()) {
+          <path d="M6 6l12 12M18 6L6 18" />
+        } @else {
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        }
+      </svg>
+    </button>
+
+    <div id="menu-principal" class="menu" [class.abierto]="menuAbierto()">
+      <nav aria-label="Secciones de la página">
+        <ul>
+          @for (seccion of secciones; track seccion.id) {
+            <li>
+              <a routerLink="/" [fragment]="seccion.id" (click)="cerrarMenu()">
+                {{ seccion.etiqueta }}
+              </a>
+            </li>
+          }
+        </ul>
+      </nav>
+
+      <!-- Login and sign-up routes arrive with the authentication user story -->
+      <div class="acciones">
+        <a class="boton boton-secundario" routerLink="/iniciar-sesion">
+          Iniciar sesión
+        </a>
+        <a class="boton boton-primario" routerLink="/registro">Registrarse</a>
+      </div>
+    </div>
+  </div>
+</header>

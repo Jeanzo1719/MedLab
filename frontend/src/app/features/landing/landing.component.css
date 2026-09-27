@@ -1,4 +1,4 @@
-/* Full viewport map until the landing sections are added */
+/* Map fills the viewport below the header until the landing sections are added */
 .landing {
-  height: 100dvh;
+  height: calc(100dvh - var(--alto-encabezado));
 }
