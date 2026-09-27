@@ -1,4 +1,8 @@
-import { LatLngBoundsExpression, LatLngExpression } from "leaflet";
+import {
+  CircleMarkerOptions,
+  LatLngBoundsExpression,
+  LatLngExpression,
+} from "leaflet";
 
 /** Initial view: Medellín, Colombia */
 export const CENTRO_INICIAL: LatLngExpression = [6.2442, -75.5812];
@@ -20,3 +24,12 @@ export const CAPA_BASE = {
   atribucion:
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 } as const;
+
+/** Vector markers: no image files to load, sharp at any zoom */
+export const ESTILO_MARCADOR: CircleMarkerOptions = {
+  radius: 8,
+  color: "#ffffff",
+  weight: 2,
+  fillColor: "#0f766e",
+  fillOpacity: 1,
+};
