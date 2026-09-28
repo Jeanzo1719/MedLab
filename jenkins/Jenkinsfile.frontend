@@ -7,34 +7,22 @@ pipeline {
                 checkout scm
             }
         }
-
-        stage('create environment') {
-            steps {
-                sh '''
-                    cp .env.example .env
-
-                    sed -i 's|^MARIADB_ROOT_PASSWORD=.*|MARIADB_ROOT_PASSWORD=root|' .env
-                    sed -i 's|^MARIADB_PASSWORD=.*|MARIADB_PASSWORD=medlab|' .env
-                    sed -i 's|^DB_PASSWORD=.*|DB_PASSWORD=medlab|' .env
-                '''
-            }
-        }
-
+        
         stage('docker build') {
             steps {
-                sh 'docker compose --env-file .env -f docker/dev-frontend-docker-compose.yml build'
+                sh 'docker compose -f docker/dev-frontend-docker-compose.yml build'
             }
         }
 
         stage('start application') {
             steps {
-                sh 'docker compose --env-file .env -f docker/dev-frontend-docker-compose.yml up -d'
+                sh 'docker compose -f docker/dev-frontend-docker-compose.yml up -d'
             }
         }
 
         stage('verify startup') {
             steps {
-                sh 'docker compose --env-file .env -f docker/dev-frontend-docker-compose.yml ps'
+                sh 'docker compose -f docker/dev-frontend-docker-compose.yml ps'
             }
         }
     }
@@ -42,10 +30,7 @@ pipeline {
     post {
         always {
             sh '''
-                docker compose \
-                    --env-file .env \
-                    -f docker/dev-frontend-docker-compose.yml \
-                    down -v || true
+                docker compose -f docker/dev-frontend-docker-compose.yml down -v || true
 
                 rm -f .env
             '''
