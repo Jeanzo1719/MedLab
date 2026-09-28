@@ -1,0 +1,38 @@
+# .dockerignore
+# the build context of every service is the project root (context: .. in
+# docker/dev-*.Dockerfile), so the Docker daemon receives every file that is
+# not ignored here. without this file the context is ~6GB
+
+# dependency folders, reinstalled inside the image
+**/node_modules
+
+# Rust build artifacts, the Tauri desktop side is not containerized
+# and its target folder alone weighs several GB
+**/target
+frontend/src-tauri
+
+# compiled output and Angular CLI cache, rebuilt inside the container
+**/dist
+**/.angular
+**/out-tsc
+
+# VCS and editor metadata
+.git
+.gitignore
+**/.vscode
+**/.idea
+
+# secrets, the environment is injected by compose from the .env file
+# and must never be sent to the Docker daemon
+.env
+**/.env
+
+# test tooling with its own dependencies
+e2e/node_modules
+e2e/test-results
+e2e/playwright-report
+
+# documentation and CI definitions, not needed to build an image
+docs
+.github
+jenkins
