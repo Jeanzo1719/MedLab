@@ -40,6 +40,8 @@ import { MarcadorMapa } from "./marcador-mapa.model";
 })
 export class MapaComponent implements AfterViewInit, OnDestroy {
   readonly marcadores: InputSignal<MarcadorMapa[]> = input<MarcadorMapa[]>([]);
+  /** Accessible name of the map region; each page describes what its map shows */
+  readonly descripcion: InputSignal<string> = input<string>("Mapa interactivo");
 
   private readonly contenedor: Signal<ElementRef<HTMLDivElement>> =
     viewChild.required<ElementRef<HTMLDivElement>>("contenedorMapa");
