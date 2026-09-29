@@ -14,10 +14,14 @@ import com.medlab.main.service.FarmaciaService;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Public pharmacy endpoints used by the landing page map.
+ * Controller REST de los endpoints públicos de farmacias (capa de controllers).
  * <p>
- * Endpoints under /api/public need no authentication (visitor mode) and only allow GET requests from the origins
- * configured in {@link com.medlab.main.config.CorsConfig}.
+ * Para qué sirve: entrega las farmacias aprobadas que la landing dibuja como marcadores en su mapa.
+ * <p>
+ * Cómo funciona: solo traduce HTTP a llamadas al servicio. Recibe la petición, delega en {@link FarmaciaService} y
+ * envuelve el resultado en un {@link ResponseEntity}. No tiene reglas de negocio ni accede al repositorio. Los
+ * endpoints bajo {@link RutasApi#PUBLICA} no requieren autenticación (modo visitante) y solo aceptan GET desde los
+ * orígenes configurados en {@link com.medlab.main.config.CorsConfig}.
  */
 @RestController
 @RequestMapping(RutasApi.FARMACIAS_PUBLICAS)
@@ -27,12 +31,12 @@ public class FarmaciaController {
 	private final FarmaciaService farmaciaService;
 
 	/**
-	 * Lists the approved pharmacies to be shown as markers on the map. Pending and suspended pharmacies are never
-	 * returned.
+	 * Lista las farmacias aprobadas que se muestran como marcadores en el mapa. Nunca devuelve farmacias pendientes ni
+	 * suspendidas.
 	 * <p>
 	 * {@code GET /api/public/farmacias/aprobadas}
 	 *
-	 * @return 200 OK with the approved pharmacies, or an empty list if there are none
+	 * @return 200 OK con las farmacias aprobadas, o una lista vacía si no hay ninguna
 	 */
 	@GetMapping("/aprobadas")
 	public ResponseEntity<List<FarmaciaMapaDto>> listarAprobadas() {

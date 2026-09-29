@@ -8,10 +8,19 @@ import org.springframework.stereotype.Repository;
 
 import com.medlab.main.entity.Medicamento;
 
-/** In-memory medicines with generic names, used until MongoDB is ready. */
+/**
+ * Implementación temporal en memoria de {@link MedicamentoRepository} (capa de repositorios).
+ * <p>
+ * Para qué sirve: permite que la búsqueda de medicamentos funcione de punta a punta antes de que exista la base de
+ * datos, con nombres genéricos y sin marcas reales.
+ * <p>
+ * Cómo funciona: filtra una lista fija sin distinguir mayúsculas ni tildes, para imitar la collation de MongoDB que
+ * usará la colección real. Hay que borrarla cuando se conecte MongoDB, siguiendo el TODO de esta clase.
+ */
 @Repository
 public class MedicamentoRepositoryMock implements MedicamentoRepository {
 
+	/** Medicamentos genéricos comunes, sin marcas reales */
 	private static final List<Medicamento> MEDICAMENTOS = List.of(
 			new Medicamento("1", "Acetaminofén", "Acetaminofén", "Analgésico", "500 mg x 20", "Tableta"),
 			new Medicamento("2", "Acetaminofén Jarabe", "Acetaminofén", "Analgésico", "150 mg/5 mL x 60 mL", "Jarabe"),
@@ -40,11 +49,14 @@ public class MedicamentoRepositoryMock implements MedicamentoRepository {
 	//    SQL) y el índice único compuesto nombreComercial + principioActivo + presentacion + formaFarmaceutica.
 	// 6. Borrar esta clase; MedicamentoService no cambia.
 
-	/** Case- and accent-insensitive contains, mimicking a MongoDB collation of strength 1 */
+	/** "Contiene" sin distinguir mayúsculas ni tildes, como una collation de MongoDB con strength 1 */
 	private static boolean contiene(String texto, String busqueda) {
 		return normalizar(texto).contains(normalizar(busqueda));
 	}
 
+	/**
+	 * Quita las tildes (NFD y descarte de marcas diacríticas) y pasa a minúsculas: "Acetaminofén" queda "acetaminofen"
+	 */
 	private static String normalizar(String texto) {
 		return Normalizer.normalize(texto, Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase(Locale.ROOT);
 	}

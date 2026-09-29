@@ -17,28 +17,28 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Global error handler for every REST controller.
+ * Manejador global de errores de todos los controllers REST (capa de excepciones).
  * <p>
- * What it is for: without it, each error is answered by Spring's default /error page, whose shape changes between error
- * types and which, with devtools on, even includes the Java stack trace. This class makes every error leave the API as
- * a standard RFC 9457 "problem detail" JSON ({@code type}, {@code title}, {@code status}, {@code detail},
- * {@code instance}), so clients always parse the same structure.
+ * Para qué sirve: sin esta clase, cada error lo responde la página /error por defecto de Spring, cuya forma cambia
+ * según el tipo de error y que, con devtools activo, incluso trae el stack trace de Java. Con ella, todo error sale de
+ * la API como un JSON "problem detail" estándar (RFC 9457: {@code type}, {@code title}, {@code status}, {@code detail},
+ * {@code instance}), así los clientes siempre leen la misma estructura.
  * <p>
- * How it works:
+ * Cómo funciona:
  * <ul>
- * <li>It extends {@link ResponseEntityExceptionHandler}, which already turns Spring MVC's own exceptions (404 route not
- * found, 405 method not allowed, 400 malformed request, ...) into problem details.</li>
- * <li>Validation errors of request DTOs ({@code @Valid}) are overridden to also list each invalid field and its message
- * under {@code errores}.</li>
- * <li>Any other unexpected exception becomes a generic 500: the cause is logged on the server and never sent to the
- * client.</li>
+ * <li>Extiende {@link ResponseEntityExceptionHandler}, que ya convierte las excepciones propias de Spring MVC (404 ruta
+ * inexistente, 405 método no permitido, 400 petición mal formada, etc.) en problem details.</li>
+ * <li>Los errores de validación de los DTO de entrada ({@code @Valid}) se sobrescriben para listar además, en
+ * {@code errores}, cada campo inválido y su mensaje.</li>
+ * <li>Cualquier otra excepción inesperada se convierte en un 500 genérico: la causa se registra en el log del servidor
+ * y nunca se envía al cliente.</li>
  * </ul>
  */
 @Slf4j
 @RestControllerAdvice
 public class ManejadorGlobalExcepciones extends ResponseEntityExceptionHandler {
 
-	/** 400 when a {@code @Valid} request DTO breaks its constraints, listing every invalid field */
+	/** 400 cuando un DTO de entrada con {@code @Valid} incumple sus restricciones; lista cada campo inválido */
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
@@ -50,7 +50,7 @@ public class ManejadorGlobalExcepciones extends ResponseEntityExceptionHandler {
 		return handleExceptionInternal(ex, problema, headers, status, request);
 	}
 
-	/** 500 for anything not handled above; details stay in the server log */
+	/** 500 para todo lo que no se maneja arriba; el detalle queda solo en el log del servidor */
 	@ExceptionHandler(Exception.class)
 	public ProblemDetail manejarErrorInesperado(Exception ex) {
 		log.error("Error no controlado al atender la petición", ex);

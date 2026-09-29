@@ -6,16 +6,19 @@ import com.medlab.main.dto.FarmaciaMapaDto;
 import com.medlab.main.entity.Farmacia;
 
 /**
- * Converts pharmacy entities into the DTOs the API exposes.
+ * Convierte las entidades de farmacia en los DTO que expone la API (capa de mappers).
  * <p>
- * Keeping the conversion here, instead of inside the service, gives each layer a single job: the service decides which
- * pharmacies to return, and this class decides which of their fields leave the backend. It only copies the public
- * fields, so internal data (owner, approval state) can never leak by accident.
+ * Para qué sirve: al tener la conversión aquí, y no dentro del servicio, cada capa hace una sola cosa: el servicio
+ * decide qué farmacias devolver y esta clase decide qué campos salen del backend.
+ * <p>
+ * Cómo funciona: copia solo los campos públicos, así los datos internos (dueño, estado de aprobación) nunca pueden
+ * filtrarse por accidente. Es un {@code @Component}, así que {@link com.medlab.main.service.FarmaciaService} lo recibe
+ * por inyección.
  */
 @Component
 public class FarmaciaMapper {
 
-	/** Public map view of a pharmacy: id, name and coordinates only */
+	/** Vista pública de una farmacia para el mapa: solo id, nombre y coordenadas */
 	public FarmaciaMapaDto aMapaDto(Farmacia farmacia) {
 		return new FarmaciaMapaDto(farmacia.getId(), farmacia.getNombreFarmacia(), farmacia.getLatitud(),
 				farmacia.getLongitud());

@@ -7,10 +7,20 @@ import org.springframework.stereotype.Repository;
 import com.medlab.main.entity.EstadoAprobacion;
 import com.medlab.main.entity.Farmacia;
 
-/** In-memory pharmacies with fictitious data, used until MongoDB is ready. */
+/**
+ * Implementación temporal en memoria de {@link FarmaciaRepository} (capa de repositorios).
+ * <p>
+ * Para qué sirve: permite que la landing y sus endpoints funcionen de punta a punta antes de que exista la base de
+ * datos. Los datos son ficticios e incluyen a propósito una farmacia pendiente y una suspendida, para comprobar que
+ * solo las aprobadas son públicas.
+ * <p>
+ * Cómo funciona: filtra una lista fija con la misma semántica que tendrá la consulta real. Hay que borrarla cuando se
+ * conecte MongoDB, siguiendo el TODO de esta clase.
+ */
 @Repository
 public class FarmaciaRepositoryMock implements FarmaciaRepository {
 
+	/** Farmacias ficticias en Medellín: tres aprobadas, una pendiente y una suspendida */
 	private static final List<Farmacia> FARMACIAS = List.of(
 			new Farmacia("1", "u-1", "Farmacia Demo El Poblado", EstadoAprobacion.APROBADA, 6.2086, -75.5659),
 			new Farmacia("2", "u-2", "Farmacia Demo Laureles", EstadoAprobacion.APROBADA, 6.2447, -75.5930),

@@ -6,16 +6,19 @@ import com.medlab.main.dto.MedicamentoBusquedaDto;
 import com.medlab.main.entity.Medicamento;
 
 /**
- * Converts medicine entities into the DTOs the API exposes.
+ * Convierte las entidades de medicamento en los DTO que expone la API (capa de mappers).
  * <p>
- * Keeping the conversion here, instead of inside the service, gives each layer a single job: the service decides which
- * medicines match a search, and this class decides which of their fields leave the backend (the category, for example,
- * is not part of the search result).
+ * Para qué sirve: al tener la conversión aquí, y no dentro del servicio, cada capa hace una sola cosa: el servicio
+ * decide qué medicamentos coinciden con una búsqueda y esta clase decide qué campos salen del backend (la categoría,
+ * por ejemplo, no forma parte del resultado).
+ * <p>
+ * Cómo funciona: es un {@code @Component}, así que {@link com.medlab.main.service.MedicamentoService} lo recibe por
+ * inyección.
  */
 @Component
 public class MedicamentoMapper {
 
-	/** Search result view of a medicine */
+	/** Vista de un medicamento en los resultados de búsqueda */
 	public MedicamentoBusquedaDto aBusquedaDto(Medicamento medicamento) {
 		return new MedicamentoBusquedaDto(medicamento.getId(), medicamento.getNombreComercial(),
 				medicamento.getPrincipioActivo(), medicamento.getPresentacion(), medicamento.getFormaFarmaceutica());

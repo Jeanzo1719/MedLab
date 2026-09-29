@@ -10,6 +10,15 @@ import com.medlab.main.repository.MedicamentoRepository;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Lógica de negocio de los medicamentos (capa de servicios).
+ * <p>
+ * Para qué sirve: realiza la búsqueda de los visitantes por nombre comercial o principio activo.
+ * <p>
+ * Cómo funciona: recibe un texto ya validado por {@link com.medlab.main.dto.MedicamentoBusquedaFiltroDto}, pide a
+ * {@link MedicamentoRepository} las coincidencias en cualquiera de los dos campos y convierte cada una en un DTO de
+ * búsqueda con {@link MedicamentoMapper}. No sabe nada de HTTP ni del almacenamiento.
+ */
 @Service
 @RequiredArgsConstructor
 public class MedicamentoService {
@@ -18,7 +27,7 @@ public class MedicamentoService {
 	private final MedicamentoMapper medicamentoMapper;
 
 	/**
-	 * Searches by commercial name or active ingredient. The text arrives already stripped and validated by
+	 * Busca por nombre comercial o principio activo. El texto llega ya sin espacios en los extremos y validado por
 	 * {@link com.medlab.main.dto.MedicamentoBusquedaFiltroDto}.
 	 */
 	public List<MedicamentoBusquedaDto> buscar(String texto) {

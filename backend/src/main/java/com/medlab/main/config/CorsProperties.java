@@ -8,14 +8,17 @@ import org.springframework.validation.annotation.Validated;
 import jakarta.validation.constraints.NotEmpty;
 
 /**
- * Typed CORS settings, bound from the {@code cors.*} properties.
+ * Propiedades tipadas de CORS, leídas de las propiedades {@code cors.*} (capa de configuración).
  * <p>
- * Locally the values come from application-dev.yml; in Docker from the {@code CORS_ORIGENES_PERMITIDOS} environment
- * variable (comma-separated), which Spring Boot maps to {@code cors.origenes-permitidos}. The list is validated when
- * the application starts: if it is missing or empty the backend refuses to start with a clear message, instead of
- * running with no allowed origins.
+ * Cómo funciona: en local los valores salen de application-dev.yml; en Docker, de la variable de entorno
+ * {@code CORS_ORIGENES_PERMITIDOS} (separada por comas), que Spring Boot asocia con {@code cors.origenes-permitidos}.
+ * La lista se valida al arrancar: si falta o está vacía, el backend no inicia y explica el motivo, en lugar de
+ * funcionar sin orígenes permitidos.
+ * <p>
+ * Para qué sirve: {@link CorsConfig} la recibe por inyección, así la configuración queda en un solo lugar, tipada y
+ * documentada.
  *
- * @param origenesPermitidos origins allowed to call the public API, e.g. {@code http://localhost:1420}
+ * @param origenesPermitidos orígenes que pueden llamar a la API pública, por ejemplo {@code http://localhost:1420}
  */
 @Validated
 @ConfigurationProperties("cors")
