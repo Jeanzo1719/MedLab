@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from "@angular/core";
 
-import { MEDIOS_CONTACTO } from "./seccion-contacto.contenido";
+import { MEDIOS_CONTACTO, MedioContacto } from "./seccion-contacto.contenido";
 
 @Component({
   selector: "app-seccion-contacto",
@@ -9,5 +9,5 @@ import { MEDIOS_CONTACTO } from "./seccion-contacto.contenido";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SeccionContactoComponent {
-  protected readonly medios = MEDIOS_CONTACTO;
+  protected readonly medios: readonly MedioContacto[] = MEDIOS_CONTACTO;
 }

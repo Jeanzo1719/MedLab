@@ -3,13 +3,17 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  InputSignal,
   OnDestroy,
+  Signal,
+  WritableSignal,
   effect,
   input,
   signal,
   viewChild,
 } from "@angular/core";
 import {
+  LayerGroup,
   Map as LeafletMap,
   circleMarker,
   layerGroup,
@@ -35,14 +39,15 @@ import { MarcadorMapa } from "./marcador-mapa.model";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapaComponent implements AfterViewInit, OnDestroy {
-  readonly marcadores = input<MarcadorMapa[]>([]);
+  readonly marcadores: InputSignal<MarcadorMapa[]> = input<MarcadorMapa[]>([]);
 
-  private readonly contenedor =
+  private readonly contenedor: Signal<ElementRef<HTMLDivElement>> =
     viewChild.required<ElementRef<HTMLDivElement>>("contenedorMapa");
 
   // A signal so the markers effect re-runs once the map exists
-  private readonly mapa = signal<LeafletMap | undefined>(undefined);
-  private readonly capaMarcadores = layerGroup();
+  private readonly mapa: WritableSignal<LeafletMap | undefined> =
+    signal<LeafletMap | undefined>(undefined);
+  private readonly capaMarcadores: LayerGroup = layerGroup();
 
   constructor() {
     // Redraws every marker whenever the input changes
@@ -62,7 +67,7 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
 
   // Leaflet needs the container already in the DOM, so it is created here
   ngAfterViewInit(): void {
-    const mapa = map(this.contenedor().nativeElement, {
+    const mapa: LeafletMap = map(this.contenedor().nativeElement, {
       center: CENTRO_INICIAL,
       zoom: ZOOM_INICIAL,
       minZoom: ZOOM_MINIMO,

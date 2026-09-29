@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Signal,
+  WritableSignal,
+  inject,
+  signal,
+} from "@angular/core";
 import { toObservable, toSignal } from "@angular/core/rxjs-interop";
 import {
   Observable,
@@ -15,10 +22,10 @@ import { MedicamentoBusqueda } from "../../../../core/models/medicamento-busqued
 import { MedicamentoService } from "../../../../core/services/medicamento.service";
 
 /** Same limits the backend enforces; shorter queries are not sent and longer ones cannot be typed */
-const LONGITUD_MINIMA_BUSQUEDA = 2;
-const LONGITUD_MAXIMA_BUSQUEDA = 150;
+const LONGITUD_MINIMA_BUSQUEDA: number = 2;
+const LONGITUD_MAXIMA_BUSQUEDA: number = 150;
 /** Waits for the user to stop typing instead of sending one request per key */
-const ESPERA_ESCRITURA_MS = 300;
+const ESPERA_ESCRITURA_MS: number = 300;
 
 type EstadoBusqueda =
   | { tipo: "inactivo" }
@@ -33,14 +40,15 @@ type EstadoBusqueda =
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BuscadorMedicamentosComponent {
-  private readonly medicamentoService = inject(MedicamentoService);
+  private readonly medicamentoService: MedicamentoService =
+    inject(MedicamentoService);
 
-  protected readonly longitudMinima = LONGITUD_MINIMA_BUSQUEDA;
-  protected readonly longitudMaxima = LONGITUD_MAXIMA_BUSQUEDA;
-  protected readonly texto = signal("");
+  protected readonly longitudMinima: number = LONGITUD_MINIMA_BUSQUEDA;
+  protected readonly longitudMaxima: number = LONGITUD_MAXIMA_BUSQUEDA;
+  protected readonly texto: WritableSignal<string> = signal("");
 
   // switchMap cancels the previous request, so stale results never overwrite new ones
-  protected readonly estado = toSignal(
+  protected readonly estado: Signal<EstadoBusqueda> = toSignal(
     toObservable(this.texto).pipe(
       debounceTime(ESPERA_ESCRITURA_MS),
       map((texto) => texto.trim()),

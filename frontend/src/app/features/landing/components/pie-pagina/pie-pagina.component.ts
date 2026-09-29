@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { RouterLink } from "@angular/router";
 
-import { SECCIONES_LANDING } from "../../landing.secciones";
+import { SECCIONES_LANDING, SeccionLanding } from "../../landing.secciones";
 
 @Component({
   selector: "app-pie-pagina",
@@ -11,6 +11,6 @@ import { SECCIONES_LANDING } from "../../landing.secciones";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PiePaginaComponent {
-  protected readonly secciones = SECCIONES_LANDING;
-  protected readonly anioActual = new Date().getFullYear();
+  protected readonly secciones: readonly SeccionLanding[] = SECCIONES_LANDING;
+  protected readonly anioActual: number = new Date().getFullYear();
 }

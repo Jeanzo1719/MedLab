@@ -1,6 +1,7 @@
 import { inject } from "@angular/core";
-import { CanActivateFn, Router } from "@angular/router";
+import { CanActivateFn, Router, UrlTree } from "@angular/router";
 
+import { Sesion } from "../models/sesion.model";
 import { SesionService } from "../services/sesion.service";
 
 /**
@@ -11,8 +12,8 @@ import { SesionService } from "../services/sesion.service";
  * Each role's panel is the route with the role's name, declared in app.routes.ts
  * (/paciente, /farmacia, /administrador).
  */
-export const redirigirAutenticadoGuard: CanActivateFn = () => {
-  const sesion = inject(SesionService).obtenerSesionActiva();
+export const redirigirAutenticadoGuard: CanActivateFn = (): boolean | UrlTree => {
+  const sesion: Sesion | null = inject(SesionService).obtenerSesionActiva();
 
   if (!sesion) {
     return true;

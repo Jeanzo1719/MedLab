@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from "@angular/core";
 
-import { SERVICIOS } from "./seccion-servicios.contenido";
+import { SERVICIOS, Servicio } from "./seccion-servicios.contenido";
 
 @Component({
   selector: "app-seccion-servicios",
@@ -9,5 +9,5 @@ import { SERVICIOS } from "./seccion-servicios.contenido";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SeccionServiciosComponent {
-  protected readonly servicios = SERVICIOS;
+  protected readonly servicios: readonly Servicio[] = SERVICIOS;
 }

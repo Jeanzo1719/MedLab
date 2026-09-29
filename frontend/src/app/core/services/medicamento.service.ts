@@ -7,13 +7,13 @@ import { MedicamentoBusqueda } from "../models/medicamento-busqueda.model";
 
 @Injectable({ providedIn: "root" })
 export class MedicamentoService {
-  private readonly http = inject(HttpClient);
-  private readonly url = `${environment.apiUrl}/public/medicamentos/buscar`;
+  private readonly http: HttpClient = inject(HttpClient);
+  private readonly url: string = `${environment.apiUrl}/public/medicamentos/buscar`;
 
   /** Public endpoint: search by commercial name or active ingredient, no account needed */
   buscar(texto: string): Observable<MedicamentoBusqueda[]> {
     // HttpParams encodes the text, so accents and spaces reach the API intact
-    const params = new HttpParams().set("q", texto);
+    const params: HttpParams = new HttpParams().set("q", texto);
     return this.http.get<MedicamentoBusqueda[]>(this.url, { params });
   }
 }

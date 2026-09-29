@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, input } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  InputSignal,
+  input,
+} from "@angular/core";
 
 import { MapaComponent } from "../../../../shared/components/mapa/mapa.component";
 import { MarcadorMapa } from "../../../../shared/components/mapa/marcador-mapa.model";
@@ -13,5 +18,5 @@ import { BuscadorMedicamentosComponent } from "../buscador-medicamentos/buscador
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SeccionInicioComponent {
-  readonly marcadores = input<MarcadorMapa[]>([]);
+  readonly marcadores: InputSignal<MarcadorMapa[]> = input<MarcadorMapa[]>([]);
 }
