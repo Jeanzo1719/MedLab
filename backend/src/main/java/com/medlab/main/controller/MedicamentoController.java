@@ -39,6 +39,6 @@ public class MedicamentoController {
 	 */
 	@GetMapping("/buscar")
 	public ResponseEntity<List<MedicamentoBusquedaDto>> buscar(@Valid MedicamentoBusquedaFiltroDto filtro) {
-		return ResponseEntity.ok(medicamentoService.buscar(filtro.texto()));
+		return ResponseEntity.ok(medicamentoService.buscar(filtro.q()));
 	}
 }
