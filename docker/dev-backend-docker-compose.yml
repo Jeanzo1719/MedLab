@@ -40,11 +40,11 @@ services:
       SERVER_ADDRESS: 0.0.0.0
 
       # Database environment variables
-      DB_HOST: ${DB_HOST:-mariadb}
-      DB_PORT: ${DB_PORT:-3306}
-      DB_NAME: ${DB_NAME:-medlab-database}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
+      ## Spring Boot maps SPRING_DATASOURCE_* to spring.datasource.*, so the connection
+      ## is configured here and application.yaml stays untouched
+      SPRING_DATASOURCE_URL: jdbc:mariadb://${DB_HOST:-mariadb}:${DB_PORT:-3306}/${DB_NAME:-medlab-database}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
 
       # CORS environment variables
       ## origins allowed to call the public API, comma-separated
