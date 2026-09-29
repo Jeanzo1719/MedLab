@@ -46,5 +46,9 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
 
+      # CORS environment variables
+      ## origins allowed to call the public API, comma-separated
+      CORS_ORIGENES_PERMITIDOS: ${CORS_ORIGENES_PERMITIDOS}
+
 volumes:
   mariadb_data:
