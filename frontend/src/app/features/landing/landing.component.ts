@@ -10,6 +10,7 @@ import { catchError, of } from "rxjs";
 
 import { FarmaciaMapa } from "../../core/models/farmacia-mapa.model";
 import { FarmaciaService } from "../../core/services/farmacia.service";
+import { MetadatosService } from "../../core/services/metadatos.service";
 import { MarcadorMapa } from "../../shared/components/mapa/marcador-mapa.model";
 import { EncabezadoComponent } from "./components/encabezado/encabezado.component";
 import { PiePaginaComponent } from "./components/pie-pagina/pie-pagina.component";
@@ -30,6 +31,9 @@ import { SeccionServiciosComponent } from "./components/seccion-servicios/seccio
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingComponent {
+  private static readonly DESCRIPCION: string =
+    "Consulta y reporta la disponibilidad de medicamentos en farmacias cercanas a ti, con búsqueda por ubicación e historial de precios. Sin necesidad de crear una cuenta.";
+
   private readonly farmaciaService: FarmaciaService = inject(FarmaciaService);
 
   // If the API is down the map still renders, just without pharmacies
@@ -48,4 +52,8 @@ export class LandingComponent {
       etiqueta: farmacia.nombre,
     })),
   );
+
+  constructor() {
+    inject(MetadatosService).definirDescripcion(LandingComponent.DESCRIPCION);
+  }
 }
