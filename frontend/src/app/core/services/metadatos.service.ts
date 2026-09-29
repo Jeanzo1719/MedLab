@@ -17,7 +17,7 @@ export class MetadatosService {
   private readonly documento: Document = inject(DOCUMENT);
   private readonly meta: Meta = inject(Meta);
 
-  /** App-wide metadata; called once from the app shell */
+  /** App-wide metadata; called once at startup by provideAppInitializer in app.config.ts */
   aplicarGenerales(): void {
     this.documento.documentElement.lang = "es";
 
