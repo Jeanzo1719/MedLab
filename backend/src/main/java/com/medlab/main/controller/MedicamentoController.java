@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.medlab.main.config.RutasApi;
 import com.medlab.main.dto.MedicamentoBusquedaDto;
 import com.medlab.main.dto.MedicamentoBusquedaFiltroDto;
 import com.medlab.main.service.MedicamentoService;
@@ -21,7 +22,7 @@ import lombok.RequiredArgsConstructor;
  * configured in {@link com.medlab.main.config.CorsConfig}.
  */
 @RestController
-@RequestMapping("/api/public/medicamentos")
+@RequestMapping(RutasApi.MEDICAMENTOS_PUBLICOS)
 @RequiredArgsConstructor
 public class MedicamentoController {
 
