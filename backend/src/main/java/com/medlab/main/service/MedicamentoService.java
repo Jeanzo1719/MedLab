@@ -14,21 +14,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MedicamentoService {
 
-	/** Same minimum length the medicine name has in the data model */
-	private static final int LONGITUD_MINIMA_BUSQUEDA = 2;
-
 	private final MedicamentoRepository medicamentoRepository;
 
-	/** Searches by commercial name or active ingredient; short queries return nothing. */
+	/**
+	 * Searches by commercial name or active ingredient. The text arrives already stripped and validated by
+	 * {@link com.medlab.main.dto.MedicamentoBusquedaFiltroDto}.
+	 */
 	public List<MedicamentoBusquedaDto> buscar(String texto) {
-		String busqueda = texto == null ? "" : texto.strip();
-		if (busqueda.length() < LONGITUD_MINIMA_BUSQUEDA) {
-			return List.of();
-		}
-
 		return medicamentoRepository
-				.findByNombreComercialContainingIgnoreCaseOrPrincipioActivoContainingIgnoreCase(busqueda, busqueda)
-				.stream().map(this::aBusquedaDto).toList();
+				.findByNombreComercialContainingIgnoreCaseOrPrincipioActivoContainingIgnoreCase(texto, texto).stream()
+				.map(this::aBusquedaDto).toList();
 	}
 
 	private MedicamentoBusquedaDto aBusquedaDto(Medicamento medicamento) {

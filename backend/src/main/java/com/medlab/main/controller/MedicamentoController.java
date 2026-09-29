@@ -5,12 +5,13 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.medlab.main.dto.MedicamentoBusquedaDto;
+import com.medlab.main.dto.MedicamentoBusquedaFiltroDto;
 import com.medlab.main.service.MedicamentoService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -31,13 +32,13 @@ public class MedicamentoController {
 	 * <p>
 	 * {@code GET /api/public/medicamentos/buscar?q=acetaminofen}
 	 *
-	 * @param texto text to search for, sent as the {@code q} query parameter; texts shorter than two characters return
-	 *              no results
-	 * @return 200 OK with the matching medicines, or an empty list if nothing matches
+	 * @param filtro search text, sent as the {@code q} query parameter; it must have between 2 and 150 characters once
+	 *               stripped
+	 * @return 200 OK with the matching medicines, or an empty list if nothing matches; 400 Bad Request if the text is
+	 *         missing, too short or too long
 	 */
 	@GetMapping("/buscar")
-	public ResponseEntity<List<MedicamentoBusquedaDto>> buscar(
-			@RequestParam(name = "q", defaultValue = "") String texto) {
-		return ResponseEntity.ok(medicamentoService.buscar(texto));
+	public ResponseEntity<List<MedicamentoBusquedaDto>> buscar(@Valid MedicamentoBusquedaFiltroDto filtro) {
+		return ResponseEntity.ok(medicamentoService.buscar(filtro.texto()));
 	}
 }

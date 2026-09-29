@@ -14,8 +14,9 @@ import {
 import { MedicamentoBusqueda } from "../../../../core/models/medicamento-busqueda.model";
 import { MedicamentoService } from "../../../../core/services/medicamento.service";
 
-/** Same minimum the backend enforces; shorter queries are not sent */
+/** Same limits the backend enforces; shorter queries are not sent and longer ones cannot be typed */
 const LONGITUD_MINIMA_BUSQUEDA = 2;
+const LONGITUD_MAXIMA_BUSQUEDA = 150;
 /** Waits for the user to stop typing instead of sending one request per key */
 const ESPERA_ESCRITURA_MS = 300;
 
@@ -35,6 +36,7 @@ export class BuscadorMedicamentosComponent {
   private readonly medicamentoService = inject(MedicamentoService);
 
   protected readonly longitudMinima = LONGITUD_MINIMA_BUSQUEDA;
+  protected readonly longitudMaxima = LONGITUD_MAXIMA_BUSQUEDA;
   protected readonly texto = signal("");
 
   // switchMap cancels the previous request, so stale results never overwrite new ones
