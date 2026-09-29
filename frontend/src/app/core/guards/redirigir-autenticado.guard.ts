@@ -5,12 +5,18 @@ import { Sesion } from "../models/sesion.model";
 import { SesionService } from "../services/sesion.service";
 
 /**
- * For public pages: visitors pass through, while users who already have a
- * session are sent to their role's panel. It never blocks a visitor, so the
- * page stays public.
+ * Guard de rutas públicas (capa core, guards).
  *
- * Each role's panel is the route with the role's name, declared in app.routes.ts
+ * Qué es: una función CanActivateFn que el router ejecuta antes de entrar a una
+ * página pública.
+ *
+ * Cómo funciona: pregunta a SesionService si hay una sesión activa. Sin sesión
+ * deja pasar (true), así la página sigue siendo pública; con sesión devuelve un
+ * UrlTree que redirige a "/<rol>", el panel del rol declarado en app.routes.ts
  * (/paciente, /farmacia, /administrador).
+ *
+ * Para qué sirve: cumple el criterio de la HU-10 de enviar a su panel al usuario
+ * que ya inició sesión, sin bloquear nunca a un visitante.
  */
 export const redirigirAutenticadoGuard: CanActivateFn = (): boolean | UrlTree => {
   const sesion: Sesion | null = inject(SesionService).obtenerSesionActiva();

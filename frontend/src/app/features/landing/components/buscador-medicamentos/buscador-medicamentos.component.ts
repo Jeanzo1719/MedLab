@@ -21,10 +21,13 @@ import {
 import { MedicamentoBusqueda } from "../../../../core/models/medicamento-busqueda.model";
 import { MedicamentoService } from "../../../../core/services/medicamento.service";
 
-/** Same limits the backend enforces; shorter queries are not sent and longer ones cannot be typed */
+/**
+ * Mismos límites que valida el backend: lo más corto no se envía y lo más
+ * largo no se puede escribir
+ */
 const LONGITUD_MINIMA_BUSQUEDA: number = 2;
 const LONGITUD_MAXIMA_BUSQUEDA: number = 150;
-/** Waits for the user to stop typing instead of sending one request per key */
+/** Espera a que el usuario deje de escribir en lugar de enviar una petición por tecla */
 const ESPERA_ESCRITURA_MS: number = 300;
 
 type EstadoBusqueda =
@@ -33,6 +36,21 @@ type EstadoBusqueda =
   | { tipo: "resultados"; medicamentos: MedicamentoBusqueda[] }
   | { tipo: "error" };
 
+/**
+ * Buscador de medicamentos de la landing (capa features, componente con datos).
+ *
+ * Qué es: el campo "Busca un medicamento" y su lista de resultados, que se usa
+ * sin cuenta.
+ *
+ * Cómo funciona: cada tecla actualiza la signal texto. Un flujo de RxJS espera
+ * 300 ms sin escribir, quita espacios, ignora textos repetidos y cancela la
+ * petición anterior con switchMap. El resultado es una máquina de estados
+ * (inactivo, cargando, resultados, error) que la plantilla muestra con @if.
+ *
+ * Para qué sirve: cumple el criterio de la HU-10 de buscar un producto sin
+ * cuenta. Es el único componente de sección que pide datos por su cuenta, porque
+ * su búsqueda depende de lo que escribe el usuario y no de la página.
+ */
 @Component({
   selector: "app-buscador-medicamentos",
   templateUrl: "./buscador-medicamentos.component.html",
@@ -47,7 +65,7 @@ export class BuscadorMedicamentosComponent {
   protected readonly longitudMaxima: number = LONGITUD_MAXIMA_BUSQUEDA;
   protected readonly texto: WritableSignal<string> = signal("");
 
-  // switchMap cancels the previous request, so stale results never overwrite new ones
+  // switchMap cancela la petición anterior: resultados viejos nunca pisan a los nuevos
   protected readonly estado: Signal<EstadoBusqueda> = toSignal(
     toObservable(this.texto).pipe(
       debounceTime(ESPERA_ESCRITURA_MS),

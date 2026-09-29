@@ -1,11 +1,20 @@
+/**
+ * Contenido de la sección de servicios (capa features, contenido).
+ *
+ * Qué es: los textos e íconos de las tarjetas que muestra
+ * SeccionServiciosComponent.
+ *
+ * Para qué sirve: separa los textos de la plantilla, así cambiar un servicio
+ * nunca toca el HTML.
+ */
 export interface Servicio {
   titulo: string;
   descripcion: string;
-  /** SVG path data drawn on a 24x24 stroke icon */
+  /** Datos del path SVG, dibujado como un ícono de trazo de 24x24 */
   icono: string;
 }
 
-/** Content kept apart from the template so copy changes never touch markup */
+/** Contenido separado de la plantilla: cambiar los textos nunca toca el HTML */
 export const SERVICIOS: readonly Servicio[] = [
   {
     titulo: "Búsqueda por ubicación",
