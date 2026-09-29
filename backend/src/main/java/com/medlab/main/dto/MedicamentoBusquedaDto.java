@@ -1,6 +1,12 @@
 package com.medlab.main.dto;
 
-/** Public view of a medicine in the visitor search results. */
-public record MedicamentoBusquedaDto(String id, String nombreComercial, String principioActivo, String presentacion,
-		String formaFarmaceutica) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+/**
+ * Public view of a medicine in the visitor search results. Sizes follow the medicine limits of the data model.
+ */
+public record MedicamentoBusquedaDto(@NotBlank String id, @NotBlank @Size(min = 2, max = 100) String nombreComercial,
+		@NotBlank @Size(min = 2, max = 150) String principioActivo, @NotBlank @Size(max = 100) String presentacion,
+		@NotBlank @Size(max = 30) String formaFarmaceutica) {
 }
