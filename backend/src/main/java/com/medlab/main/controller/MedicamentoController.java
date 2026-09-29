@@ -29,13 +29,13 @@ public class MedicamentoController {
 	/**
 	 * Searches medicines whose brand name or active ingredient contains the given text, ignoring case and accents.
 	 * <p>
-	 * {@code GET /api/public/medicamentos?q=acetaminofen}
+	 * {@code GET /api/public/medicamentos/buscar?q=acetaminofen}
 	 *
 	 * @param texto text to search for, sent as the {@code q} query parameter; texts shorter than two characters return
 	 *              no results
 	 * @return 200 OK with the matching medicines, or an empty list if nothing matches
 	 */
-	@GetMapping
+	@GetMapping("/buscar")
 	public ResponseEntity<List<MedicamentoBusquedaDto>> buscar(
 			@RequestParam(name = "q", defaultValue = "") String texto) {
 		return ResponseEntity.ok(medicamentoService.buscar(texto));

@@ -8,7 +8,7 @@ import { MedicamentoBusqueda } from "../models/medicamento-busqueda.model";
 @Injectable({ providedIn: "root" })
 export class MedicamentoService {
   private readonly http = inject(HttpClient);
-  private readonly url = `${environment.apiUrl}/public/medicamentos`;
+  private readonly url = `${environment.apiUrl}/public/medicamentos/buscar`;
 
   /** Public endpoint: search by commercial name or active ingredient, no account needed */
   buscar(texto: string): Observable<MedicamentoBusqueda[]> {
