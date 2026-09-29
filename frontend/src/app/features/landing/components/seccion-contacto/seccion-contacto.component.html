@@ -1,3 +1,8 @@
+<!--
+  Plantilla de la sección de contacto.
+  Recorre los medios de contacto y muestra cada uno con su ícono; si el medio
+  tiene enlace (por ejemplo mailto:), el valor se puede pulsar.
+-->
 <section id="contacto" class="contacto" aria-labelledby="titulo-contacto">
   <div class="contenido">
     <h2 id="titulo-contacto">Contacto</h2>
@@ -6,7 +11,7 @@
       aliada? Escríbenos.
     </p>
 
-    <!-- <address> marks this block as the platform's contact information -->
+    <!-- <address> marca este bloque como la información de contacto de la plataforma -->
     <address>
       <ul class="medios">
         @for (medio of medios; track medio.titulo) {

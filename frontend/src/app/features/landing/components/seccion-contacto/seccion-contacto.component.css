@@ -1,4 +1,10 @@
-/* Mobile: contact items stacked */
+/*
+ * Estilos de la sección de contacto.
+ * Mobile first: en móvil los medios de contacto van apilados y desde tablet se
+ * muestran en una fila de tres.
+ */
+
+/* Móvil: medios de contacto apilados */
 .contenido {
   max-width: 1200px;
   margin: 0 auto;
@@ -21,7 +27,7 @@ h2 {
   color: var(--color-texto-secundario);
 }
 
-/* Browsers render <address> in italics by default */
+/* Los navegadores muestran <address> en cursiva por defecto */
 address {
   font-style: normal;
 }
@@ -78,7 +84,7 @@ address {
   color: var(--color-texto-secundario);
 }
 
-/* Long emails wrap instead of overflowing on narrow screens */
+/* Los correos largos se parten en lugar de desbordarse en pantallas angostas */
 .texto a,
 .texto span:last-child {
   font-weight: 600;
@@ -93,7 +99,7 @@ address {
   color: var(--color-primario-hover);
 }
 
-/* Tablet and desktop: three items in a row */
+/* Tablet y escritorio: los tres medios en una fila */
 @media (min-width: 640px) {
   .contenido {
     padding: 4rem 1.5rem;

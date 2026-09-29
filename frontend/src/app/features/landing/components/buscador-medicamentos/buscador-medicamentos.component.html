@@ -1,4 +1,11 @@
-<!-- Search runs while typing; submit is prevented so Enter never reloads the page -->
+<!--
+  Plantilla del buscador de medicamentos.
+  Tiene el formulario con el campo de búsqueda y, debajo, la zona de
+  resultados. Esa zona muestra un mensaje distinto según el estado de la
+  búsqueda (cargando, error, sin resultados o lista de medicamentos) y lo
+  anuncia a los lectores de pantalla.
+-->
+<!-- La búsqueda se hace mientras se escribe; el submit se cancela para que Enter nunca recargue la página -->
 <form class="buscador" role="search" (submit)="$event.preventDefault()">
   <label class="etiqueta" for="campo-busqueda">Busca un medicamento</label>
 
@@ -26,7 +33,7 @@
   </p>
 </form>
 
-<!-- aria-live announces status changes to screen reader users -->
+<!-- aria-live anuncia los cambios de estado a quienes usan lector de pantalla -->
 <div id="resultados-busqueda" class="resultados" aria-live="polite">
   @let estadoActual = estado();
   @if (estadoActual.tipo === "cargando") {

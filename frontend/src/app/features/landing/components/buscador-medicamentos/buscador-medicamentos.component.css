@@ -1,3 +1,9 @@
+/*
+ * Estilos del buscador de medicamentos.
+ * Dan forma al campo con su ícono de lupa, a los mensajes de estado y a la
+ * lista de resultados. Usan los tokens de styles.css.
+ */
+
 :host {
   display: block;
   width: 100%;
@@ -29,7 +35,7 @@
   pointer-events: none;
 }
 
-/* 16px font prevents iOS from zooming in when the field gets focus */
+/* Con fuente de 16px, iOS no hace zoom al enfocar el campo */
 input {
   box-sizing: border-box;
   width: 100%;
