@@ -12,10 +12,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Farmacia {
 
-  private String id;
-  private String usuarioId;
-  private String nombreFarmacia;
-  private EstadoAprobacion estadoAprobacion;
-  private double latitud;
-  private double longitud;
+	private String id;
+	private String usuarioId;
+	private String nombreFarmacia;
+	private EstadoAprobacion estadoAprobacion;
+	private double latitud;
+	private double longitud;
 }
