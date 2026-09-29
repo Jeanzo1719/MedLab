@@ -1,0 +1,11 @@
+services:
+  angular-dev:
+    build:
+      context: ..
+      dockerfile: docker/dev-frontend.Dockerfile
+    container_name: medlab-frontend
+    restart: unless-stopped
+    ports:
+      - "1420:1420"
+    environment:
+      NODE_ENV: development

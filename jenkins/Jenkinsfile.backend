@@ -22,19 +22,19 @@ pipeline {
 
         stage('docker build') {
             steps {
-                sh 'docker compose --env-file .env -f docker/docker-compose.yml build'
+                sh 'docker compose --env-file .env -f docker/dev-backend-docker-compose.yml build'
             }
         }
 
         stage('start application') {
             steps {
-                sh 'docker compose --env-file .env -f docker/docker-compose.yml up -d'
+                sh 'docker compose --env-file .env -f docker/dev-backend-docker-compose.yml up -d'
             }
         }
 
         stage('verify startup') {
             steps {
-                sh 'docker compose --env-file .env -f docker/docker-compose.yml ps'
+                sh 'docker compose --env-file .env -f docker/dev-backend-docker-compose.yml ps'
             }
         }
     }
@@ -44,7 +44,7 @@ pipeline {
             sh '''
                 docker compose \
                     --env-file .env \
-                    -f docker/docker-compose.yml \
+                    -f docker/dev-backend-docker-compose.yml \
                     down -v || true
 
                 rm -f .env

@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('docker build') {
+            steps {
+                sh 'docker compose -f docker/dev-frontend-docker-compose.yml build'
+            }
+        }
+
+        stage('start application') {
+            steps {
+                sh 'docker compose -f docker/dev-frontend-docker-compose.yml up -d'
+            }
+        }
+
+        stage('verify startup') {
+            steps {
+                sh 'docker compose -f docker/dev-frontend-docker-compose.yml ps'
+            }
+        }
+    }
+
+    post {
+        always {
+            sh '''
+                docker compose -f docker/dev-frontend-docker-compose.yml down -v || true
+
+                rm -f .env
+            '''
+        }
+    }
+}
