@@ -18,5 +18,6 @@ export class SesionService {
   // 3. Aquí: leer el token, descartarlo si expiró y devolver { rol } a partir de su contenido.
   //    Todo es local, sin llamar al backend, para que la landing siga sin depender de la base
   //    de datos de usuarios.
-  // 4. Crear las rutas de RUTAS_PANEL antes de devolver sesiones reales.
+  // 4. Antes de devolver sesiones reales, declarar en app.routes.ts las rutas de los paneles
+  //    (/paciente, /farmacia, /administrador), que es a donde redirige redirigirAutenticadoGuard.
 }

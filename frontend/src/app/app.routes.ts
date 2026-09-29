@@ -12,5 +12,9 @@ export const routes: Routes = [
     title: "MedLab | Disponibilidad de medicamentos en farmacias cercanas",
     canActivate: [redirigirAutenticadoGuard],
   },
+  // Role panels arrive with the authentication user story. Each path must be the
+  // role's name (paciente, farmacia, administrador), because redirigirAutenticadoGuard
+  // sends a logged-in user to "/<rol>"; declare them here before SesionService
+  // returns real sessions, or the wildcard below would bounce users back to the landing.
   { path: "**", redirectTo: "" },
 ];
