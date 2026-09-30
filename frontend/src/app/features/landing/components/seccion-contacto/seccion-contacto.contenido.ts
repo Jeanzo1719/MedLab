@@ -1,18 +1,7 @@
-/**
- * Contenido de la sección de contacto (capa features, contenido).
- *
- * Qué es: los datos de contacto que muestra SeccionContactoComponent.
- *
- * Para qué sirve: separa los textos de la plantilla, así cambiar un dato de
- * contacto nunca toca el HTML. Los valores son provisionales hasta tener los
- * oficiales.
- */
 export interface MedioContacto {
   titulo: string;
   valor: string;
-  /** Enlace opcional (mailto:, tel:, URL de mapa); si no hay, se muestra como texto */
   enlace?: string;
-  /** Datos del path SVG, dibujado como un ícono de trazo de 24x24 */
   icono: string;
 }
 

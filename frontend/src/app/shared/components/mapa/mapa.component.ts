@@ -32,20 +32,6 @@ import {
 } from "./mapa.config";
 import { MarcadorMapa } from "./marcador-mapa.model";
 
-/**
- * Mapa interactivo reutilizable (capa shared).
- *
- * Qué es: un componente genérico que envuelve Leaflet con teselas de
- * OpenStreetMap y no conoce el dominio (no sabe qué es una farmacia).
- *
- * Cómo funciona: crea el mapa en ngAfterViewInit, cuando el contenedor ya está
- * en el DOM, con la configuración de mapa.config.ts. Un effect redibuja los
- * marcadores cada vez que cambia el input marcadores, y ngOnDestroy libera
- * Leaflet. El input descripcion da el nombre accesible de la región.
- *
- * Para qué sirve: cualquier página puede mostrar puntos en un mapa convirtiendo
- * sus datos a MarcadorMapa.
- */
 @Component({
   selector: "app-mapa",
   templateUrl: "./mapa.component.html",
@@ -54,19 +40,16 @@ import { MarcadorMapa } from "./marcador-mapa.model";
 })
 export class MapaComponent implements AfterViewInit, OnDestroy {
   readonly marcadores: InputSignal<MarcadorMapa[]> = input<MarcadorMapa[]>([]);
-  /** Nombre accesible de la región del mapa; cada página describe lo que muestra su mapa */
   readonly descripcion: InputSignal<string> = input<string>("Mapa interactivo");
 
   private readonly contenedor: Signal<ElementRef<HTMLDivElement>> =
     viewChild.required<ElementRef<HTMLDivElement>>("contenedorMapa");
 
-  // Es una signal para que el effect de los marcadores se vuelva a ejecutar cuando el mapa exista
   private readonly mapa: WritableSignal<LeafletMap | undefined> =
     signal<LeafletMap | undefined>(undefined);
   private readonly capaMarcadores: LayerGroup = layerGroup();
 
   constructor() {
-    // Redibuja todos los marcadores cada vez que cambia el input
     effect(() => {
       if (!this.mapa()) {
         return;
@@ -81,7 +64,6 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  // Leaflet necesita el contenedor ya en el DOM, por eso el mapa se crea aquí
   ngAfterViewInit(): void {
     const mapa: LeafletMap = map(this.contenedor().nativeElement, {
       center: CENTRO_INICIAL,
@@ -102,7 +84,6 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
     this.mapa.set(mapa);
   }
 
-  // Libera los listeners y las capas de Leaflet cuando se destruye la vista
   ngOnDestroy(): void {
     this.mapa()?.remove();
   }

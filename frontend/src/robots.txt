@@ -1,3 +1,2 @@
-# La landing es pública: los buscadores pueden indexarla
 User-agent: *
 Allow: /

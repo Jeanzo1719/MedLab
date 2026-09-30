@@ -1,12 +1,5 @@
-<!--
-  Plantilla del encabezado de la landing.
-  Tiene el logotipo (enlace a inicio), el botón de menú para pantallas
-  pequeñas, la navegación entre secciones y los botones de iniciar sesión y
-  registrarse. El botón de menú informa su estado con aria-expanded.
--->
 <header class="encabezado">
   <div class="contenido">
-    <!-- El ícono es decorativo: el texto visible ya nombra el enlace -->
     <a class="marca" routerLink="/" fragment="inicio" (click)="cerrarMenu()">
       <img
         src="assets/images/marca/medlab-icono.svg"
@@ -47,7 +40,6 @@
         </ul>
       </nav>
 
-      <!-- Las rutas de inicio de sesión y registro llegan con la HU de autenticación -->
       <div class="acciones">
         <a class="boton boton-secundario" routerLink="/iniciar-sesion">
           Iniciar sesión

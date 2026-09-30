@@ -1,37 +1,18 @@
-/*
- * Estilos globales de MedLab.
- * Qué es: la hoja de estilos que se aplica a toda la app (angular.json la
- * carga junto con la fuente y el CSS de Leaflet).
- * Cómo funciona: define en :root los tokens de diseño (colores de marca con su
- * contraste, fuente y alto del encabezado) y unas pocas reglas base: sin
- * márgenes del navegador, scroll suave a las anclas y foco visible.
- * Para qué sirve: los componentes usan estas variables en lugar de valores
- * sueltos, así la identidad visual se cambia en un solo lugar.
- */
+/* You can add global styles to this file, and also import other style files */
 
-/*
- * Tokens de diseño de MedLab, tomados del paquete oficial del logo.
- * Cada par indica su contraste (WCAG AA exige 4.5:1 para texto normal).
- */
 :root {
-  /* Colores de marca: solo para el ícono, la decoración y formas grandes */
   --color-marca: #159a63;
   --color-acento: #f2a93b;
   --color-negro: #131210;
 
-  /* Verde accesible para texto y botones: el blanco encima da 5.36:1 */
   --color-primario: #107a4e;
-  /* Estado hover/activo del primario: el blanco encima da 6.55:1 */
   --color-primario-hover: #0d6b44;
 
-  /* Texto sobre --color-fondo: 18.21:1 y 8.31:1 */
   --color-texto: #101208;
   --color-texto-secundario: #4a4d45;
 
-  /* Texto tenue sobre --color-negro (franjas oscuras como el pie de página): 7.87:1 */
   --color-texto-invertido-secundario: #a7a9a1;
 
-  /* Texto de error sobre --color-fondo: 6.34:1 */
   --color-error: #b42318;
 
   --color-fondo: #fbfbf8;
@@ -42,22 +23,14 @@
 
   --alto-encabezado: 4rem;
 
-  /*
-   * Breakpoints (las variables CSS no funcionan dentro de @media, así que se usan estos valores):
-   *   móvil:      < 640px   (estilos por defecto, mobile first)
-   *   tablet:     >= 640px  @media (min-width: 640px)
-   *   escritorio: >= 1024px @media (min-width: 1024px)
-   */
 }
 
-/* Quita el margen por defecto del navegador para que las vistas a pantalla completa no tengan huecos */
 html,
 body {
   margin: 0;
   height: 100%;
 }
 
-/* Los saltos a anclas (/#servicios) quedan debajo del encabezado fijo, no tapados por él */
 html {
   scroll-padding-top: var(--alto-encabezado);
 }
@@ -75,7 +48,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Foco de teclado visible en todos los elementos interactivos */
 :focus-visible {
   outline: 3px solid var(--color-acento);
   outline-offset: 2px;

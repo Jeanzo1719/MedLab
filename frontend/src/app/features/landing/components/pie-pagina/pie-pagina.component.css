@@ -1,18 +1,8 @@
-/*
- * Estilos del pie de página de la landing.
- * Franja oscura en la variante oscura de la marca. Mobile first: en móvil todo
- * va apilado y en escritorio la marca queda a la izquierda y la navegación a
- * la derecha.
- */
-
-/* Franja oscura con la variante oscura oficial de la marca.
-   Contraste sobre --color-negro: texto 18.06:1, enlaces 9.37:1, tenue 7.87:1 */
 .pie {
   color: var(--color-fondo);
   background-color: var(--color-negro);
 }
 
-/* Móvil: todo apilado */
 .contenido {
   display: grid;
   grid-template-columns: 1fr;
@@ -50,7 +40,6 @@ nav ul {
   list-style: none;
 }
 
-/* El padding deja un área táctil cómoda alrededor de los enlaces cortos */
 nav a {
   display: inline-block;
   padding: 0.5rem 0;
@@ -71,14 +60,12 @@ nav a:hover {
   border-top: 1px solid rgb(255 255 255 / 0.12);
 }
 
-/* Tablet: mismo margen lateral que las secciones de arriba */
 @media (min-width: 640px) {
   .contenido {
     padding: 3rem 1.5rem 2rem;
   }
 }
 
-/* Escritorio: marca y lema a la izquierda, navegación a la derecha */
 @media (min-width: 1024px) {
   .contenido {
     grid-template-columns: 1fr auto;

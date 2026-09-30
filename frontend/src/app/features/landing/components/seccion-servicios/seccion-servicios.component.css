@@ -1,17 +1,9 @@
-/*
- * Estilos de la sección de servicios.
- * Franja blanca con las tarjetas de servicios. Mobile first: una tarjeta por
- * fila en móvil, dos en tablet y las cuatro en una fila en escritorio.
- */
-
-/* La franja blanca separa esta sección del fondo de la sección de inicio */
 .servicios {
   background-color: var(--color-superficie);
   border-top: 1px solid var(--color-borde);
   border-bottom: 1px solid var(--color-borde);
 }
 
-/* Móvil: una tarjeta por fila */
 .contenido {
   max-width: 1200px;
   margin: 0 auto;
@@ -82,7 +74,6 @@ h3 {
   color: var(--color-texto-secundario);
 }
 
-/* Tablet: dos tarjetas por fila */
 @media (min-width: 640px) {
   .contenido {
     padding: 4rem 1.5rem;
@@ -98,7 +89,6 @@ h3 {
   }
 }
 
-/* Escritorio: los cuatro servicios en una sola fila */
 @media (min-width: 1024px) {
   .tarjetas {
     grid-template-columns: repeat(4, 1fr);

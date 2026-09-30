@@ -1,10 +1,3 @@
-/*
- * Estilos del mapa compartido.
- * El componente no fija su propio tamaño: ocupa todo el espacio que le da el
- * padre, con un alto mínimo para que Leaflet siempre pueda dibujar.
- */
-
-/* El padre decide el tamaño; el mapa lo llena */
 :host {
   display: block;
   width: 100%;

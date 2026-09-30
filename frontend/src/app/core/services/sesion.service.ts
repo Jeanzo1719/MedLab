@@ -2,24 +2,8 @@ import { Injectable } from "@angular/core";
 
 import { Sesion } from "../models/sesion.model";
 
-/**
- * Servicio de sesión del usuario (capa core, servicios).
- *
- * Qué es: el punto único donde la app pregunta si hay alguien con sesión
- * iniciada.
- *
- * Cómo funciona: por ahora siempre devuelve null (visitante), porque la
- * autenticación todavía no existe. El TODO de abajo explica cómo conectarlo.
- *
- * Para qué sirve: redirigirAutenticadoGuard lo usa para decidir si envía al
- * usuario a su panel.
- */
 @Injectable({ providedIn: "root" })
 export class SesionService {
-  /**
-   * Síncrono y local a propósito: la landing nunca debe esperar ni depender de
-   * la base de datos de usuarios para decidir si redirige.
-   */
   obtenerSesionActiva(): Sesion | null {
     return null;
   }

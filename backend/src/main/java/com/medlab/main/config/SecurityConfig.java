@@ -22,7 +22,6 @@ public class SecurityConfig {
     return http.build();
   }
 
-  // CORS de la API pública: solo GET y solo desde los orígenes de cors.origenes-permitidos (application-dev.yml)
   @Bean
   CorsConfigurationSource corsConfigurationSource(
       @Value("${cors.origenes-permitidos}") List<String> origenesPermitidos) {

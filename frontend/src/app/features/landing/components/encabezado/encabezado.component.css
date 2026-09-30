@@ -1,12 +1,3 @@
-/*
- * Estilos del encabezado de la landing.
- * Mobile first: en móvil y tablet la navegación es un desplegable que abre el
- * botón de menú; desde 1024px todo va en una sola línea. El encabezado es fijo
- * (sticky) y su alto sale de --alto-encabezado.
- */
-
-/* Fijo (sticky) para que iniciar sesión y registrarse estén a mano en toda la landing.
-   El z-index queda por encima de Leaflet, cuyos controles usan 1000 */
 :host {
   position: sticky;
   top: 0;
@@ -42,7 +33,6 @@
   text-decoration: none;
 }
 
-/* 44px: tamaño mínimo de un área táctil */
 .boton-menu {
   display: inline-flex;
   align-items: center;
@@ -64,7 +54,6 @@
   stroke-linecap: round;
 }
 
-/* Móvil y tablet: menú desplegable plegado debajo de la barra */
 .menu {
   display: none;
   position: absolute;
@@ -143,14 +132,12 @@ nav a:hover {
   background-color: var(--color-fondo);
 }
 
-/* Tablet: botones lado a lado dentro del desplegable */
 @media (min-width: 640px) {
   .acciones {
     flex-direction: row;
   }
 }
 
-/* Escritorio: todo en línea, sin botón de menú */
 @media (min-width: 1024px) {
   .boton-menu {
     display: none;
