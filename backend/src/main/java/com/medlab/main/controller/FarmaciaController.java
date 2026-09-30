@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.medlab.main.config.RutasApi;
 import com.medlab.main.dto.FarmaciaMapaDto;
 import com.medlab.main.service.FarmaciaService;
 
@@ -20,11 +19,11 @@ import lombok.RequiredArgsConstructor;
  * <p>
  * Cómo funciona: solo traduce HTTP a llamadas al servicio. Recibe la petición, delega en {@link FarmaciaService} y
  * envuelve el resultado en un {@link ResponseEntity}. No tiene reglas de negocio ni accede al repositorio. Los
- * endpoints bajo {@link RutasApi#PUBLICA} no requieren autenticación (modo visitante) y solo aceptan GET desde los
- * orígenes configurados en {@link com.medlab.main.config.CorsConfig}.
+ * endpoints bajo {@code /api/public} no requieren autenticación (modo visitante) y solo aceptan GET desde los orígenes
+ * configurados en {@link com.medlab.main.config.SecurityConfig}.
  */
 @RestController
-@RequestMapping(RutasApi.FARMACIAS_PUBLICAS)
+@RequestMapping("/api/public/farmacias")
 @RequiredArgsConstructor
 public class FarmaciaController {
 

@@ -3,7 +3,7 @@ import { environment } from "../../../environments/environment";
 /**
  * Endpoints del backend que usa el frontend, en un solo lugar (capa core, api).
  *
- * Qué es: el equivalente en el frontend de RutasApi.java del backend.
+ * Qué es: la lista de rutas que declaran los controllers del backend.
  *
  * Cómo funciona: cada entrada une la URL base de la API del entorno
  * (environment.apiUrl) con la ruta del área pública del backend.
