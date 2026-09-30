@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.medlab.main.dto.FarmaciaMapaDto;
 import com.medlab.main.entity.EstadoAprobacion;
-import com.medlab.main.mapper.FarmaciaMapper;
+import com.medlab.main.entity.Farmacia;
 import com.medlab.main.repository.FarmaciaRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -16,10 +16,14 @@ import lombok.RequiredArgsConstructor;
 public class FarmaciaService {
 
 	private final FarmaciaRepository farmaciaRepository;
-	private final FarmaciaMapper farmaciaMapper;
 
 	public List<FarmaciaMapaDto> listarAprobadasParaMapa() {
-		return farmaciaRepository.findByEstadoAprobacion(EstadoAprobacion.APROBADA).stream()
-				.map(farmaciaMapper::aMapaDto).toList();
+		return farmaciaRepository.findByEstadoAprobacion(EstadoAprobacion.APROBADA).stream().map(this::aMapaDto)
+				.toList();
+	}
+
+	private FarmaciaMapaDto aMapaDto(Farmacia farmacia) {
+		return new FarmaciaMapaDto(farmacia.getId(), farmacia.getNombreFarmacia(), farmacia.getLatitud(),
+				farmacia.getLongitud());
 	}
 }
