@@ -24,6 +24,7 @@ public class MedicamentoService {
 
 	private MedicamentoBusquedaDto aBusquedaDto(Medicamento medicamento) {
 		return new MedicamentoBusquedaDto(medicamento.getId(), medicamento.getNombreComercial(),
-				medicamento.getPrincipioActivo(), medicamento.getPresentacion(), medicamento.getFormaFarmaceutica());
+				medicamento.getPrincipioActivo(), medicamento.getPresentacion(),
+				medicamento.getFormaFarmaceutica().getNombre());
 	}
 }

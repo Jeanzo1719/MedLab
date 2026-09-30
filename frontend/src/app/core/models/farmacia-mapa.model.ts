@@ -1,5 +1,5 @@
 export interface FarmaciaMapa {
-  id: string;
+  id: number;
   nombre: string;
   latitud: number;
   longitud: number;

@@ -1,5 +1,5 @@
 export interface MedicamentoBusqueda {
-  id: string;
+  id: number;
   nombreComercial: string;
   principioActivo: string;
   presentacion: string;

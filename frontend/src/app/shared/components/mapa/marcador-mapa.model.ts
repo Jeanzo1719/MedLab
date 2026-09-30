@@ -1,5 +1,5 @@
 export interface MarcadorMapa {
-  id: string;
+  id: number;
   latitud: number;
   longitud: number;
   etiqueta: string;
