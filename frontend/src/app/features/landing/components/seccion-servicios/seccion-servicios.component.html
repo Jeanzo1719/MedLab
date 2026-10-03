@@ -1,0 +1,23 @@
+<section id="servicios" class="servicios" aria-labelledby="titulo-servicios">
+  <div class="contenido">
+    <h2 id="titulo-servicios">Todo lo que necesitas para encontrar tus medicamentos</h2>
+    <p class="introduccion">
+      MedLab reúne la información de farmacias y pacientes en un solo lugar,
+      gratis y sin necesidad de crear una cuenta para consultar.
+    </p>
+
+    <ul class="tarjetas">
+      @for (servicio of servicios; track servicio.titulo) {
+        <li class="tarjeta">
+          <span class="icono" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="28" height="28">
+              <path [attr.d]="servicio.icono" />
+            </svg>
+          </span>
+          <h3>{{ servicio.titulo }}</h3>
+          <p>{{ servicio.descripcion }}</p>
+        </li>
+      }
+    </ul>
+  </div>
+</section>

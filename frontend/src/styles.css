@@ -1,1 +1,54 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root {
+  --color-marca: #159a63;
+  --color-acento: #f2a93b;
+  --color-negro: #131210;
+
+  --color-primario: #107a4e;
+  --color-primario-hover: #0d6b44;
+
+  --color-texto: #101208;
+  --color-texto-secundario: #4a4d45;
+
+  --color-texto-invertido-secundario: #a7a9a1;
+
+  --color-error: #b42318;
+
+  --color-fondo: #fbfbf8;
+  --color-superficie: #ffffff;
+  --color-borde: #e3e4de;
+
+  --fuente-base: "Plus Jakarta Sans Variable", Arial, sans-serif;
+
+  --alto-encabezado: 4rem;
+
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+html {
+  scroll-padding-top: var(--alto-encabezado);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  font-family: var(--fuente-base);
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-acento);
+  outline-offset: 2px;
+}

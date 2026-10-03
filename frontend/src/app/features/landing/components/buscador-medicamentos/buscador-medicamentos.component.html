@@ -1,0 +1,57 @@
+<form class="buscador" role="search" (submit)="$event.preventDefault()">
+  <label class="etiqueta" for="campo-busqueda">Busca un medicamento</label>
+
+  <div class="campo">
+    <svg class="icono" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+      <circle cx="11" cy="11" r="7" />
+      <path d="M20 20l-4-4" />
+    </svg>
+    <input
+      #campo
+      id="campo-busqueda"
+      type="search"
+      autocomplete="off"
+      [maxLength]="longitudMaxima"
+      placeholder="Ej: acetaminofén, ibuprofeno…"
+      aria-describedby="ayuda-busqueda"
+      aria-controls="resultados-busqueda"
+      [value]="texto()"
+      (input)="texto.set(campo.value)"
+    />
+  </div>
+
+  <p id="ayuda-busqueda" class="ayuda">
+    Por nombre comercial o principio activo. No necesitas una cuenta.
+  </p>
+</form>
+
+<div id="resultados-busqueda" class="resultados" aria-live="polite">
+  @let estadoActual = estado();
+  @if (estadoActual.tipo === "cargando") {
+    <p class="mensaje">Buscando…</p>
+  } @else if (estadoActual.tipo === "error") {
+    <p class="mensaje mensaje-error">
+      No pudimos realizar la búsqueda. Intenta de nuevo en unos minutos.
+    </p>
+  } @else if (estadoActual.tipo === "resultados") {
+    @if (estadoActual.medicamentos.length === 0) {
+      <p class="mensaje">No encontramos medicamentos para "{{ texto().trim() }}".</p>
+    } @else {
+      <p class="mensaje">
+        {{ estadoActual.medicamentos.length }}
+        {{ estadoActual.medicamentos.length === 1 ? "resultado" : "resultados" }}
+      </p>
+      <ul class="lista">
+        @for (medicamento of estadoActual.medicamentos; track medicamento.id) {
+          <li class="medicamento">
+            <span class="nombre">{{ medicamento.nombreComercial }}</span>
+            <span class="detalle">
+              {{ medicamento.principioActivo }} · {{ medicamento.presentacion }} ·
+              {{ medicamento.formaFarmaceutica }}
+            </span>
+          </li>
+        }
+      </ul>
+    }
+  }
+</div>

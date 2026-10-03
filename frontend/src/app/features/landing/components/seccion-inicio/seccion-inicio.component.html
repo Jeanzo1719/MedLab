@@ -1,0 +1,20 @@
+<section id="inicio" class="inicio" aria-labelledby="titulo-inicio">
+  <div class="contenido">
+    <div class="presentacion">
+      <h1 id="titulo-inicio">Encuentra tus medicamentos en farmacias cercanas</h1>
+      <p class="descripcion">
+        Consulta en qué farmacias de Medellín hay disponibilidad, compara precios
+        y ayuda a otros reportando lo que encuentras.
+      </p>
+
+      <app-buscador-medicamentos />
+    </div>
+
+    <div class="mapa">
+      <app-mapa
+        [marcadores]="marcadores()"
+        descripcion="Mapa de farmacias aprobadas en Medellín"
+      />
+    </div>
+  </div>
+</section>
