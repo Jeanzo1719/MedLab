@@ -9,6 +9,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * esta es una clase java que representa la tabla formas_farmaceuticas: cómo viene el medicamento, por ejemplo tableta o jarabe.
+ * solo tienen id y nombre. Representan listas fijas de opciones que otras tablas referencian
+ */
 @Entity
 @Table(name = "formas_farmaceuticas")
 @Getter

@@ -9,6 +9,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * esta es una clase java que representa la tabla categorias: el grupo terapéutico del medicamento, por ejemplo "Analgésicos"
+ * solo tienen id y nombre. Representan listas fijas de opciones que otras tablas referencian
+ */
 @Entity
 @Table(name = "categorias")
 @Getter
