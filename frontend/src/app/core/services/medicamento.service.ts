@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { Observable } from "rxjs";
 
-import { API_RUTAS } from "../api/api-rutas";
+import { environment } from "../../../environments/environment";
 import { MedicamentoBusqueda } from "../models/medicamento-busqueda.model";
 
 @Injectable({ providedIn: "root" })
@@ -11,7 +11,7 @@ export class MedicamentoService {
 
   buscar(texto: string): Observable<MedicamentoBusqueda[]> {
     const params: HttpParams = new HttpParams().set("q", texto);
-    return this.http.get<MedicamentoBusqueda[]>(API_RUTAS.buscarMedicamentos, {
+    return this.http.get<MedicamentoBusqueda[]>(`${environment.apiUrl}/public/medicamentos/buscar`, {
       params,
     });
   }
