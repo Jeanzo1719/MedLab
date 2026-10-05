@@ -9,8 +9,3 @@ jpa:
     ddl-auto: validate
     show_sql: true
     highlight_sql: true
-
-## origins allowed to call the public API, comma-separated:
-## Angular dev server (ng serve, pnpm tauri dev), Tauri on Linux/macOS, Tauri on Windows/Android
-cors:
-  origenes-permitidos: http://localhost:1420,tauri://localhost,http://tauri.localhost
