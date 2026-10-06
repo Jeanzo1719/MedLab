@@ -1,8 +1,18 @@
+/*
+
+  el fondo negro de la marca con el texto claro
+
+*/
 .pie {
   color: var(--color-fondo);
   background-color: var(--color-negro);
 }
 
+/*
+
+  el contenido centrado, una cosa debajo de la otra en celular
+
+*/
 .contenido {
   display: grid;
   grid-template-columns: 1fr;
@@ -12,6 +22,11 @@
   padding: 3rem 1rem 2rem;
 }
 
+/*
+
+  el logo y el nombre MedLab
+
+*/
 .marca {
   display: flex;
   align-items: center;
@@ -24,6 +39,11 @@
   letter-spacing: -0.02em;
 }
 
+/*
+
+  la frase sobre MedLab, en gris claro
+
+*/
 .lema {
   max-width: 24rem;
   margin: 0;
@@ -31,6 +51,12 @@
   color: var(--color-texto-invertido-secundario);
 }
 
+/*
+
+  los enlaces a las secciones en naranja (el color de acento de la marca),
+  que se subrayan al pasar el mouse
+
+*/
 nav ul {
   display: flex;
   flex-wrap: wrap;
@@ -52,6 +78,11 @@ nav a:hover {
   text-decoration: underline;
 }
 
+/*
+
+  los derechos reservados, más pequeños y separados por una línea arriba
+
+*/
 .derechos {
   margin: 0;
   padding-top: 1.5rem;
@@ -60,12 +91,23 @@ nav a:hover {
   border-top: 1px solid rgb(255 255 255 / 0.12);
 }
 
+/*
+
+  en tablet (desde 640px) hay más espacio a los lados
+
+*/
 @media (min-width: 640px) {
   .contenido {
     padding: 3rem 1.5rem 2rem;
   }
 }
 
+/*
+
+  en computador (desde 1024px) el logo y la frase quedan a la izquierda, los
+  enlaces a la derecha y los derechos abajo ocupando todo el ancho
+
+*/
 @media (min-width: 1024px) {
   .contenido {
     grid-template-columns: 1fr auto;
