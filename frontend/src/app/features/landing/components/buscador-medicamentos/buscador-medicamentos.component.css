@@ -1,8 +1,18 @@
+/*
+
+  el buscador ocupa todo el ancho disponible
+
+*/
 :host {
   display: block;
   width: 100%;
 }
 
+/*
+
+  el formulario: el título, el campo y la ayuda, uno debajo del otro
+
+*/
 .buscador {
   display: flex;
   flex-direction: column;
@@ -13,6 +23,11 @@
   font-weight: 700;
 }
 
+/*
+
+  el campo con la lupa dibujada adentro, a la izquierda
+
+*/
 .campo {
   position: relative;
 }
@@ -29,6 +44,12 @@
   pointer-events: none;
 }
 
+/*
+
+  el campo de texto: alto para que sea fácil de tocar en celular y con espacio
+  a la izquierda para la lupa. Al seleccionarlo, el borde se pone verde
+
+*/
 input {
   box-sizing: border-box;
   width: 100%;
@@ -46,12 +67,22 @@ input:focus {
   border-color: var(--color-primario);
 }
 
+/*
+
+  el texto de ayuda, más pequeño y en gris
+
+*/
 .ayuda {
   margin: 0;
   font-size: 0.875rem;
   color: var(--color-texto-secundario);
 }
 
+/*
+
+  la zona de resultados y sus mensajes. El mensaje de error va en rojo
+
+*/
 .resultados {
   margin-top: 1rem;
 }
@@ -65,6 +96,12 @@ input:focus {
   color: var(--color-error);
 }
 
+/*
+
+  la lista de resultados, cada medicamento en una tarjeta con su nombre en
+  negrilla y el detalle en gris
+
+*/
 .lista {
   display: flex;
   flex-direction: column;

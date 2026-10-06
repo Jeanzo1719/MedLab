@@ -1,6 +1,26 @@
+<!--
+
+  el formulario del buscador. role="search" le dice al lector de pantalla que
+  es un buscador, y preventDefault evita que la página se recargue al presionar
+  Enter
+
+-->
 <form class="buscador" role="search" (submit)="$event.preventDefault()">
+  <!--
+
+    el título del campo. for lo conecta con el campo, así al tocarlo se activa el campo
+
+  -->
   <label class="etiqueta" for="campo-busqueda">Busca un medicamento</label>
 
+  <!--
+
+    el campo de búsqueda con el ícono de lupa
+
+    cada vez que el usuario escribe, guarda el texto en texto (eso dispara la
+    búsqueda). maxLength no deja escribir más de 150 letras
+
+  -->
   <div class="campo">
     <svg class="icono" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
       <circle cx="11" cy="11" r="7" />
@@ -20,11 +40,25 @@
     />
   </div>
 
+  <!--
+
+    el texto de ayuda debajo del campo. El lector de pantalla lo lee junto con el
+    campo (aria-describedby)
+
+  -->
   <p id="ayuda-busqueda" class="ayuda">
     Por nombre comercial o principio activo. No necesitas una cuenta.
   </p>
 </form>
 
+<!--
+
+  la zona de resultados. Muestra un mensaje distinto según el estado del buscador
+
+  aria-live="polite" hace que el lector de pantalla avise cuando cambian los
+  resultados, sin interrumpir lo que esté leyendo
+
+-->
 <div id="resultados-busqueda" class="resultados" aria-live="polite">
   @let estadoActual = estado();
   @if (estadoActual.tipo === "cargando") {
@@ -41,6 +75,12 @@
         {{ estadoActual.medicamentos.length }}
         {{ estadoActual.medicamentos.length === 1 ? "resultado" : "resultados" }}
       </p>
+      <!--
+
+        la lista de resultados: el nombre comercial y debajo el principio activo, la
+        presentación y la forma farmacéutica
+
+      -->
       <ul class="lista">
         @for (medicamento of estadoActual.medicamentos; track medicamento.id) {
           <li class="medicamento">
