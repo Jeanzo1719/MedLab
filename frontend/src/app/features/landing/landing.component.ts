@@ -18,6 +18,16 @@ import { SeccionContactoComponent } from "./components/seccion-contacto/seccion-
 import { SeccionInicioComponent } from "./components/seccion-inicio/seccion-inicio.component";
 import { SeccionServiciosComponent } from "./components/seccion-servicios/seccion-servicios.component";
 
+/**
+ * 
+ * la página de la landing, la primera que ve cualquier persona al entrar a
+ * MedLab, sin necesidad de cuenta
+ * 
+ * arma la página con sus partes: encabezado, inicio, servicios, contacto y pie
+ * de página. Además le pide al backend las farmacias aprobadas y se las pasa al
+ * mapa de la sección de inicio
+ * 
+ */
 @Component({
   selector: "app-landing",
   imports: [
@@ -31,11 +41,30 @@ import { SeccionServiciosComponent } from "./components/seccion-servicios/seccio
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingComponent {
+  /**
+   * 
+   * la descripción de la landing que muestran los buscadores como Google debajo
+   * del título
+   * 
+   */
   private static readonly DESCRIPCION: string =
     "Consulta y reporta la disponibilidad de medicamentos en farmacias cercanas a ti, con búsqueda por ubicación e historial de precios. Sin necesidad de crear una cuenta.";
 
+  /**
+   * 
+   * el service que pide las farmacias al backend
+   * 
+   */
   private readonly farmaciaService: FarmaciaService = inject(FarmaciaService);
 
+  /**
+   * 
+   * las farmacias aprobadas que llegan del backend
+   * 
+   * empieza como una lista vacía y se llena cuando llega la respuesta. Si hay un
+   * error, se queda vacía y el mapa se muestra sin puntos
+   * 
+   */
   private readonly farmacias: Signal<FarmaciaMapa[]> = toSignal(
     this.farmaciaService
       .listarAprobadas()
@@ -43,6 +72,14 @@ export class LandingComponent {
     { initialValue: [] },
   );
 
+  /**
+   * 
+   * las farmacias convertidas en puntos para el mapa: id, latitud, longitud y
+   * el nombre como etiqueta
+   * 
+   * es computed: se recalcula solo cada vez que cambian las farmacias
+   * 
+   */
   protected readonly marcadores: Signal<MarcadorMapa[]> = computed(() =>
     this.farmacias().map((farmacia) => ({
       id: farmacia.id,
@@ -52,6 +89,11 @@ export class LandingComponent {
     })),
   );
 
+  /**
+   * 
+   * pone la descripción de la landing al abrir la página
+   * 
+   */
   constructor() {
     inject(MetadatosService).definirDescripcion(LandingComponent.DESCRIPCION);
   }

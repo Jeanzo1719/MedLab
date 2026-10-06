@@ -1,9 +1,25 @@
+<!--
+
+  el encabezado con el logo y el menú, siempre visible arriba
+
+-->
 <app-encabezado />
 
+<!--
+
+  el contenido principal de la página, una sección debajo de la otra. La sección
+  de inicio recibe los puntos de las farmacias para el mapa
+
+-->
 <main>
   <app-seccion-inicio [marcadores]="marcadores()" />
   <app-seccion-servicios />
   <app-seccion-contacto />
 </main>
 
+<!--
+
+  el pie de página, al final de todo
+
+-->
 <app-pie-pagina />
