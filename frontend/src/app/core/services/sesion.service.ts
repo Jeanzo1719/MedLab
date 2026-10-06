@@ -2,8 +2,22 @@ import { Injectable } from "@angular/core";
 
 import { Sesion } from "../models/sesion.model";
 
+/**
+ * 
+ * el service de la sesión del usuario: dice si hay alguien con sesión iniciada
+ * y qué tipo de usuario es
+ * 
+ */
 @Injectable({ providedIn: "root" })
 export class SesionService {
+  /**
+   * 
+   * devuelve la sesión del usuario, o null si no hay nadie con sesión iniciada
+   * 
+   * por ahora siempre devuelve null, porque el login todavía no existe. Los pasos
+   * para conectarlo están en el TODO de abajo
+   * 
+   */
   obtenerSesionActiva(): Sesion | null {
     return null;
   }
