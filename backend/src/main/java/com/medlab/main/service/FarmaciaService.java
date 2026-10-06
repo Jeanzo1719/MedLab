@@ -10,6 +10,18 @@ import com.medlab.main.repository.FarmaciaRepository;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 
+ * este archivo es el service de farmacias, prepara los datos de las 
+ * farmacias que se muestran en el mapa
+ * 
+ * se hace en tres pasos.
+ * a. Le pide al repositorio las farmacias con estado "aprobada".
+ * b. Recorre la lista (stream()) y convierte cada farmacia en un 
+ * FarmaciaMapaDto (map(this::aMapaDto)).
+ * c. Junta los resultados en una lista nueva (toList()).
+ * 
+ */
 @Service
 @RequiredArgsConstructor
 public class FarmaciaService {
