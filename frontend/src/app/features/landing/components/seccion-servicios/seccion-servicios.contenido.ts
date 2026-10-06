@@ -1,9 +1,39 @@
+/**
+ * 
+ * la forma de cada servicio que se muestra en una tarjeta
+ * 
+ */
 export interface Servicio {
+  /**
+   * 
+   * el nombre del servicio, por ejemplo "Historial de precios"
+   * 
+   */
   titulo: string;
+
+  /**
+   * 
+   * el texto que explica el servicio
+   * 
+   */
   descripcion: string;
+
+  /**
+   * 
+   * el dibujo del ícono, escrito como el trazo de un SVG (las letras y números
+   * le dicen al navegador por dónde pasar la línea)
+   * 
+   */
   icono: string;
 }
 
+/**
+ * 
+ * los cuatro servicios principales de MedLab, en el orden en que se muestran
+ * 
+ * están en este archivo aparte para cambiar los textos sin tocar el componente
+ * 
+ */
 export const SERVICIOS: readonly Servicio[] = [
   {
     titulo: "Búsqueda por ubicación",

@@ -1,9 +1,19 @@
+/*
+
+  el contenido centrado, con un ancho máximo de 1200px
+
+*/
 .contenido {
   max-width: 1200px;
   margin: 0 auto;
   padding: 3rem 1rem;
 }
 
+/*
+
+  el título de la sección
+
+*/
 h2 {
   margin: 0 0 1rem;
   font-size: 1.75rem;
@@ -12,6 +22,11 @@ h2 {
   letter-spacing: -0.02em;
 }
 
+/*
+
+  el texto debajo del título, en gris
+
+*/
 .introduccion {
   max-width: 40rem;
   margin: 0 0 2rem;
@@ -20,10 +35,20 @@ h2 {
   color: var(--color-texto-secundario);
 }
 
+/*
+
+  quita la letra cursiva que el navegador le pone a address por defecto
+
+*/
 address {
   font-style: normal;
 }
 
+/*
+
+  los datos de contacto en una columna en celular
+
+*/
 .medios {
   display: grid;
   grid-template-columns: 1fr;
@@ -33,6 +58,11 @@ address {
   list-style: none;
 }
 
+/*
+
+  cada dato en una tarjeta, con el ícono a la izquierda y el texto a la derecha
+
+*/
 .medio {
   display: flex;
   align-items: center;
@@ -43,6 +73,11 @@ address {
   border-radius: 1rem;
 }
 
+/*
+
+  el cuadro del ícono, con el ícono en verde
+
+*/
 .icono {
   display: inline-flex;
   flex-shrink: 0;
@@ -64,6 +99,12 @@ address {
   stroke-linejoin: round;
 }
 
+/*
+
+  el título del dato en gris y el valor en negrilla. Los textos largos, como
+  el correo, se parten para no salirse de la tarjeta
+
+*/
 .texto {
   display: flex;
   flex-direction: column;
@@ -82,6 +123,11 @@ address {
   overflow-wrap: anywhere;
 }
 
+/*
+
+  los enlaces van en verde y se oscurecen al pasar el mouse
+
+*/
 .texto a {
   color: var(--color-primario);
 }
@@ -90,6 +136,11 @@ address {
   color: var(--color-primario-hover);
 }
 
+/*
+
+  en tablet (desde 640px) hay más espacio y el título es más grande
+
+*/
 @media (min-width: 640px) {
   .contenido {
     padding: 4rem 1.5rem;
@@ -100,6 +151,11 @@ address {
   }
 }
 
+/*
+
+  en computador (desde 1024px) los tres datos van en una sola fila
+
+*/
 @media (min-width: 1024px) {
   .medios {
     grid-template-columns: repeat(3, 1fr);

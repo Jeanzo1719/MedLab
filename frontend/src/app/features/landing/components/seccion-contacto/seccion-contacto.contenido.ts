@@ -1,11 +1,47 @@
+/**
+ * 
+ * la forma de cada dato de contacto que se muestra
+ * 
+ */
 export interface MedioContacto {
+  /**
+   * 
+   * qué tipo de dato es, por ejemplo "Correo"
+   * 
+   */
   titulo: string;
+
+  /**
+   * 
+   * el dato en sí, por ejemplo el correo o el horario
+   * 
+   */
   valor: string;
+
+  /**
+   * 
+   * el enlace al que lleva al tocarlo, por ejemplo mailto: para abrir el correo.
+   * Es opcional (?): los datos sin enlace se muestran como texto normal
+   * 
+   */
   enlace?: string;
+
+  /**
+   * 
+   * el dibujo del ícono, escrito como el trazo de un SVG
+   * 
+   */
   icono: string;
 }
 
 // TODO: reemplazar estos valores provisionales por los datos de contacto oficiales de la plataforma
+/**
+ * 
+ * los datos de contacto de MedLab: correo, ubicación y horario
+ * 
+ * son provisionales hasta tener los oficiales (ver el TODO de arriba)
+ * 
+ */
 export const MEDIOS_CONTACTO: readonly MedioContacto[] = [
   {
     titulo: "Correo",

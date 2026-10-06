@@ -1,3 +1,9 @@
+/*
+
+  en celular, la presentación arriba y el mapa debajo, centrados y con un
+  ancho máximo de 1200px
+
+*/
 .contenido {
   display: flex;
   flex-direction: column;
@@ -7,6 +13,11 @@
   padding: 2rem 1rem;
 }
 
+/*
+
+  el título principal, grande y en negrilla
+
+*/
 h1 {
   margin: 0 0 1rem;
   font-size: 2rem;
@@ -15,6 +26,11 @@ h1 {
   letter-spacing: -0.02em;
 }
 
+/*
+
+  el texto debajo del título, en gris
+
+*/
 .descripcion {
   margin: 0 0 2rem;
   font-size: 1.0625rem;
@@ -22,6 +38,11 @@ h1 {
   color: var(--color-texto-secundario);
 }
 
+/*
+
+  el recuadro del mapa con bordes redondeados
+
+*/
 .mapa {
   height: 360px;
   overflow: hidden;
@@ -29,6 +50,12 @@ h1 {
   border-radius: 1rem;
 }
 
+/*
+
+  en tablet (desde 640px) hay más espacio, el título más grande y el mapa
+  más alto
+
+*/
 @media (min-width: 640px) {
   .contenido {
     padding: 3rem 1.5rem;
@@ -43,6 +70,13 @@ h1 {
   }
 }
 
+/*
+
+  en computador (desde 1024px) la presentación queda a la izquierda y el
+  mapa a la derecha. El mapa se queda quieto al bajar (sticky) y ocupa el
+  alto de la pantalla
+
+*/
 @media (min-width: 1024px) {
   .contenido {
     display: grid;

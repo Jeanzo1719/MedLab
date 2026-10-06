@@ -1,3 +1,8 @@
+<!--
+
+  la sección de servicios. id="servicios" es a donde salta el menú
+
+-->
 <section id="servicios" class="servicios" aria-labelledby="titulo-servicios">
   <div class="contenido">
     <h2 id="titulo-servicios">Todo lo que necesitas para encontrar tus medicamentos</h2>
@@ -6,6 +11,12 @@
       gratis y sin necesidad de crear una cuenta para consultar.
     </p>
 
+    <!--
+
+      una tarjeta por cada servicio, con su ícono, título y descripción. El ícono
+      lleva aria-hidden porque es solo decorativo
+
+    -->
     <ul class="tarjetas">
       @for (servicio of servicios; track servicio.titulo) {
         <li class="tarjeta">
