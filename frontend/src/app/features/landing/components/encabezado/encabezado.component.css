@@ -1,3 +1,9 @@
+/*
+
+  el encabezado se queda pegado arriba al bajar por la página (sticky) y por
+  encima del mapa (z-index alto)
+
+*/
 :host {
   position: sticky;
   top: 0;
@@ -5,6 +11,11 @@
   display: block;
 }
 
+/*
+
+  la barra blanca del encabezado con su línea de abajo
+
+*/
 .encabezado {
   position: relative;
   height: var(--alto-encabezado);
@@ -12,6 +23,12 @@
   border-bottom: 1px solid var(--color-borde);
 }
 
+/*
+
+  el logo a la izquierda y el menú a la derecha, centrados y con un ancho
+  máximo de 1200px
+
+*/
 .contenido {
   display: flex;
   align-items: center;
@@ -22,6 +39,11 @@
   padding: 0 1rem;
 }
 
+/*
+
+  el logo y el nombre MedLab
+
+*/
 .marca {
   display: flex;
   align-items: center;
@@ -33,6 +55,11 @@
   text-decoration: none;
 }
 
+/*
+
+  el botón ☰ del menú y su ícono
+
+*/
 .boton-menu {
   display: inline-flex;
   align-items: center;
@@ -54,6 +81,12 @@
   stroke-linecap: round;
 }
 
+/*
+
+  el menú en celular: escondido, y cuando se abre aparece como una lista
+  debajo del encabezado
+
+*/
 .menu {
   display: none;
   position: absolute;
@@ -72,6 +105,11 @@
   display: flex;
 }
 
+/*
+
+  los enlaces a las secciones
+
+*/
 nav ul {
   display: flex;
   flex-direction: column;
@@ -95,6 +133,14 @@ nav a:hover {
   background-color: var(--color-fondo);
 }
 
+/*
+
+  los botones de iniciar sesión y registrarse
+
+  boton-primario es el verde relleno (registrarse) y boton-secundario el de
+  solo borde (iniciar sesión)
+
+*/
 .acciones {
   display: flex;
   flex-direction: column;
@@ -132,12 +178,23 @@ nav a:hover {
   background-color: var(--color-fondo);
 }
 
+/*
+
+  en tablet (desde 640px) los dos botones se ponen uno al lado del otro
+
+*/
 @media (min-width: 640px) {
   .acciones {
     flex-direction: row;
   }
 }
 
+/*
+
+  en computador (desde 1024px) se esconde el botón ☰ y el menú se muestra
+  completo en una sola fila
+
+*/
 @media (min-width: 1024px) {
   .boton-menu {
     display: none;

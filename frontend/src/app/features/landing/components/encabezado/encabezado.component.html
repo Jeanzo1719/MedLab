@@ -1,5 +1,18 @@
+<!--
+
+  el encabezado completo de la landing
+
+-->
 <header class="encabezado">
   <div class="contenido">
+    <!--
+
+      el logo y el nombre de MedLab. Al tocarlo lleva al inicio de la página
+
+      alt="" porque el texto MedLab ya está al lado; así el lector de pantalla no
+      lo lee dos veces
+
+    -->
     <a class="marca" routerLink="/" fragment="inicio" (click)="cerrarMenu()">
       <img
         src="assets/images/marca/medlab-icono.svg"
@@ -10,6 +23,14 @@
       <span>MedLab</span>
     </a>
 
+    <!--
+
+      el botón ☰ que abre y cierra el menú en celular y tablet
+
+      aria-expanded y aria-label le dicen al lector de pantalla si el menú está
+      abierto y qué hace el botón. El ícono cambia a una X cuando está abierto
+
+    -->
     <button
       type="button"
       class="boton-menu"
@@ -27,7 +48,19 @@
       </svg>
     </button>
 
+    <!--
+
+      el menú: los enlaces a las secciones y los botones de cuenta. En celular
+      solo se ve cuando está abierto
+
+    -->
     <div id="menu-principal" class="menu" [class.abierto]="menuAbierto()">
+      <!--
+
+        los enlaces a cada sección. fragment hace que salte a la sección sin
+        recargar la página
+
+      -->
       <nav aria-label="Secciones de la página">
         <ul>
           @for (seccion of secciones; track seccion.id) {
@@ -40,6 +73,12 @@
         </ul>
       </nav>
 
+      <!--
+
+        los botones para iniciar sesión y registrarse. Sus páginas todavía no
+        existen; llegan con el login
+
+      -->
       <div class="acciones">
         <a class="boton boton-secundario" routerLink="/iniciar-sesion">
           Iniciar sesión
