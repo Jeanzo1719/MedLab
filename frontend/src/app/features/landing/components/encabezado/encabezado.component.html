@@ -63,13 +63,15 @@
       -->
       <nav aria-label="Secciones de la página">
         <ul>
-          @for (seccion of secciones; track seccion.id) {
-            <li>
-              <a routerLink="/" [fragment]="seccion.id" (click)="cerrarMenu()">
-                {{ seccion.etiqueta }}
-              </a>
-            </li>
-          }
+          <li>
+            <a routerLink="/" fragment="inicio" (click)="cerrarMenu()">Inicio</a>
+          </li>
+          <li>
+            <a routerLink="/" fragment="servicios" (click)="cerrarMenu()">Servicios</a>
+          </li>
+          <li>
+            <a routerLink="/" fragment="contacto" (click)="cerrarMenu()">Contacto</a>
+          </li>
         </ul>
       </nav>
 

@@ -18,8 +18,10 @@ import {
   switchMap,
 } from "rxjs";
 
-import { MedicamentoBusqueda } from "../../../../core/models/medicamento-busqueda.model";
-import { MedicamentoService } from "../../../../core/services/medicamento.service";
+import {
+  MedicamentoBusqueda,
+  MedicamentoService,
+} from "../../../../core/services/medicamento.service";
 
 /**
  * 

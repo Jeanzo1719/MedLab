@@ -6,8 +6,6 @@ import {
 } from "@angular/core";
 import { RouterLink } from "@angular/router";
 
-import { SECCIONES_LANDING, SeccionLanding } from "../../landing.secciones";
-
 /**
  * 
  * el encabezado de la landing: el logo, el menú de secciones y los botones de
@@ -25,14 +23,6 @@ import { SECCIONES_LANDING, SeccionLanding } from "../../landing.secciones";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EncabezadoComponent {
-  /**
-   * 
-   * las secciones a las que se puede saltar desde el menú (inicio, servicios y
-   * contacto), tomadas de landing.secciones
-   * 
-   */
-  protected readonly secciones: readonly SeccionLanding[] = SECCIONES_LANDING;
-
   /**
    * 
    * si el menú está abierto o cerrado en celular y tablet. Empieza cerrado

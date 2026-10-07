@@ -13,6 +13,9 @@ import {
   viewChild,
 } from "@angular/core";
 import {
+  CircleMarkerOptions,
+  LatLngBoundsExpression,
+  LatLngExpression,
   LayerGroup,
   Map as LeafletMap,
   circleMarker,
@@ -21,25 +24,84 @@ import {
   tileLayer,
 } from "leaflet";
 
-import {
-  CAPA_BASE,
-  CENTRO_INICIAL,
-  ESTILO_MARCADOR,
-  LIMITES_MUNDO,
-  ZOOM_INICIAL,
-  ZOOM_MAXIMO,
-  ZOOM_MINIMO,
-} from "./mapa.config";
-import { MarcadorMapa } from "./marcador-mapa.model";
+import { FarmaciaMapa } from "../../../core/services/farmacia.service";
 
 /**
- * 
+ *
+ * el punto donde se centra el mapa al abrirse: el centro de Medellín
+ *
+ */
+const CENTRO_INICIAL: LatLngExpression = [6.2442, -75.5812];
+
+/**
+ *
+ * qué tan cerca se ve el mapa al abrirse. 13 muestra la ciudad por barrios
+ *
+ */
+const ZOOM_INICIAL: number = 13;
+
+/**
+ *
+ * lo más lejos que se puede alejar el mapa (3 muestra continentes)
+ *
+ */
+const ZOOM_MINIMO: number = 3;
+
+/**
+ *
+ * lo más cerca que se puede acercar el mapa (19 muestra calles y casas)
+ *
+ */
+const ZOOM_MAXIMO: number = 19;
+
+/**
+ *
+ * los bordes del mapa, para que no se pueda arrastrar fuera del mundo
+ *
+ * va de -85 a 85 de latitud porque más allá de eso el mapa ya no tiene imágenes
+ *
+ */
+const LIMITES_MUNDO: LatLngBoundsExpression = [
+  [-85, -180],
+  [85, 180],
+];
+
+/**
+ *
+ * de dónde salen las imágenes del mapa (calles, ríos, barrios)
+ *
+ * url es la dirección de OpenStreetMap, un mapa libre y gratuito que no pide
+ * clave. Las {z}, {x} y {y} las reemplaza Leaflet con el zoom y la posición de
+ * cada cuadro. atribucion es el crédito a OpenStreetMap que se muestra en la
+ * esquina del mapa, como piden sus condiciones de uso
+ *
+ */
+const CAPA_BASE: Readonly<{ url: string; atribucion: string }> = {
+  url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+  atribucion:
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+};
+
+/**
+ *
+ * cómo se ve cada punto del mapa: un círculo verde de la marca con borde blanco
+ *
+ */
+const ESTILO_MARCADOR: CircleMarkerOptions = {
+  radius: 8,
+  color: "#ffffff",
+  weight: 2,
+  fillColor: "#159a63",
+  fillOpacity: 1,
+};
+
+/**
+ *
  * el componente del mapa interactivo. Muestra un mapa en el que se puede
- * mover y hacer zoom, con puntos encima
- * 
- * usa la librería Leaflet. Está en shared porque no depende de ninguna página:
- * quien lo use le pasa los puntos y él los dibuja
- * 
+ * mover y hacer zoom, con un punto por cada farmacia
+ *
+ * usa la librería Leaflet. Quien lo use le pasa las farmacias y él las dibuja
+ *
  */
 @Component({
   selector: "app-mapa",
@@ -49,52 +111,52 @@ import { MarcadorMapa } from "./marcador-mapa.model";
 })
 export class MapaComponent implements AfterViewInit, OnDestroy {
   /**
-   * 
-   * los puntos que se dibujan en el mapa. Los recibe desde afuera, de quien
+   *
+   * las farmacias que se dibujan en el mapa. Las recibe desde afuera, de quien
    * use el componente; si cambian, el mapa se redibuja solo
-   * 
+   *
    */
-  readonly marcadores: InputSignal<MarcadorMapa[]> = input<MarcadorMapa[]>([]);
+  readonly farmacias: InputSignal<FarmaciaMapa[]> = input<FarmaciaMapa[]>([]);
   /**
-   * 
+   *
    * el texto que leen los lectores de pantalla para describir el mapa a las
    * personas con discapacidad visual
-   * 
+   *
    */
   readonly descripcion: InputSignal<string> = input<string>("Mapa interactivo");
 
   /**
-   * 
+   *
    * el div del HTML donde Leaflet dibuja el mapa
-   * 
+   *
    */
   private readonly contenedor: Signal<ElementRef<HTMLDivElement>> =
     viewChild.required<ElementRef<HTMLDivElement>>("contenedorMapa");
 
   /**
-   * 
+   *
    * el mapa de Leaflet. Empieza vacío (undefined) y se llena cuando el HTML ya
    * está en pantalla
-   * 
+   *
    */
   private readonly mapa: WritableSignal<LeafletMap | undefined> =
     signal<LeafletMap | undefined>(undefined);
   /**
-   * 
+   *
    * el grupo donde se guardan todos los puntos, para poder borrarlos y
    * volverlos a dibujar juntos
-   * 
+   *
    */
   private readonly capaMarcadores: LayerGroup = layerGroup();
 
   /**
-   * 
+   *
    * deja preparado el redibujo de los puntos
-   * 
-   * el effect se ejecuta solo cada vez que cambian los marcadores o el mapa:
-   * borra los puntos viejos y dibuja un círculo por cada marcador, con su
-   * etiqueta. Si el mapa todavía no existe, no hace nada
-   * 
+   *
+   * el effect se ejecuta solo cada vez que cambian las farmacias o el mapa:
+   * borra los puntos viejos y dibuja un círculo por cada farmacia, con su
+   * nombre. Si el mapa todavía no existe, no hace nada
+   *
    */
   constructor() {
     effect(() => {
@@ -103,21 +165,21 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
       }
 
       this.capaMarcadores.clearLayers();
-      for (const marcador of this.marcadores()) {
-        circleMarker([marcador.latitud, marcador.longitud], ESTILO_MARCADOR)
-          .bindTooltip(marcador.etiqueta)
+      for (const farmacia of this.farmacias()) {
+        circleMarker([farmacia.latitud, farmacia.longitud], ESTILO_MARCADOR)
+          .bindTooltip(farmacia.nombre)
           .addTo(this.capaMarcadores);
       }
     });
   }
 
   /**
-   * 
+   *
    * crea el mapa cuando el HTML del componente ya está en pantalla
-   * 
-   * lo centra en Medellín con los límites de zoom y de bordes de mapa.config, le
+   *
+   * lo centra en Medellín con los límites de zoom y de bordes de arriba, le
    * pone las imágenes de OpenStreetMap y la capa de puntos encima
-   * 
+   *
    */
   ngAfterViewInit(): void {
     const mapa: LeafletMap = map(this.contenedor().nativeElement, {
@@ -140,9 +202,9 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
-   * 
+   *
    * borra el mapa cuando el componente sale de la pantalla, para liberar memoria
-   * 
+   *
    */
   ngOnDestroy(): void {
     this.mapa()?.remove();

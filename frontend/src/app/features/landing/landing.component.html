@@ -7,19 +7,181 @@
 
 <!--
 
-  el contenido principal de la página, una sección debajo de la otra. La sección
-  de inicio recibe los puntos de las farmacias para el mapa
+  el contenido principal de la página, una sección debajo de la otra
 
 -->
 <main>
-  <app-seccion-inicio [marcadores]="marcadores()" />
-  <app-seccion-servicios />
-  <app-seccion-contacto />
+  <!--
+
+    la sección de inicio. id="inicio" es a donde salta el menú y
+    aria-labelledby le dice al lector de pantalla que su nombre es el título
+
+  -->
+  <section id="inicio" class="inicio" aria-labelledby="titulo-inicio">
+    <div class="contenido">
+      <!--
+
+        el título principal de la página (el único h1), la descripción y el buscador
+
+      -->
+      <div class="presentacion">
+        <h1 id="titulo-inicio">Encuentra tus medicamentos en farmacias cercanas</h1>
+        <p class="descripcion">
+          Consulta en qué farmacias de Medellín hay disponibilidad, compara precios
+          y ayuda a otros reportando lo que encuentras.
+        </p>
+
+        <app-buscador-medicamentos />
+      </div>
+
+      <!--
+
+        el mapa con las farmacias aprobadas. descripcion es lo que lee el lector
+        de pantalla para describirlo
+
+      -->
+      <div class="mapa">
+        <app-mapa
+          [farmacias]="farmacias()"
+          descripcion="Mapa de farmacias aprobadas en Medellín"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!--
+
+    la sección de servicios. id="servicios" es a donde salta el menú
+
+  -->
+  <section id="servicios" class="servicios" aria-labelledby="titulo-servicios">
+    <div class="contenido">
+      <h2 id="titulo-servicios">Todo lo que necesitas para encontrar tus medicamentos</h2>
+      <p class="introduccion">
+        MedLab reúne la información de farmacias y pacientes en un solo lugar,
+        gratis y sin necesidad de crear una cuenta para consultar.
+      </p>
+
+      <!--
+
+        una tarjeta por cada servicio, con su ícono, título y descripción. El ícono
+        lleva aria-hidden porque es solo decorativo
+
+      -->
+      <ul class="tarjetas">
+        @for (servicio of servicios; track servicio.titulo) {
+          <li class="tarjeta">
+            <span class="icono" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28">
+                <path [attr.d]="servicio.icono" />
+              </svg>
+            </span>
+            <h3>{{ servicio.titulo }}</h3>
+            <p>{{ servicio.descripcion }}</p>
+          </li>
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!--
+
+    la sección de contacto. id="contacto" es a donde salta el menú
+
+  -->
+  <section id="contacto" class="contacto" aria-labelledby="titulo-contacto">
+    <div class="contenido">
+      <h2 id="titulo-contacto">Contacto</h2>
+      <p class="introduccion">
+        ¿Tienes dudas, quieres reportar un problema o registrar tu farmacia como
+        aliada? Escríbenos.
+      </p>
+
+      <!--
+
+        los datos de contacto. address le dice al navegador y a los buscadores que
+        esto es información de contacto
+
+        si el dato tiene enlace se muestra como enlace; si no, como texto normal
+
+      -->
+      <address>
+        <ul class="medios">
+          @for (medio of mediosContacto; track medio.titulo) {
+            <li class="medio">
+              <span class="icono" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                  <path [attr.d]="medio.icono" />
+                </svg>
+              </span>
+              <span class="texto">
+                <span class="titulo">{{ medio.titulo }}</span>
+                @if (medio.enlace) {
+                  <a [href]="medio.enlace">{{ medio.valor }}</a>
+                } @else {
+                  <span>{{ medio.valor }}</span>
+                }
+              </span>
+            </li>
+          }
+        </ul>
+      </address>
+    </div>
+  </section>
 </main>
 
 <!--
 
-  el pie de página, al final de todo
+  el pie de página, con fondo oscuro, al final de todo
 
 -->
-<app-pie-pagina />
+<footer class="pie">
+  <div class="contenido">
+    <!--
+
+      el logo en su versión para fondo oscuro y el nombre MedLab. loading="lazy"
+      hace que la imagen se cargue solo cuando el usuario llega al final de la página
+
+    -->
+    <div class="marca">
+      <img
+        src="assets/images/marca/medlab-icono-oscuro.svg"
+        alt=""
+        width="36"
+        height="36"
+        loading="lazy"
+      />
+      <span class="nombre">MedLab</span>
+    </div>
+    <!--
+
+      una frase corta que resume qué es MedLab
+
+    -->
+    <p class="lema">
+      Disponibilidad de medicamentos en farmacias cercanas, reportada por la
+      comunidad.
+    </p>
+
+    <!--
+
+      los enlaces a las secciones, igual que en el encabezado. aria-label los
+      distingue del menú de arriba para el lector de pantalla
+
+    -->
+    <nav aria-label="Secciones de la página (pie de página)">
+      <ul>
+        <li><a routerLink="/" fragment="inicio">Inicio</a></li>
+        <li><a routerLink="/" fragment="servicios">Servicios</a></li>
+        <li><a routerLink="/" fragment="contacto">Contacto</a></li>
+      </ul>
+    </nav>
+
+    <!--
+
+      los derechos reservados con el año actual
+
+    -->
+    <p class="derechos">© {{ anioActual }} MedLab. Todos los derechos reservados.</p>
+  </div>
+</footer>

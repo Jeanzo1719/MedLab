@@ -1,8 +1,7 @@
 import { inject } from "@angular/core";
 import { CanActivateFn, Router, UrlTree } from "@angular/router";
 
-import { Sesion } from "../models/sesion.model";
-import { SesionService } from "../services/sesion.service";
+import { Sesion, SesionService } from "../services/sesion.service";
 
 /**
  * 
