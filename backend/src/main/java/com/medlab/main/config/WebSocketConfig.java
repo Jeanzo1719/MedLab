@@ -24,13 +24,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	 * la lista de direcciones desde las que se permite conectarse al WebSocket, 
 	 * como la web en http://localhost:1420 y la app de escritorio de Tauri
 	 * 
-	 * {@code @Value} la lee de la propiedad cors.origenes-permitidos de application.yaml, 
-	 * que a su vez la toma de la variable CORS_ORIGENES_PERMITIDOS del .env. La 
-	 * lista separada por comas se convierte sola en una lista de Java
-	 * 
+	 * {@code @Value} la lee de la propiedad spring.cors.allowed-origins. En Docker la llena
+	 * la variable SPRING_CORS_ALLOWED_ORIGINS del compose y fuera de Docker se escribe en
+	 * application-dev.yml. La lista separada por comas se convierte sola en una lista de Java
+	 *
 	 */
-	@Value("${cors.origenes-permitidos}")
-	private List<String> origenesPermitidos;
+	@Value("${spring.cors.allowed-origins}")
+	private List<String> allowedOrigins;
 
 
 	/**
@@ -47,7 +47,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	 */
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/ws").setAllowedOrigins(origenesPermitidos.toArray(String[]::new));
+		registry.addEndpoint("/ws").setAllowedOrigins(allowedOrigins.toArray(String[]::new));
 	}
 
 	/**
