@@ -14,12 +14,29 @@ import com.medlab.main.entity.Farmacia;
  * este es el repositorio que da acceso a la tabla farmacias
  * 
  * devuelve la lista de farmacias que están en el estado que se le solicita
+ * y las farmacias aprobadas más cercanas que tienen un medicamento disponible
  * 
  */
 public interface FarmaciaRepository extends JpaRepository<Farmacia, Integer> {
 
 	List<Farmacia> findByEstadoAprobacionNombre(String nombre);
 
+	/**
+	 * 
+	 * busca las farmacias aprobadas que tienen el medicamento disponible, de la
+	 * más cercana a la más lejana, sin pasar del radio ni del límite que se le pidan
+	 * 
+	 * une cada farmacia con su estado y con la tabla disponibilidad, y se queda
+	 * solo con las que tienen el estado de farmacia pedido (aprobada), el
+	 * medicamento buscado y un estado de disponibilidad distinto al excluido
+	 * (agotado). Primero descarta las que quedan fuera de un cuadro alrededor del
+	 * usuario (un grado de latitud mide unos 111 km); así usa el índice
+	 * idx_farmacias_ubicacion y no revisa todas las farmacias. Después calcula la
+	 * distancia real con la fórmula de Haversine (6371 es el radio de la Tierra en
+	 * km), quita las que pasan del radio, las ordena por distancia y se queda con
+	 * las primeras según el límite
+	 * 
+	 */
 	@Query(value = """
 			SELECT f.usuario_id AS id, f.nombre_farmacia AS nombre, f.latitud AS latitud, f.longitud AS longitud,
 			       6371 * 2 * ASIN(SQRT(
@@ -45,6 +62,14 @@ public interface FarmaciaRepository extends JpaRepository<Farmacia, Integer> {
 			@Param("latitud") double latitud, @Param("longitud") double longitud, @Param("radioKm") double radioKm,
 			@Param("limite") int limite);
 
+	/**
+	 * 
+	 * la forma de cada fila que devuelve la búsqueda de farmacias cercanas
+	 * 
+	 * no es una tabla. Spring llena cada método con la columna de la consulta que
+	 * tiene el mismo nombre: id, nombre, latitud, longitud y distanciaKm
+	 * 
+	 */
 	interface FarmaciaCercana {
 
 		Integer getId();

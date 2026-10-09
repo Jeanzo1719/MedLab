@@ -99,7 +99,8 @@ input:focus {
 /*
 
   la lista de resultados, cada medicamento en una tarjeta con su nombre en
-  negrilla y el detalle en gris
+  negrilla y el detalle en gris. Como cada tarjeta es un enlace, se le quita el
+  subrayado y al pasar el mouse el borde se pone verde
 
 */
 .lista {
@@ -136,6 +137,11 @@ input:focus {
   color: var(--color-texto-secundario);
 }
 
+/*
+
+  el texto "Ver farmacias cercanas" de cada resultado, en verde
+
+*/
 .accion {
   font-size: 0.875rem;
   font-weight: 600;

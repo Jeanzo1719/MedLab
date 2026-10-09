@@ -104,6 +104,12 @@ const ESTILO_MARCADOR: CircleMarkerOptions = {
   fillOpacity: 1,
 };
 
+/**
+ *
+ * cómo se ve la farmacia elegida: el mismo círculo, más grande y del verde
+ * oscuro de los botones, para que se distinga de las demás
+ *
+ */
 const ESTILO_MARCADOR_SELECCIONADO: CircleMarkerOptions = {
   ...ESTILO_MARCADOR,
   radius: 12,
@@ -111,6 +117,12 @@ const ESTILO_MARCADOR_SELECCIONADO: CircleMarkerOptions = {
   fillColor: "#107a4e",
 };
 
+/**
+ *
+ * cómo se ve el punto del usuario: un círculo naranja (el color de acento de la
+ * marca) con borde blanco
+ *
+ */
 const ESTILO_UBICACION: CircleMarkerOptions = {
   radius: 9,
   color: "#ffffff",
@@ -119,14 +131,32 @@ const ESTILO_UBICACION: CircleMarkerOptions = {
   fillOpacity: 1,
 };
 
+/**
+ *
+ * cómo se ve la línea de la ruta: verde oscuro, gruesa y un poco transparente
+ * para que se vean las calles debajo
+ *
+ */
 const ESTILO_RUTA: PolylineOptions = {
   color: "#107a4e",
   weight: 5,
   opacity: 0.85,
 };
 
+/**
+ *
+ * qué tan cerca se acerca el mapa al elegir una farmacia o al encuadrar los
+ * puntos (16 muestra las calles cercanas)
+ *
+ */
 const ZOOM_SELECCION: number = 16;
 
+/**
+ *
+ * el espacio que se deja en los bordes del mapa al encuadrar los puntos o la
+ * ruta, para que no queden pegados al borde: 32 píxeles
+ *
+ */
 const MARGEN_AJUSTE_PX: number = 32;
 
 /**
@@ -134,7 +164,9 @@ const MARGEN_AJUSTE_PX: number = 32;
  * el componente del mapa interactivo. Muestra un mapa en el que se puede
  * mover y hacer zoom, con un punto por cada farmacia
  *
- * usa la librería Leaflet. Quien lo use le pasa las farmacias y él las dibuja
+ * usa la librería Leaflet. Quien lo use le pasa las farmacias y él las dibuja.
+ * También puede mostrar la ubicación del usuario, resaltar una farmacia y
+ * dibujar una ruta, si se los pasan
  *
  */
 @Component({
@@ -159,12 +191,35 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
    */
   readonly descripcion: InputSignal<string> = input<string>("Mapa interactivo");
 
+  /**
+   *
+   * dónde está el usuario. Si llega, se dibuja como un punto naranja; si es
+   * null, no se dibuja nada
+   *
+   */
   readonly ubicacion: InputSignal<Coordenadas | null> = input<Coordenadas | null>(null);
 
+  /**
+   *
+   * el id de la farmacia elegida, para resaltarla. Si es null, no hay ninguna
+   * elegida
+   *
+   */
   readonly seleccionada: InputSignal<number | null> = input<number | null>(null);
 
+  /**
+   *
+   * los puntos del camino que se dibuja como una línea. Si la lista está vacía,
+   * no se dibuja ninguna ruta
+   *
+   */
   readonly ruta: InputSignal<Coordenadas[]> = input<Coordenadas[]>([]);
 
+  /**
+   *
+   * avisa a quien use el mapa qué farmacia tocó el usuario, enviando su id
+   *
+   */
   readonly seleccionar: OutputEmitterRef<number> = output<number>();
 
   /**
@@ -191,15 +246,29 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
    */
   private readonly capaMarcadores: LayerGroup = layerGroup();
 
+  /**
+   *
+   * el grupo donde se guarda la línea de la ruta, para poder borrarla y
+   * dibujar otra
+   *
+   */
   private readonly capaRuta: LayerGroup = layerGroup();
 
   /**
    *
-   * deja preparado el redibujo de los puntos
+   * deja preparado todo lo que el mapa redibuja solo
    *
-   * el effect se ejecuta solo cada vez que cambian las farmacias o el mapa:
-   * borra los puntos viejos y dibuja un círculo por cada farmacia, con su
-   * nombre. Si el mapa todavía no existe, no hace nada
+   * cada effect se ejecuta solo cuando cambia algo de lo que usa. Si el mapa
+   * todavía no existe, no hacen nada:
+   * - el primero borra los puntos viejos y dibuja un círculo por cada farmacia,
+   *   con su nombre. La elegida va más grande y al final, para que quede encima.
+   *   Tocar un punto avisa qué farmacia se eligió. Si hay ubicación del usuario,
+   *   también la dibuja
+   * - el segundo, cuando llega la ubicación del usuario o cambian las farmacias,
+   *   mueve el mapa para que se vean el usuario y todas las farmacias
+   * - el tercero, cuando se elige una farmacia, vuela hasta ella
+   * - el cuarto borra la ruta vieja y, si hay una nueva, la dibuja y mueve el
+   *   mapa para que se vea completa
    *
    */
   constructor() {
@@ -291,7 +360,8 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
    * crea el mapa cuando el HTML del componente ya está en pantalla
    *
    * lo centra en Medellín con los límites de zoom y de bordes de arriba, le
-   * pone las imágenes de OpenStreetMap y la capa de puntos encima
+   * pone las imágenes de OpenStreetMap, la capa de la ruta y la capa de puntos
+   * encima, para que la línea no tape los puntos
    *
    */
   ngAfterViewInit(): void {

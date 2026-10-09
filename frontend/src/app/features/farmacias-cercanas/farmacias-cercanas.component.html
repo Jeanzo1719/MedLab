@@ -1,6 +1,23 @@
+<!--
+
+  el encabezado con el logo y el menú, el mismo de la landing
+
+-->
 <app-encabezado />
 
+<!--
+
+  el contenido de la página. En celular va todo en una columna; en computador,
+  la búsqueda y la lista a la izquierda y el mapa a la derecha
+
+-->
 <main class="contenido">
+  <!--
+
+    si la dirección de la página no trae un medicamento válido, se muestra un
+    mensaje con un botón para volver al buscador de la landing
+
+  -->
   @if (medicamentoId() === null) {
     <section class="sin-medicamento" aria-labelledby="titulo-farmacias">
       <h1 id="titulo-farmacias">Elige un medicamento</h1>
@@ -10,6 +27,12 @@
       <a class="boton boton-primario" routerLink="/" fragment="inicio">Buscar un medicamento</a>
     </section>
   } @else {
+    <!--
+
+      el panel de búsqueda: el enlace para volver, el título con el nombre del
+      medicamento, la explicación y las formas de dar la ubicación
+
+    -->
     <section class="panel" aria-labelledby="titulo-farmacias">
       <a class="volver" routerLink="/" fragment="inicio">← Buscar otro medicamento</a>
       <h1 id="titulo-farmacias">Farmacias cercanas con {{ nombreMedicamento() }}</h1>
@@ -18,7 +41,19 @@
         de la más cercana a la más lejana.
       </p>
 
+      <!--
+
+        las dos formas de dar la ubicación: el botón para usar la del dispositivo o
+        el campo para escribir una dirección o ciudad
+
+      -->
       <div class="ubicacion">
+        <!--
+
+          el botón que pide la ubicación del dispositivo. Se desactiva mientras se está
+          buscando una ubicación
+
+        -->
         <button
           type="button"
           class="boton boton-primario"
@@ -28,6 +63,13 @@
           Usar mi ubicación
         </button>
 
+        <!--
+
+          el formulario de la dirección. preventDefault evita que la página se recargue
+          al presionar Enter, y en su lugar busca la dirección. El botón Buscar se
+          desactiva si el campo está vacío o si ya se está buscando
+
+        -->
         <form class="direccion" (submit)="$event.preventDefault(); buscarDireccion()">
           <label for="campo-direccion">O escribe una dirección o ciudad</label>
           <div class="fila">
@@ -51,6 +93,12 @@
           </div>
         </form>
 
+        <!--
+
+          el mensaje del estado de la ubicación: buscando, desde dónde se busca o qué
+          salió mal. aria-live hace que el lector de pantalla lo lea cuando cambia
+
+        -->
         <p class="estado-ubicacion" aria-live="polite">
           @let estado = estadoUbicacion();
           @if (estado.tipo === "obteniendo") {
@@ -74,9 +122,27 @@
       </div>
     </section>
 
+    <!--
+
+      la columna del mapa: arriba la caja de cómo llegar y debajo el mapa
+
+    -->
     <div class="columna-mapa">
+      <!--
+
+        la caja de cómo llegar. Solo aparece cuando hay una farmacia elegida, y tiene
+        el selector de medio (a pie o en carro) y el resumen de la ruta. Si todavía
+        no se eligió ninguna, se muestra una pista
+
+      -->
       @if (farmaciaSeleccionada(); as farmacia) {
         <section class="ruta" aria-label="Cómo llegar">
+          <!--
+
+            los botones de medio. aria-pressed le dice al lector de pantalla cuál está
+            elegido
+
+          -->
           <div class="medios" role="group" aria-label="Medio de transporte">
             @for (opcion of medios; track opcion.valor) {
               <button
@@ -91,6 +157,12 @@
             }
           </div>
 
+          <!--
+
+            el resumen de la ruta: la distancia y el tiempo, o el mensaje si se está
+            trazando o si salió mal
+
+          -->
           <p class="resumen-ruta" aria-live="polite">
             @let estado = estadoRuta();
             @if (estado.tipo === "cargando") {
@@ -117,6 +189,12 @@
         <p class="pista-ruta">Elige una farmacia para ver cómo llegar.</p>
       }
 
+      <!--
+
+        el mapa con el usuario, las farmacias, la elegida y la ruta. Cuando el
+        usuario toca una farmacia en el mapa, se elige y la lista se mueve hasta ella
+
+      -->
       <div class="mapa">
         <app-mapa
           [farmacias]="farmacias()"
@@ -129,6 +207,12 @@
       </div>
     </div>
 
+    <!--
+
+      la lista de farmacias encontradas, con un mensaje distinto según el estado
+      de la búsqueda
+
+    -->
     <section class="resultados" aria-label="Farmacias encontradas" aria-live="polite">
       @let resultado = estadoFarmacias();
       @if (resultado.tipo === "cargando") {
@@ -147,6 +231,13 @@
             {{ resultado.farmacias.length }}
             {{ resultado.farmacias.length === 1 ? "farmacia encontrada" : "farmacias encontradas" }}
           </p>
+          <!--
+
+            la lista numerada de farmacias, de la más cercana a la más lejana. Cada una
+            es un botón con su nombre y su distancia; la primera lleva la etiqueta "Más
+            cercana". Al tocarla, se elige y se resalta en la lista y en el mapa
+
+          -->
           <ol class="lista">
             @for (farmacia of resultado.farmacias; track farmacia.id; let primera = $first) {
               <li>

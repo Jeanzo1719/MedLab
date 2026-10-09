@@ -80,6 +80,9 @@
         la lista de resultados: el nombre comercial y debajo el principio activo, la
         presentación y la forma farmacéutica
 
+        cada resultado es un enlace a la página de farmacias cercanas. queryParams
+        le pasa el id y el nombre del medicamento en la dirección de esa página
+
       -->
       <ul class="lista">
         @for (medicamento of estadoActual.medicamentos; track medicamento.id) {

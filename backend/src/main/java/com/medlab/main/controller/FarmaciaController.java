@@ -45,6 +45,19 @@ public class FarmaciaController {
 		return farmaciaService.listarAprobadasParaMapa();
 	}
 
+	/**
+	 * 
+	 * responde con las farmacias aprobadas más cercanas que tienen el medicamento
+	 * disponible, cuando el frontend se suscribe a /app/farmacias/cercanas
+	 * 
+	 * los datos llegan como datos extra de la suscripción: medicamentoId (el
+	 * medicamento que se busca), latitud y longitud (dónde está el usuario).
+	 * Las anotaciones revisan que vengan y que sean válidos: el id mayor que 0, la
+	 * latitud entre -90 y 90 y la longitud entre -180 y 180. Si algo no cumple, no
+	 * se busca nada y el error queda en el log del backend. Si todo está bien, se
+	 * lo pasa al service
+	 * 
+	 */
 	@SubscribeMapping("/farmacias/cercanas")
 	public List<FarmaciaCercanaDto> listarCercanas(@Header("medicamentoId") @NotNull @Positive Integer medicamentoId,
 			@Header("latitud") @NotNull @DecimalMin("-90.0") @DecimalMax("90.0") Double latitud,
