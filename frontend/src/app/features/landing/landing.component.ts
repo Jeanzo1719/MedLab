@@ -7,7 +7,7 @@ import { FarmaciaMapa, FarmaciaService } from "../../core/services/farmacia.serv
 import { MetadatosService } from "../../core/services/metadatos.service";
 import { MapaComponent } from "../../shared/components/mapa/mapa.component";
 import { BuscadorMedicamentosComponent } from "./components/buscador-medicamentos/buscador-medicamentos.component";
-import { EncabezadoComponent } from "./components/encabezado/encabezado.component";
+import { EncabezadoComponent } from "../../shared/components/encabezado/encabezado.component";
 
 /**
  *
