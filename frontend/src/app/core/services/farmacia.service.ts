@@ -41,6 +41,10 @@ export interface FarmaciaMapa {
   longitud: number;
 }
 
+export interface FarmaciaCercana extends FarmaciaMapa {
+  distanciaKm: number;
+}
+
 /**
  * 
  * el service de las farmacias en el frontend. Le pide al backend las farmacias
@@ -65,5 +69,13 @@ export class FarmaciaService {
    */
   listarAprobadas(): Observable<FarmaciaMapa[]> {
     return this.stomp.consultar<FarmaciaMapa[]>("/app/farmacias/aprobadas");
+  }
+
+  listarCercanas(medicamentoId: number, latitud: number, longitud: number): Observable<FarmaciaCercana[]> {
+    return this.stomp.consultar<FarmaciaCercana[]>("/app/farmacias/cercanas", {
+      medicamentoId: String(medicamentoId),
+      latitud: String(latitud),
+      longitud: String(longitud),
+    });
   }
 }
