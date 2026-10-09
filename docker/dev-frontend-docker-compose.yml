@@ -9,20 +9,3 @@ services:
       - "1420:1420"
     environment:
       NODE_ENV: development
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:1420"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 60s
-    develop:
-      watch:
-        - action: sync
-          path: ../frontend/src
-          target: /workspace/src
-        - action: rebuild
-          path: ../frontend/package.json
-        - action: rebuild
-          path: ../frontend/pnpm-lock.yaml
-        - action: rebuild
-          path: ../frontend/angular.json
