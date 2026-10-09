@@ -2,12 +2,19 @@ package com.medlab.main.controller;
 
 import java.util.List;
 
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 
+import com.medlab.main.dto.FarmaciaCercanaDto;
 import com.medlab.main.dto.FarmaciaMapaDto;
 import com.medlab.main.service.FarmaciaService;
 
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -17,6 +24,7 @@ import lombok.RequiredArgsConstructor;
  * 
  */
 @Controller
+@Validated
 @RequiredArgsConstructor
 public class FarmaciaController {
 
@@ -35,5 +43,12 @@ public class FarmaciaController {
 	@SubscribeMapping("/farmacias/aprobadas")
 	public List<FarmaciaMapaDto> listarAprobadas() {
 		return farmaciaService.listarAprobadasParaMapa();
+	}
+
+	@SubscribeMapping("/farmacias/cercanas")
+	public List<FarmaciaCercanaDto> listarCercanas(@Header("medicamentoId") @NotNull @Positive Integer medicamentoId,
+			@Header("latitud") @NotNull @DecimalMin("-90.0") @DecimalMax("90.0") Double latitud,
+			@Header("longitud") @NotNull @DecimalMin("-180.0") @DecimalMax("180.0") Double longitud) {
+		return farmaciaService.listarCercanasConDisponibilidad(medicamentoId, latitud, longitud);
 	}
 }
