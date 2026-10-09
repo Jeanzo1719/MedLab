@@ -1,21 +1,9 @@
 spring:
-  #
-  # datos de conexión a la base de datos
-  #
-  # cada ${...} se reemplaza por la variable del mismo nombre: en Docker las pasa el
-  # compose desde el .env y fuera de Docker hay que cambiarlas por los valores propios
-  #
   datasource:
-    url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_NAME}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: jdbc:mariadb://localhost:3306/
+    username: 
+    password: 
 
-  #
-  # direcciones desde las que se permite conectarse al WebSocket, separadas por comas
-  #
-  # en Docker la pone el compose con la variable SPRING_CORS_ALLOWED_ORIGINS; fuera de
-  # Docker hay que escribirlas aquí, por ejemplo http://localhost:1420,tauri://localhost,http://tauri.localhost
-  #
   cors:
     allowed-origins:
 
