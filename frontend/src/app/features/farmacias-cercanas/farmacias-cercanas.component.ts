@@ -14,6 +14,7 @@ import { Observable, catchError, combineLatest, map, of, startWith, switchMap } 
 
 import { FarmaciaCercana, FarmaciaService } from "../../core/services/farmacia.service";
 import { MetadatosService } from "../../core/services/metadatos.service";
+import { MedioRuta, Ruta, RutaService } from "../../core/services/ruta.service";
 import { Coordenadas, UbicacionService } from "../../core/services/ubicacion.service";
 import { EncabezadoComponent } from "../../shared/components/encabezado/encabezado.component";
 import { MapaComponent } from "../../shared/components/mapa/mapa.component";
@@ -28,6 +29,13 @@ type EstadoUbicacion =
   | { tipo: "lista"; origen: string }
   | { tipo: "denegada" }
   | { tipo: "no-encontrada"; direccion: string }
+  | { tipo: "error" };
+
+type EstadoRuta =
+  | { tipo: "inactivo" }
+  | { tipo: "cargando" }
+  | { tipo: "lista"; ruta: Ruta }
+  | { tipo: "sin-ruta" }
   | { tipo: "error" };
 
 type EstadoFarmacias =
@@ -50,6 +58,8 @@ export class FarmaciasCercanasComponent {
   private readonly farmaciaService: FarmaciaService = inject(FarmaciaService);
 
   private readonly ubicacionService: UbicacionService = inject(UbicacionService);
+
+  private readonly rutaService: RutaService = inject(RutaService);
 
   private readonly formatoKilometros: Intl.NumberFormat = new Intl.NumberFormat("es-CO", {
     maximumFractionDigits: 1,
@@ -96,6 +106,32 @@ export class FarmaciasCercanasComponent {
   >({
     source: this.farmacias,
     computation: (): number | null => null,
+  });
+
+  protected readonly medios: readonly { valor: MedioRuta; etiqueta: string }[] = [
+    { valor: "a-pie", etiqueta: "A pie" },
+    { valor: "en-carro", etiqueta: "En carro" },
+  ];
+
+  protected readonly medio: WritableSignal<MedioRuta> = signal<MedioRuta>("a-pie");
+
+  protected readonly farmaciaSeleccionada: Signal<FarmaciaCercana | undefined> = computed(
+    (): FarmaciaCercana | undefined =>
+      this.farmacias().find((farmacia: FarmaciaCercana): boolean => farmacia.id === this.seleccionada()),
+  );
+
+  protected readonly estadoRuta: Signal<EstadoRuta> = toSignal(
+    combineLatest([
+      toObservable(this.ubicacion),
+      toObservable(this.farmaciaSeleccionada),
+      toObservable(this.medio),
+    ]).pipe(switchMap(([ubicacion, farmacia, medio]) => this.trazarRuta(ubicacion, farmacia, medio))),
+    { initialValue: { tipo: "inactivo" } as EstadoRuta },
+  );
+
+  protected readonly puntosRuta: Signal<Coordenadas[]> = computed((): Coordenadas[] => {
+    const estado: EstadoRuta = this.estadoRuta();
+    return estado.tipo === "lista" ? estado.ruta.puntos : [];
   });
 
   constructor() {
@@ -148,6 +184,27 @@ export class FarmaciasCercanasComponent {
     return distanciaKm < 1
       ? `${Math.round(distanciaKm * 1000)} m`
       : `${this.formatoKilometros.format(distanciaKm)} km`;
+  }
+
+  protected formatearDuracion(duracionMin: number): string {
+    const minutos: number = Math.max(1, Math.round(duracionMin));
+    return minutos < 60 ? `${minutos} min` : `${Math.floor(minutos / 60)} h ${minutos % 60} min`;
+  }
+
+  private trazarRuta(
+    ubicacion: Coordenadas | null,
+    farmacia: FarmaciaCercana | undefined,
+    medio: MedioRuta,
+  ): Observable<EstadoRuta> {
+    if (!ubicacion || !farmacia) {
+      return of({ tipo: "inactivo" });
+    }
+
+    return this.rutaService.trazar(ubicacion, farmacia, medio).pipe(
+      map((ruta: Ruta | null): EstadoRuta => (ruta ? { tipo: "lista", ruta } : { tipo: "sin-ruta" })),
+      catchError(() => of<EstadoRuta>({ tipo: "error" })),
+      startWith<EstadoRuta>({ tipo: "cargando" }),
+    );
   }
 
   private buscarFarmacias(

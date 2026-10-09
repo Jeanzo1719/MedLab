@@ -22,10 +22,13 @@ import {
   LatLngTuple,
   LayerGroup,
   Map as LeafletMap,
+  Polyline,
+  PolylineOptions,
   circleMarker,
   latLngBounds,
   layerGroup,
   map,
+  polyline,
   tileLayer,
 } from "leaflet";
 
@@ -116,6 +119,12 @@ const ESTILO_UBICACION: CircleMarkerOptions = {
   fillOpacity: 1,
 };
 
+const ESTILO_RUTA: PolylineOptions = {
+  color: "#107a4e",
+  weight: 5,
+  opacity: 0.85,
+};
+
 const ZOOM_SELECCION: number = 16;
 
 const MARGEN_AJUSTE_PX: number = 32;
@@ -154,6 +163,8 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
 
   readonly seleccionada: InputSignal<number | null> = input<number | null>(null);
 
+  readonly ruta: InputSignal<Coordenadas[]> = input<Coordenadas[]>([]);
+
   readonly seleccionar: OutputEmitterRef<number> = output<number>();
 
   /**
@@ -179,6 +190,8 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
    *
    */
   private readonly capaMarcadores: LayerGroup = layerGroup();
+
+  private readonly capaRuta: LayerGroup = layerGroup();
 
   /**
    *
@@ -252,6 +265,25 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
         mapa.flyTo([farmacia.latitud, farmacia.longitud], Math.max(mapa.getZoom(), ZOOM_SELECCION));
       }
     });
+
+    effect(() => {
+      const mapa: LeafletMap | undefined = this.mapa();
+      if (!mapa) {
+        return;
+      }
+
+      this.capaRuta.clearLayers();
+      const puntos: LatLngTuple[] = this.ruta().map(
+        (punto: Coordenadas): LatLngTuple => [punto.latitud, punto.longitud],
+      );
+      if (puntos.length > 1) {
+        const linea: Polyline = polyline(puntos, ESTILO_RUTA).addTo(this.capaRuta);
+        mapa.flyToBounds(linea.getBounds(), {
+          padding: [MARGEN_AJUSTE_PX, MARGEN_AJUSTE_PX],
+          maxZoom: ZOOM_SELECCION,
+        });
+      }
+    });
   }
 
   /**
@@ -278,6 +310,7 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
       noWrap: true,
     }).addTo(mapa);
 
+    this.capaRuta.addTo(mapa);
     this.capaMarcadores.addTo(mapa);
     this.mapa.set(mapa);
   }

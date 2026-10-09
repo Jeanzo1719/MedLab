@@ -74,14 +74,59 @@
       </div>
     </section>
 
-    <div class="mapa">
-      <app-mapa
-        [farmacias]="farmacias()"
-        [ubicacion]="ubicacion()"
-        [seleccionada]="seleccionada()"
-        (seleccionar)="seleccionarDesdeMapa($event)"
-        descripcion="Mapa de farmacias cercanas con disponibilidad del medicamento"
-      />
+    <div class="columna-mapa">
+      @if (farmaciaSeleccionada(); as farmacia) {
+        <section class="ruta" aria-label="Cómo llegar">
+          <div class="medios" role="group" aria-label="Medio de transporte">
+            @for (opcion of medios; track opcion.valor) {
+              <button
+                type="button"
+                class="medio"
+                [class.activo]="medio() === opcion.valor"
+                [attr.aria-pressed]="medio() === opcion.valor"
+                (click)="medio.set(opcion.valor)"
+              >
+                {{ opcion.etiqueta }}
+              </button>
+            }
+          </div>
+
+          <p class="resumen-ruta" aria-live="polite">
+            @let estado = estadoRuta();
+            @if (estado.tipo === "cargando") {
+              Trazando la ruta a {{ farmacia.nombre }}…
+            } @else if (estado.tipo === "lista") {
+              <strong>
+                {{ formatearDistancia(estado.ruta.distanciaKm) }} ·
+                {{ formatearDuracion(estado.ruta.duracionMin) }}
+              </strong>
+              {{ medio() === "a-pie" ? "a pie" : "en carro" }} hasta {{ farmacia.nombre }}
+            } @else if (estado.tipo === "sin-ruta") {
+              <span class="mensaje-error">
+                No encontramos una ruta {{ medio() === "a-pie" ? "a pie" : "en carro" }} hasta
+                {{ farmacia.nombre }}.
+              </span>
+            } @else if (estado.tipo === "error") {
+              <span class="mensaje-error">
+                No pudimos trazar la ruta. Intenta de nuevo en unos minutos.
+              </span>
+            }
+          </p>
+        </section>
+      } @else if (farmacias().length > 0) {
+        <p class="pista-ruta">Elige una farmacia para ver cómo llegar.</p>
+      }
+
+      <div class="mapa">
+        <app-mapa
+          [farmacias]="farmacias()"
+          [ubicacion]="ubicacion()"
+          [seleccionada]="seleccionada()"
+          [ruta]="puntosRuta()"
+          (seleccionar)="seleccionarDesdeMapa($event)"
+          descripcion="Mapa de farmacias cercanas con disponibilidad del medicamento"
+        />
+      </div>
     </div>
 
     <section class="resultados" aria-label="Farmacias encontradas" aria-live="polite">
