@@ -5,26 +5,32 @@ import {
   ElementRef,
   InputSignal,
   OnDestroy,
+  OutputEmitterRef,
   Signal,
   WritableSignal,
   effect,
   input,
+  output,
   signal,
+  untracked,
   viewChild,
 } from "@angular/core";
 import {
   CircleMarkerOptions,
   LatLngBoundsExpression,
   LatLngExpression,
+  LatLngTuple,
   LayerGroup,
   Map as LeafletMap,
   circleMarker,
+  latLngBounds,
   layerGroup,
   map,
   tileLayer,
 } from "leaflet";
 
 import { FarmaciaMapa } from "../../../core/services/farmacia.service";
+import { Coordenadas } from "../../../core/services/ubicacion.service";
 
 /**
  *
@@ -95,6 +101,25 @@ const ESTILO_MARCADOR: CircleMarkerOptions = {
   fillOpacity: 1,
 };
 
+const ESTILO_MARCADOR_SELECCIONADO: CircleMarkerOptions = {
+  ...ESTILO_MARCADOR,
+  radius: 12,
+  weight: 3,
+  fillColor: "#107a4e",
+};
+
+const ESTILO_UBICACION: CircleMarkerOptions = {
+  radius: 9,
+  color: "#ffffff",
+  weight: 3,
+  fillColor: "#f2a93b",
+  fillOpacity: 1,
+};
+
+const ZOOM_SELECCION: number = 16;
+
+const MARGEN_AJUSTE_PX: number = 32;
+
 /**
  *
  * el componente del mapa interactivo. Muestra un mapa en el que se puede
@@ -124,6 +149,12 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
    *
    */
   readonly descripcion: InputSignal<string> = input<string>("Mapa interactivo");
+
+  readonly ubicacion: InputSignal<Coordenadas | null> = input<Coordenadas | null>(null);
+
+  readonly seleccionada: InputSignal<number | null> = input<number | null>(null);
+
+  readonly seleccionar: OutputEmitterRef<number> = output<number>();
 
   /**
    *
@@ -165,10 +196,60 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
       }
 
       this.capaMarcadores.clearLayers();
-      for (const farmacia of this.farmacias()) {
-        circleMarker([farmacia.latitud, farmacia.longitud], ESTILO_MARCADOR)
+      const seleccionada: number | null = this.seleccionada();
+      const farmacias: FarmaciaMapa[] = [...this.farmacias()].sort(
+        (a: FarmaciaMapa, b: FarmaciaMapa): number =>
+          Number(a.id === seleccionada) - Number(b.id === seleccionada),
+      );
+      for (const farmacia of farmacias) {
+        circleMarker(
+          [farmacia.latitud, farmacia.longitud],
+          farmacia.id === seleccionada ? ESTILO_MARCADOR_SELECCIONADO : ESTILO_MARCADOR,
+        )
           .bindTooltip(farmacia.nombre)
+          .on("click", (): void => this.seleccionar.emit(farmacia.id))
           .addTo(this.capaMarcadores);
+      }
+
+      const ubicacion: Coordenadas | null = this.ubicacion();
+      if (ubicacion) {
+        circleMarker([ubicacion.latitud, ubicacion.longitud], ESTILO_UBICACION)
+          .bindTooltip("Tu ubicación")
+          .addTo(this.capaMarcadores);
+      }
+    });
+
+    effect(() => {
+      const mapa: LeafletMap | undefined = this.mapa();
+      const ubicacion: Coordenadas | null = this.ubicacion();
+      if (!mapa || !ubicacion) {
+        return;
+      }
+
+      const puntos: LatLngTuple[] = [
+        [ubicacion.latitud, ubicacion.longitud],
+        ...this.farmacias().map(
+          (farmacia: FarmaciaMapa): LatLngTuple => [farmacia.latitud, farmacia.longitud],
+        ),
+      ];
+      mapa.fitBounds(latLngBounds(puntos), {
+        padding: [MARGEN_AJUSTE_PX, MARGEN_AJUSTE_PX],
+        maxZoom: ZOOM_SELECCION,
+      });
+    });
+
+    effect(() => {
+      const mapa: LeafletMap | undefined = this.mapa();
+      const seleccionada: number | null = this.seleccionada();
+      if (!mapa || seleccionada === null) {
+        return;
+      }
+
+      const farmacia: FarmaciaMapa | undefined = untracked(this.farmacias).find(
+        (farmacia: FarmaciaMapa): boolean => farmacia.id === seleccionada,
+      );
+      if (farmacia) {
+        mapa.flyTo([farmacia.latitud, farmacia.longitud], Math.max(mapa.getZoom(), ZOOM_SELECCION));
       }
     });
   }

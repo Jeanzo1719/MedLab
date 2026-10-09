@@ -116,9 +116,15 @@ input:focus {
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.75rem 1rem;
+  color: var(--color-texto);
+  text-decoration: none;
   background-color: var(--color-superficie);
   border: 1px solid var(--color-borde);
   border-radius: 0.75rem;
+}
+
+.medicamento:hover {
+  border-color: var(--color-primario);
 }
 
 .nombre {
@@ -128,4 +134,10 @@ input:focus {
 .detalle {
   font-size: 0.875rem;
   color: var(--color-texto-secundario);
+}
+
+.accion {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primario);
 }

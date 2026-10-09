@@ -83,12 +83,19 @@
       -->
       <ul class="lista">
         @for (medicamento of estadoActual.medicamentos; track medicamento.id) {
-          <li class="medicamento">
-            <span class="nombre">{{ medicamento.nombreComercial }}</span>
-            <span class="detalle">
-              {{ medicamento.principioActivo }} · {{ medicamento.presentacion }} ·
-              {{ medicamento.formaFarmaceutica }}
-            </span>
+          <li>
+            <a
+              class="medicamento"
+              routerLink="/farmacias-cercanas"
+              [queryParams]="{ medicamento: medicamento.id, nombre: medicamento.nombreComercial }"
+            >
+              <span class="nombre">{{ medicamento.nombreComercial }}</span>
+              <span class="detalle">
+                {{ medicamento.principioActivo }} · {{ medicamento.presentacion }} ·
+                {{ medicamento.formaFarmaceutica }}
+              </span>
+              <span class="accion">Ver farmacias cercanas →</span>
+            </a>
           </li>
         }
       </ul>

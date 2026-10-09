@@ -1,0 +1,246 @@
+.contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.volver {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: var(--color-primario);
+  text-decoration: none;
+}
+
+.volver:hover {
+  text-decoration: underline;
+}
+
+h1 {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.descripcion {
+  margin: 0 0 1.5rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--color-texto-secundario);
+}
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 1.25rem;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: 2px solid var(--color-primario);
+  border-radius: 0.75rem;
+}
+
+.boton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.boton-primario {
+  color: #ffffff;
+  background-color: var(--color-primario);
+}
+
+.boton-primario:hover:not(:disabled) {
+  background-color: var(--color-primario-hover);
+  border-color: var(--color-primario-hover);
+}
+
+.boton-secundario {
+  color: var(--color-primario);
+  background-color: var(--color-superficie);
+}
+
+.boton-secundario:hover:not(:disabled) {
+  background-color: var(--color-fondo);
+}
+
+.ubicacion {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.direccion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.direccion label {
+  font-weight: 700;
+}
+
+.fila {
+  display: flex;
+  gap: 0.5rem;
+}
+
+input {
+  box-sizing: border-box;
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 1rem;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--color-texto);
+  background-color: var(--color-superficie);
+  border: 2px solid var(--color-borde);
+  border-radius: 0.75rem;
+}
+
+input:focus {
+  border-color: var(--color-primario);
+}
+
+.estado-ubicacion {
+  min-height: 1.5rem;
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.resultados {
+  min-width: 0;
+}
+
+.mensaje {
+  margin: 0 0 0.5rem;
+  color: var(--color-texto-secundario);
+}
+
+.mensaje-error {
+  color: var(--color-error);
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.farmacia {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font: inherit;
+  color: var(--color-texto);
+  text-align: left;
+  cursor: pointer;
+  scroll-margin: calc(var(--alto-encabezado) + 1rem) 0 1rem;
+  background-color: var(--color-superficie);
+  border: 2px solid var(--color-borde);
+  border-radius: 0.75rem;
+}
+
+.farmacia:hover {
+  border-color: var(--color-marca);
+}
+
+.farmacia.seleccionada {
+  border-color: var(--color-primario);
+  box-shadow: inset 4px 0 0 var(--color-primario);
+}
+
+.nombre {
+  font-weight: 700;
+}
+
+.detalle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.etiqueta-cercana {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: var(--color-primario);
+  border-radius: 999px;
+}
+
+.mapa {
+  height: 360px;
+  overflow: hidden;
+  border: 1px solid var(--color-borde);
+  border-radius: 1rem;
+}
+
+.sin-medicamento {
+  padding: 2rem 0;
+}
+
+@media (min-width: 640px) {
+  .contenido {
+    padding: 3rem 1.5rem;
+  }
+
+  h1 {
+    font-size: 2.25rem;
+  }
+
+  .mapa {
+    height: 440px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .contenido {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    grid-template-areas:
+      "panel mapa"
+      "resultados mapa";
+    grid-template-rows: auto 1fr;
+    align-items: start;
+    column-gap: 3rem;
+    row-gap: 1.5rem;
+  }
+
+  .panel {
+    grid-area: panel;
+  }
+
+  .resultados {
+    grid-area: resultados;
+  }
+
+  .sin-medicamento {
+    grid-column: 1 / -1;
+  }
+
+  .mapa {
+    grid-area: mapa;
+    position: sticky;
+    top: calc(var(--alto-encabezado) + 1.5rem);
+    height: calc(100dvh - var(--alto-encabezado) - 6rem);
+    min-height: 480px;
+  }
+}

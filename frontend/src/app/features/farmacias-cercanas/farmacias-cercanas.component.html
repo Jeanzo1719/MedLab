@@ -1,0 +1,131 @@
+<app-encabezado />
+
+<main class="contenido">
+  @if (medicamentoId() === null) {
+    <section class="sin-medicamento" aria-labelledby="titulo-farmacias">
+      <h1 id="titulo-farmacias">Elige un medicamento</h1>
+      <p class="descripcion">
+        Para ver las farmacias cercanas, primero busca el medicamento que necesitas.
+      </p>
+      <a class="boton boton-primario" routerLink="/" fragment="inicio">Buscar un medicamento</a>
+    </section>
+  } @else {
+    <section class="panel" aria-labelledby="titulo-farmacias">
+      <a class="volver" routerLink="/" fragment="inicio">← Buscar otro medicamento</a>
+      <h1 id="titulo-farmacias">Farmacias cercanas con {{ nombreMedicamento() }}</h1>
+      <p class="descripcion">
+        Te mostramos las farmacias aprobadas a menos de 20 km que reportan disponibilidad,
+        de la más cercana a la más lejana.
+      </p>
+
+      <div class="ubicacion">
+        <button
+          type="button"
+          class="boton boton-primario"
+          [disabled]="estadoUbicacion().tipo === 'obteniendo'"
+          (click)="usarMiUbicacion()"
+        >
+          Usar mi ubicación
+        </button>
+
+        <form class="direccion" (submit)="$event.preventDefault(); buscarDireccion()">
+          <label for="campo-direccion">O escribe una dirección o ciudad</label>
+          <div class="fila">
+            <input
+              #campo
+              id="campo-direccion"
+              type="text"
+              autocomplete="street-address"
+              [maxLength]="longitudMaximaDireccion"
+              placeholder="Ej: Calle 10 # 43-12, Medellín"
+              [value]="direccion()"
+              (input)="direccion.set(campo.value)"
+            />
+            <button
+              type="submit"
+              class="boton boton-secundario"
+              [disabled]="estadoUbicacion().tipo === 'obteniendo' || !direccion().trim()"
+            >
+              Buscar
+            </button>
+          </div>
+        </form>
+
+        <p class="estado-ubicacion" aria-live="polite">
+          @let estado = estadoUbicacion();
+          @if (estado.tipo === "obteniendo") {
+            Buscando la ubicación…
+          } @else if (estado.tipo === "lista") {
+            Buscando cerca de: <strong>{{ estado.origen }}</strong>
+          } @else if (estado.tipo === "denegada") {
+            <span class="mensaje-error">
+              No diste permiso para usar tu ubicación. Escribe una dirección o ciudad.
+            </span>
+          } @else if (estado.tipo === "no-encontrada") {
+            <span class="mensaje-error">
+              No encontramos "{{ estado.direccion }}". Revisa la dirección o escribe solo la ciudad.
+            </span>
+          } @else if (estado.tipo === "error") {
+            <span class="mensaje-error">
+              No pudimos obtener la ubicación. Intenta de nuevo o escribe una dirección.
+            </span>
+          }
+        </p>
+      </div>
+    </section>
+
+    <div class="mapa">
+      <app-mapa
+        [farmacias]="farmacias()"
+        [ubicacion]="ubicacion()"
+        [seleccionada]="seleccionada()"
+        (seleccionar)="seleccionarDesdeMapa($event)"
+        descripcion="Mapa de farmacias cercanas con disponibilidad del medicamento"
+      />
+    </div>
+
+    <section class="resultados" aria-label="Farmacias encontradas" aria-live="polite">
+      @let resultado = estadoFarmacias();
+      @if (resultado.tipo === "cargando") {
+        <p class="mensaje">Buscando farmacias…</p>
+      } @else if (resultado.tipo === "error") {
+        <p class="mensaje mensaje-error">
+          No pudimos consultar las farmacias. Intenta de nuevo en unos minutos.
+        </p>
+      } @else if (resultado.tipo === "resultados") {
+        @if (resultado.farmacias.length === 0) {
+          <p class="mensaje">
+            Ninguna farmacia a menos de 20 km reporta {{ nombreMedicamento() }} disponible.
+          </p>
+        } @else {
+          <p class="mensaje">
+            {{ resultado.farmacias.length }}
+            {{ resultado.farmacias.length === 1 ? "farmacia encontrada" : "farmacias encontradas" }}
+          </p>
+          <ol class="lista">
+            @for (farmacia of resultado.farmacias; track farmacia.id; let primera = $first) {
+              <li>
+                <button
+                  type="button"
+                  class="farmacia"
+                  [id]="'farmacia-' + farmacia.id"
+                  [class.seleccionada]="seleccionada() === farmacia.id"
+                  [attr.aria-pressed]="seleccionada() === farmacia.id"
+                  (click)="seleccionada.set(farmacia.id)"
+                >
+                  <span class="nombre">{{ farmacia.nombre }}</span>
+                  <span class="detalle">
+                    a {{ formatearDistancia(farmacia.distanciaKm) }} aprox.
+                    @if (primera) {
+                      <span class="etiqueta-cercana">Más cercana</span>
+                    }
+                  </span>
+                </button>
+              </li>
+            }
+          </ol>
+        }
+      }
+    </section>
+  }
+</main>
