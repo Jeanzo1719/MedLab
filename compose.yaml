@@ -1,0 +1,6 @@
+name: medlab
+
+include:
+  - path: docker/dev-backend-docker-compose.yml
+    env_file: .env
+  - path: docker/dev-frontend-docker-compose.yml

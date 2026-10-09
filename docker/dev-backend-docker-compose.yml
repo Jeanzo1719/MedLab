@@ -5,10 +5,10 @@ services:
     container_name: medlab-database
     restart: unless-stopped
     environment:
-      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
-      MARIADB_DATABASE: ${MARIADB_DATABASE}
-      MARIADB_USER: ${MARIADB_USER}
-      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?falta MARIADB_ROOT_PASSWORD en el .env}
+      MARIADB_DATABASE: ${MARIADB_DATABASE:?falta MARIADB_DATABASE en el .env}
+      MARIADB_USER: ${MARIADB_USER:?falta MARIADB_USER en el .env}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:?falta MARIADB_PASSWORD en el .env}
     ports:
       - "3306:3306"
     volumes:
@@ -26,6 +26,7 @@ services:
       ## context starts from root folder of the project THIS SHOULD NOT BE CHANGED
       context: ..
       dockerfile: docker/dev-backend.Dockerfile
+      target: dev
     container_name: medlab-backend
     restart: unless-stopped
     ports:
@@ -43,11 +44,28 @@ services:
       DB_HOST: ${DB_HOST:-mariadb}
       DB_PORT: ${DB_PORT:-3306}
       DB_NAME: ${DB_NAME:-medlab-database}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USER: ${DB_USER:?falta DB_USER en el .env}
+      DB_PASSWORD: ${DB_PASSWORD:?falta DB_PASSWORD en el .env}
+
+      SPRING_DATASOURCE_URL: jdbc:mariadb://${DB_HOST:-mariadb}:${DB_PORT:-3306}/${DB_NAME:-medlab-database}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
 
       # WebSocket allowed origins (Angular dev server, Tauri on Linux/macOS, Tauri on Windows/Android)
       SPRING_CORS_ALLOWED_ORIGINS: ${SPRING_CORS_ALLOWED_ORIGINS:-http://localhost:1420,tauri://localhost,http://tauri.localhost}
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+    develop:
+      watch:
+        - action: sync+restart
+          path: ../backend/src
+          target: /workspace/src
+        - action: rebuild
+          path: ../backend/pom.xml
 
 volumes:
   mariadb_data:
