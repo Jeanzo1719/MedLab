@@ -8,15 +8,6 @@ CREATE TABLE estados_farmacia (
     nombre          VARCHAR(30)     NOT NULL UNIQUE
 );
 
-/**
- *
- * carga los estados que puede tener una farmacia en la tabla estados_farmacia
- *
- * cada farmacia apunta a uno de estos estados con la columna estado_aprobacion_id, así que
- * sin estas filas no se puede registrar ninguna farmacia. El backend busca las aprobadas por
- * el nombre 'aprobada', por eso ese texto tiene que estar escrito exactamente así
- *
- */
 INSERT INTO estados_farmacia (nombre) VALUES
     ('pendiente'),
     ('aprobada'),
