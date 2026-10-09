@@ -1,0 +1,452 @@
+/*
+
+  lo que comparten todas las secciones: el contenido centrado, con un ancho
+  máximo de 1200px
+
+*/
+.contenido {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+/*
+
+  el título de las secciones de servicios y contacto
+
+*/
+h2 {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+/*
+
+  el texto debajo del título de servicios y contacto, en gris
+
+*/
+.introduccion {
+  max-width: 40rem;
+  margin: 0 0 2rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--color-texto-secundario);
+}
+
+/*
+
+  el dibujo de los íconos de servicios y contacto: solo la línea, sin relleno
+
+*/
+.icono svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/*
+
+  inicio: en celular, la presentación arriba y el mapa debajo
+
+*/
+.inicio .contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem 1rem;
+}
+
+/*
+
+  inicio: el título principal, grande y en negrilla
+
+*/
+h1 {
+  margin: 0 0 1rem;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/*
+
+  inicio: el texto debajo del título, en gris
+
+*/
+.descripcion {
+  margin: 0 0 2rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--color-texto-secundario);
+}
+
+/*
+
+  inicio: el recuadro del mapa con bordes redondeados
+
+*/
+.mapa {
+  height: 360px;
+  overflow: hidden;
+  border: 1px solid var(--color-borde);
+  border-radius: 1rem;
+}
+
+/*
+
+  servicios: el fondo blanco de la sección con líneas arriba y abajo, para
+  separarla de las demás
+
+*/
+.servicios {
+  background-color: var(--color-superficie);
+  border-top: 1px solid var(--color-borde);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+/*
+
+  servicios: las tarjetas en una columna en celular
+
+*/
+.tarjetas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+
+  servicios: cada tarjeta con bordes redondeados
+
+*/
+.tarjeta {
+  padding: 1.5rem;
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: 1rem;
+}
+
+/*
+
+  servicios: el cuadro verde de la marca con el ícono blanco adentro
+
+*/
+.servicios .icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
+  color: #ffffff;
+  background-color: var(--color-marca);
+  border-radius: 0.75rem;
+}
+
+/*
+
+  servicios: el título y el texto de cada tarjeta
+
+*/
+h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.tarjeta p {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--color-texto-secundario);
+}
+
+/*
+
+  contacto: quita la letra cursiva que el navegador le pone a address por
+  defecto
+
+*/
+address {
+  font-style: normal;
+}
+
+/*
+
+  contacto: los datos de contacto en una columna en celular
+
+*/
+.medios {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+
+  contacto: cada dato en una tarjeta, con el ícono a la izquierda y el texto a
+  la derecha
+
+*/
+.medio {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 1rem;
+}
+
+/*
+
+  contacto: el cuadro del ícono, con el ícono en verde
+
+*/
+.contacto .icono {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--color-primario);
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: 0.75rem;
+}
+
+/*
+
+  contacto: el título del dato en gris y el valor en negrilla. Los textos
+  largos, como el correo, se parten para no salirse de la tarjeta
+
+*/
+.texto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.titulo {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.texto a,
+.texto span:last-child {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/*
+
+  contacto: los enlaces van en verde y se oscurecen al pasar el mouse
+
+*/
+.texto a {
+  color: var(--color-primario);
+}
+
+.texto a:hover {
+  color: var(--color-primario-hover);
+}
+
+/*
+
+  pie de página: el fondo negro de la marca con el texto claro
+
+*/
+.pie {
+  color: var(--color-fondo);
+  background-color: var(--color-negro);
+}
+
+/*
+
+  pie de página: una cosa debajo de la otra en celular
+
+*/
+.pie .contenido {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 3rem 1rem 2rem;
+}
+
+/*
+
+  pie de página: el logo y el nombre MedLab
+
+*/
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nombre {
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/*
+
+  pie de página: la frase sobre MedLab, en gris claro
+
+*/
+.lema {
+  max-width: 24rem;
+  margin: 0;
+  line-height: 1.6;
+  color: var(--color-texto-invertido-secundario);
+}
+
+/*
+
+  pie de página: los enlaces a las secciones en naranja (el color de acento de
+  la marca), que se subrayan al pasar el mouse
+
+*/
+.pie nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pie nav a {
+  display: inline-block;
+  padding: 0.5rem 0;
+  font-weight: 600;
+  color: var(--color-acento);
+  text-decoration: none;
+}
+
+.pie nav a:hover {
+  text-decoration: underline;
+}
+
+/*
+
+  pie de página: los derechos reservados, más pequeños y separados por una
+  línea arriba
+
+*/
+.derechos {
+  margin: 0;
+  padding-top: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--color-texto-invertido-secundario);
+  border-top: 1px solid rgb(255 255 255 / 0.12);
+}
+
+/*
+
+  en tablet (desde 640px) hay más espacio, los títulos son más grandes, el
+  mapa más alto y las tarjetas de servicios van en dos columnas
+
+*/
+@media (min-width: 640px) {
+  .contenido {
+    padding: 4rem 1.5rem;
+  }
+
+  .inicio .contenido {
+    padding: 3rem 1.5rem;
+  }
+
+  .pie .contenido {
+    padding: 3rem 1.5rem 2rem;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  h2 {
+    font-size: 2.25rem;
+  }
+
+  .mapa {
+    height: 440px;
+  }
+
+  .tarjetas {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/*
+
+  en computador (desde 1024px):
+  - inicio: la presentación queda a la izquierda y el mapa a la derecha. El
+    mapa se queda quieto al bajar (sticky) y ocupa el alto de la pantalla
+  - servicios y contacto: las tarjetas van en una sola fila
+  - pie de página: el logo y la frase a la izquierda, los enlaces a la derecha
+    y los derechos abajo ocupando todo el ancho
+
+*/
+@media (min-width: 1024px) {
+  .inicio .contenido {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    align-items: start;
+    gap: 3rem;
+  }
+
+  h1 {
+    font-size: 3rem;
+  }
+
+  .mapa {
+    position: sticky;
+    top: calc(var(--alto-encabezado) + 1.5rem);
+    height: calc(100dvh - var(--alto-encabezado) - 6rem);
+    min-height: 480px;
+  }
+
+  .tarjetas {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .medios {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .pie .contenido {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 4rem 1.5rem 2rem;
+  }
+
+  .lema {
+    grid-column: 1;
+  }
+
+  .pie nav {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .derechos {
+    grid-column: 1 / -1;
+  }
+}

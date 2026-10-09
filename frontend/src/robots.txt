@@ -1,0 +1,8 @@
+#
+# le dice a los buscadores como Google qué páginas pueden revisar y mostrar
+#
+# User-agent: * aplica la regla a todos los buscadores, y Allow: / les permite
+# revisar todo el sitio, porque la landing es pública
+#
+User-agent: *
+Allow: /

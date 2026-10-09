@@ -8,6 +8,11 @@ CREATE TABLE estados_farmacia (
     nombre          VARCHAR(30)     NOT NULL UNIQUE
 );
 
+INSERT INTO estados_farmacia (nombre) VALUES
+    ('pendiente'),
+    ('aprobada'),
+    ('suspendida');
+
 CREATE TABLE usuarios (
     id                  INT             AUTO_INCREMENT PRIMARY KEY,
     identificacion      VARCHAR(10)     NOT NULL UNIQUE,

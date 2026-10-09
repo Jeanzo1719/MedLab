@@ -1,0 +1,92 @@
+<!--
+
+  el encabezado completo de la landing
+
+-->
+<header class="encabezado">
+  <div class="contenido">
+    <!--
+
+      el logo y el nombre de MedLab. Al tocarlo lleva al inicio de la página
+
+      alt="" porque el texto MedLab ya está al lado; así el lector de pantalla no
+      lo lee dos veces
+
+    -->
+    <a class="marca" routerLink="/" fragment="inicio" (click)="cerrarMenu()">
+      <img
+        src="assets/images/marca/medlab-icono.svg"
+        alt=""
+        width="36"
+        height="36"
+      />
+      <span>MedLab</span>
+    </a>
+
+    <!--
+
+      el botón ☰ que abre y cierra el menú en celular y tablet
+
+      aria-expanded y aria-label le dicen al lector de pantalla si el menú está
+      abierto y qué hace el botón. El ícono cambia a una X cuando está abierto
+
+    -->
+    <button
+      type="button"
+      class="boton-menu"
+      aria-controls="menu-principal"
+      [attr.aria-expanded]="menuAbierto()"
+      [attr.aria-label]="menuAbierto() ? 'Cerrar menú' : 'Abrir menú'"
+      (click)="alternarMenu()"
+    >
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        @if (menuAbierto()) {
+          <path d="M6 6l12 12M18 6L6 18" />
+        } @else {
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        }
+      </svg>
+    </button>
+
+    <!--
+
+      el menú: los enlaces a las secciones y los botones de cuenta. En celular
+      solo se ve cuando está abierto
+
+    -->
+    <div id="menu-principal" class="menu" [class.abierto]="menuAbierto()">
+      <!--
+
+        los enlaces a cada sección. fragment hace que salte a la sección sin
+        recargar la página
+
+      -->
+      <nav aria-label="Secciones de la página">
+        <ul>
+          <li>
+            <a routerLink="/" fragment="inicio" (click)="cerrarMenu()">Inicio</a>
+          </li>
+          <li>
+            <a routerLink="/" fragment="servicios" (click)="cerrarMenu()">Servicios</a>
+          </li>
+          <li>
+            <a routerLink="/" fragment="contacto" (click)="cerrarMenu()">Contacto</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!--
+
+        los botones para iniciar sesión y registrarse. Sus páginas todavía no
+        existen; llegan con el login
+
+      -->
+      <div class="acciones">
+        <a class="boton boton-secundario" routerLink="/iniciar-sesion">
+          Iniciar sesión
+        </a>
+        <a class="boton boton-primario" routerLink="/registro">Registrarse</a>
+      </div>
+    </div>
+  </div>
+</header>

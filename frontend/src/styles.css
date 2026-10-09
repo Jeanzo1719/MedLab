@@ -1,1 +1,135 @@
 /* You can add global styles to this file, and also import other style files */
+
+/*
+
+  los estilos de toda la app: los colores de la marca, la fuente y el
+  comportamiento general de la página
+
+  :root guarda variables (las que empiezan con --) que cualquier componente
+  puede usar con var(--nombre). Así, si un color cambia, se cambia solo aquí
+
+*/
+:root {
+  /*
+
+    los colores oficiales de MedLab: el verde de la marca (para el logo y
+    decoración), el naranja de acento (para el foco y los enlaces del pie) y el
+    negro del pie de página
+
+  */
+  --color-marca: #159a63;
+  --color-acento: #f2a93b;
+  --color-negro: #131210;
+
+  /*
+
+    el verde de los botones y enlaces, y el verde más oscuro al pasar el mouse.
+    Es más oscuro que el de la marca para que el texto blanco encima se lea bien
+
+  */
+  --color-primario: #107a4e;
+  --color-primario-hover: #0d6b44;
+
+  /*
+
+    el color del texto principal (casi negro) y del texto secundario (gris)
+
+  */
+  --color-texto: #101208;
+  --color-texto-secundario: #4a4d45;
+
+  /*
+
+    el gris claro del texto secundario sobre fondo oscuro, como en el pie de página
+
+  */
+  --color-texto-invertido-secundario: #a7a9a1;
+
+  /*
+
+    el rojo de los mensajes de error
+
+  */
+  --color-error: #b42318;
+
+  /*
+
+    el color del fondo de la página (blanco hueso), de las tarjetas y del
+    encabezado (blanco), y de las líneas de los bordes (gris claro)
+
+  */
+  --color-fondo: #fbfbf8;
+  --color-superficie: #ffffff;
+  --color-borde: #e3e4de;
+
+  /*
+
+    la letra de la marca, Plus Jakarta Sans. Si no carga, usa Arial
+
+  */
+  --fuente-base: "Plus Jakarta Sans Variable", Arial, sans-serif;
+
+  /*
+
+    el alto del encabezado. Se usa en el encabezado y para que al saltar a una
+    sección el título no quede tapado
+
+  */
+  --alto-encabezado: 4rem;
+}
+
+/*
+
+  la página ocupa todo el alto de la pantalla y sin márgenes alrededor
+
+*/
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+/*
+
+  al saltar a una sección desde el menú, deja el espacio del encabezado arriba
+  para que no tape el título
+
+*/
+html {
+  scroll-padding-top: var(--alto-encabezado);
+}
+
+/*
+
+  el salto a las secciones se hace con un desplazamiento suave, excepto si el
+  usuario pidió en su sistema reducir las animaciones
+
+*/
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/*
+
+  la letra, el color del texto y el color de fondo de toda la página
+
+*/
+body {
+  font-family: var(--fuente-base);
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+
+  el borde naranja que aparece alrededor de un botón o enlace cuando se navega
+  con el teclado (tecla Tab), para saber dónde se está parado
+
+*/
+:focus-visible {
+  outline: 3px solid var(--color-acento);
+  outline-offset: 2px;
+}
