@@ -36,6 +36,3 @@ e2e/playwright-report
 docs
 .github
 jenkins
-
-# local Spring profile, the container gets its configuration from compose
-**/application-dev.yml
