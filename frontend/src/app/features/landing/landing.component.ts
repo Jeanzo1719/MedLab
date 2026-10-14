@@ -7,115 +7,51 @@ import { FarmaciaMapa, FarmaciaService } from "../../core/services/farmacia.serv
 import { MetadatosService } from "../../core/services/metadatos.service";
 import { MapaComponent } from "../../shared/components/mapa/mapa.component";
 import { BuscadorMedicamentosComponent } from "./components/buscador-medicamentos/buscador-medicamentos.component";
+import { ComoFuncionaComponent } from "./components/como-funciona/como-funciona.component";
 import { EncabezadoComponent } from "./components/encabezado/encabezado.component";
+import { ParaFarmaciasComponent } from "./components/para-farmacias/para-farmacias.component";
 
-/**
- *
- * la forma de cada servicio que se muestra en una tarjeta
- *
- */
+/** Tarjeta de servicio. `icono` es el trazo de un SVG. */
 interface Servicio {
-  /**
-   *
-   * el nombre del servicio, por ejemplo "Historial de precios"
-   *
-   */
   titulo: string;
-
-  /**
-   *
-   * el texto que explica el servicio
-   *
-   */
   descripcion: string;
-
-  /**
-   *
-   * el dibujo del ícono, escrito como el trazo de un SVG (las letras y números
-   * le dicen al navegador por dónde pasar la línea)
-   *
-   */
   icono: string;
 }
 
-/**
- *
- * la forma de cada dato de contacto que se muestra
- *
- */
+/** Dato de contacto. Si tiene `enlace` se muestra como enlace. */
 interface MedioContacto {
-  /**
-   *
-   * qué tipo de dato es, por ejemplo "Correo"
-   *
-   */
   titulo: string;
-
-  /**
-   *
-   * el dato en sí, por ejemplo el correo o el horario
-   *
-   */
   valor: string;
-
-  /**
-   *
-   * el enlace al que lleva al tocarlo, por ejemplo mailto: para abrir el correo.
-   * Es opcional (?): los datos sin enlace se muestran como texto normal
-   *
-   */
   enlace?: string;
-
-  /**
-   *
-   * el dibujo del ícono, escrito como el trazo de un SVG
-   *
-   */
   icono: string;
 }
 
 /**
- *
- * la página de la landing, la primera que ve cualquier persona al entrar a
- * MedLab, sin necesidad de cuenta
- *
- * tiene el encabezado, las secciones de inicio, servicios y contacto, y el pie
- * de página. Además le pide al backend las farmacias aprobadas y se las pasa al
- * mapa de la sección de inicio
- *
+ * Landing pública (HU-10): encabezado, inicio, servicios, cómo funciona,
+ * para farmacias, contacto y pie. Pide las farmacias aprobadas para el mapa.
  */
 @Component({
   selector: "app-landing",
-  imports: [EncabezadoComponent, BuscadorMedicamentosComponent, MapaComponent, RouterLink],
+  imports: [
+    EncabezadoComponent,
+    BuscadorMedicamentosComponent,
+    MapaComponent,
+    RouterLink,
+    ComoFuncionaComponent,
+    ParaFarmaciasComponent,
+  ],
   templateUrl: "./landing.component.html",
   styleUrl: "./landing.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingComponent {
-  /**
-   *
-   * la descripción de la landing que muestran los buscadores como Google debajo
-   * del título
-   *
-   */
+  /** Descripción que muestran los buscadores como Google. */
   private static readonly DESCRIPCION: string =
     "Consulta y reporta la disponibilidad de medicamentos en farmacias cercanas a ti, con búsqueda por ubicación e historial de precios. Sin necesidad de crear una cuenta.";
 
-  /**
-   *
-   * el service que pide las farmacias al backend
-   *
-   */
   private readonly farmaciaService: FarmaciaService = inject(FarmaciaService);
 
-  /**
-   *
-   * las farmacias aprobadas que llegan del backend, para el mapa
-   *
-   * empieza como una lista vacía y se llena cuando llega la respuesta. Si hay un
-   * error, se queda vacía y el mapa se muestra sin puntos
-   *
-   */
+  /** Farmacias aprobadas para el mapa. Si el backend falla, queda vacía. */
   protected readonly farmacias: Signal<FarmaciaMapa[]> = toSignal(
     this.farmaciaService
       .listarAprobadas()
@@ -123,11 +59,7 @@ export class LandingComponent {
     { initialValue: [] },
   );
 
-  /**
-   *
-   * los cuatro servicios principales de MedLab, en el orden en que se muestran
-   *
-   */
+  /** Los cuatro servicios principales, en orden. */
   protected readonly servicios: readonly Servicio[] = [
     {
       titulo: "Búsqueda por ubicación",
@@ -156,14 +88,8 @@ export class LandingComponent {
     },
   ];
 
-  // TODO: reemplazar estos valores provisionales por los datos de contacto oficiales de la plataforma
-  /**
-   *
-   * los datos de contacto de MedLab: correo, ubicación y horario
-   *
-   * son provisionales hasta tener los oficiales (ver el TODO de arriba)
-   *
-   */
+  // TODO: reemplazar por los datos de contacto oficiales.
+  /** Datos de contacto (provisionales). */
   protected readonly mediosContacto: readonly MedioContacto[] = [
     {
       titulo: "Correo",
@@ -184,19 +110,9 @@ export class LandingComponent {
     },
   ];
 
-  /**
-   *
-   * el año actual, para el texto de derechos reservados del pie de página. Se
-   * calcula solo, así que no hay que cambiarlo cada año
-   *
-   */
+  /** Año para el pie de página. */
   protected readonly anioActual: number = new Date().getFullYear();
 
-  /**
-   *
-   * pone la descripción de la landing al abrir la página
-   *
-   */
   constructor() {
     inject(MetadatosService).definirDescripcion(LandingComponent.DESCRIPCION);
   }
