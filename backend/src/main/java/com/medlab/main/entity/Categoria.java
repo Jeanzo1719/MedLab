@@ -6,14 +6,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+/** Tabla categorias: grupo terapéutico del medicamento (ej. "Analgésicos"). */
 @Entity
 @Table(name = "categorias")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor
 public class Categoria {
 
   @Id

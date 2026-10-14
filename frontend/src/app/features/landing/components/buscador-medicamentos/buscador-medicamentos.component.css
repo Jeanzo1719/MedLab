@@ -1,0 +1,131 @@
+/*
+
+  el buscador ocupa todo el ancho disponible
+
+*/
+:host {
+  display: block;
+  width: 100%;
+}
+
+/*
+
+  el formulario: el título, el campo y la ayuda, uno debajo del otro
+
+*/
+.buscador {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.etiqueta {
+  font-weight: 700;
+}
+
+/*
+
+  el campo con la lupa dibujada adentro, a la izquierda
+
+*/
+.campo {
+  position: relative;
+}
+
+.icono {
+  position: absolute;
+  top: 50%;
+  left: 1rem;
+  transform: translateY(-50%);
+  fill: none;
+  stroke: var(--color-texto-secundario);
+  stroke-width: 2;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+/*
+
+  el campo de texto: alto para que sea fácil de tocar en celular y con espacio
+  a la izquierda para la lupa. Al seleccionarlo, el borde se pone verde
+
+*/
+input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 1rem 0 3rem;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--color-texto);
+  background-color: var(--color-superficie);
+  border: 2px solid var(--color-borde);
+  border-radius: 0.75rem;
+}
+
+input:focus {
+  border-color: var(--color-primario);
+}
+
+/*
+
+  el texto de ayuda, más pequeño y en gris
+
+*/
+.ayuda {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+/*
+
+  la zona de resultados y sus mensajes. El mensaje de error va en rojo
+
+*/
+.resultados {
+  margin-top: 1rem;
+}
+
+.mensaje {
+  margin: 0 0 0.5rem;
+  color: var(--color-texto-secundario);
+}
+
+.mensaje-error {
+  color: var(--color-error);
+}
+
+/*
+
+  la lista de resultados, cada medicamento en una tarjeta con su nombre en
+  negrilla y el detalle en gris
+
+*/
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.medicamento {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 0.75rem;
+}
+
+.nombre {
+  font-weight: 700;
+}
+
+.detalle {
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}

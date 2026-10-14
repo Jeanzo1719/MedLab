@@ -6,14 +6,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+/** Tabla formas_farmaceuticas: cómo viene el medicamento (ej. tableta, jarabe). */
 @Entity
 @Table(name = "formas_farmaceuticas")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor
 public class FormaFarmaceutica {
 
   @Id
