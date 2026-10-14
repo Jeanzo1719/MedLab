@@ -80,15 +80,25 @@
         la lista de resultados: el nombre comercial y debajo el principio activo, la
         presentación y la forma farmacéutica
 
+        cada resultado es un enlace a la página de farmacias cercanas. queryParams
+        le pasa el id y el nombre del medicamento en la dirección de esa página
+
       -->
       <ul class="lista">
         @for (medicamento of estadoActual.medicamentos; track medicamento.id) {
-          <li class="medicamento">
-            <span class="nombre">{{ medicamento.nombreComercial }}</span>
-            <span class="detalle">
-              {{ medicamento.principioActivo }} · {{ medicamento.presentacion }} ·
-              {{ medicamento.formaFarmaceutica }}
-            </span>
+          <li>
+            <a
+              class="medicamento"
+              routerLink="/farmacias-cercanas"
+              [queryParams]="{ medicamento: medicamento.id, nombre: medicamento.nombreComercial }"
+            >
+              <span class="nombre">{{ medicamento.nombreComercial }}</span>
+              <span class="detalle">
+                {{ medicamento.principioActivo }} · {{ medicamento.presentacion }} ·
+                {{ medicamento.formaFarmaceutica }}
+              </span>
+              <span class="accion">Ver farmacias cercanas →</span>
+            </a>
           </li>
         }
       </ul>
