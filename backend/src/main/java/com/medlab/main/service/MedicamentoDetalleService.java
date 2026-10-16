@@ -24,7 +24,21 @@ import com.medlab.main.repository.MedicamentoRepository;
 
 import lombok.RequiredArgsConstructor;
 
-/** Arma el detalle de un medicamento: su información básica y un reporte por farmacia. */
+/**
+ * Qué hace: arma el detalle de un medicamento: su información básica y un reporte de
+ * disponibilidad por cada farmacia que lo reportó, con su tiempo relativo y su confianza.
+ *
+ * Cómo entenderlo: es como el empleado que arma la ficha de un producto: busca el producto
+ * en el catálogo, pregunta en cada tienda cuándo actualizó su información, consulta las
+ * reseñas y entrega todo junto en una sola hoja.
+ *
+ * Detalles técnicos: obtiene el medicamento de MedicamentoRepository, sus reportes de
+ * DisponibilidadRepository y el conteo de calificaciones de todos los reportes con una sola
+ * consulta a CalificacionRepository. Calcula el texto relativo con TiempoRelativoService y
+ * la confianza con ConfianzaService, usando la hora del servidor como "ahora". Entrega un
+ * MedicamentoDetalleDto a MedicamentoDetalleController. Solo lee la base de datos: no
+ * guarda ni modifica nada.
+ */
 @Service
 @RequiredArgsConstructor
 public class MedicamentoDetalleService {
@@ -38,9 +52,12 @@ public class MedicamentoDetalleService {
   private final TiempoRelativoService tiempoRelativoService;
 
   /**
-   * Busca el medicamento y sus reportes de disponibilidad. Las calificaciones de todas las
-   * farmacias se cuentan en una sola consulta. Si el medicamento no existe, lanza
-   * MedicamentoNoEncontradoException.
+   * Devuelve el detalle de un medicamento.
+   *
+   * id: id del medicamento.
+   *
+   * Si el medicamento no existe, lanza MedicamentoNoEncontradoException. Si existe pero
+   * ninguna farmacia lo ha reportado, devuelve el medicamento con la lista de reportes vacía.
    */
   @Transactional(readOnly = true)
   public MedicamentoDetalleDto obtener(Integer id) {
@@ -60,6 +77,10 @@ public class MedicamentoDetalleService {
         medicamento.getPresentacion(), medicamento.getFormaFarmaceutica().getNombre(), reportes);
   }
 
+  /**
+   * Cuenta las calificaciones de todos los reportes en una sola consulta y las organiza por
+   * id de reporte. Los reportes sin calificaciones no aparecen en el resultado.
+   */
   private Map<Integer, ConteoCalificaciones> contarCalificaciones(
       List<Disponibilidad> disponibilidades) {
     if (disponibilidades.isEmpty()) {
@@ -71,6 +92,10 @@ public class MedicamentoDetalleService {
         .collect(Collectors.toMap(ConteoCalificaciones::getDisponibilidadId, Function.identity()));
   }
 
+  /**
+   * Convierte un reporte en el dato que se envía al frontend. Si conteo es null, el reporte
+   * no tiene calificaciones y su mensaje es "sin calificaciones aún".
+   */
   private DisponibilidadReporteDto aReporteDto(Disponibilidad disponibilidad,
       ConteoCalificaciones conteo, LocalDateTime ahora) {
     LocalDateTime fecha = disponibilidad.getFechaHoraReporte();

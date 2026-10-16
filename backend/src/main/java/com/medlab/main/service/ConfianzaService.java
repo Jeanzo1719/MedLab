@@ -10,22 +10,43 @@ import com.medlab.main.dto.ConfianzaDto;
 import com.medlab.main.dto.NivelConfianza;
 
 /**
- * Calcula el nivel de confianza de un reporte de disponibilidad.
+ * Qué hace: calcula qué tan confiable es un reporte de disponibilidad, combinando lo que
+ * opinan los usuarios y qué tan reciente es el reporte.
  *
- * puntaje = proporción de calificaciones "Si hay" x vigencia del reporte.
- * La vigencia baja de 1 a 0 a lo largo de HORAS_VIGENCIA desde la fecha del reporte.
+ * Cómo entenderlo: es como la reputación de un vendedor: cuenta cuántos clientes dicen que
+ * sí había el producto, pero esa reputación se va apagando con el tiempo si no se renueva.
+ *
+ * Detalles técnicos: recibe cuántas calificaciones son favorables, cuántas hay en total, la
+ * fecha del reporte y la hora actual, y aplica esta fórmula:
+ * - proporción = favorables / total.
+ * - vigencia = máximo entre 0 y (1 - horas desde el reporte / 72). Baja de 1 a 0 durante 72
+ *   horas.
+ * - puntaje = proporción x vigencia, redondeado a dos decimales.
+ * El nivel es ALTA si el puntaje es 0.7 o más, MEDIA si es 0.4 o más y BAJA si es menor. Si
+ * no hay calificaciones, no hay confianza que calcular y devuelve vacío. Este es el
+ * indicador que HU-4 y HU-8 comparten. MedicamentoDetalleService lo usa una vez por reporte.
+ * No consulta la base de datos.
  */
 @Service
 public class ConfianzaService {
 
-  /** Nombre del tipo de calificación que cuenta a favor (tal como está en la BD). */
+  /** Nombre del tipo de calificación que cuenta a favor, escrito igual que en la base de datos. */
   public static final String TIPO_FAVORABLE = "Si hay";
 
   private static final double HORAS_VIGENCIA = 72.0;
   private static final double UMBRAL_ALTA = 0.7;
   private static final double UMBRAL_MEDIA = 0.4;
 
-  /** Devuelve vacío cuando no hay calificaciones. */
+  /**
+   * Calcula la confianza de un reporte.
+   *
+   * favorables: cuántas calificaciones son del tipo favorable.
+   * total: cuántas calificaciones tiene el reporte.
+   * fechaReporte: fecha y hora del reporte.
+   * ahora: fecha y hora con la que se mide la antigüedad.
+   *
+   * Devuelve vacío cuando total es 0.
+   */
   public Optional<ConfianzaDto> calcular(long favorables, long total, LocalDateTime fechaReporte,
       LocalDateTime ahora) {
     if (total == 0) {
