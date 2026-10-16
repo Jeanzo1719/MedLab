@@ -10,57 +10,62 @@ import org.springframework.data.repository.query.Param;
 import com.medlab.main.entity.Calificacion;
 
 /**
- * Qué hace: da acceso a la tabla calificaciones y cuenta cuántas calificaciones tiene cada
- * reporte de disponibilidad y cuántas son favorables.
+ * Qué hace: da acceso a la tabla calificaciones y trae las calificaciones más recientes de
+ * cada reporte de disponibilidad.
  *
- * Cómo entenderlo: es como un encuestador que no te entrega cada reseña, sino que te dice
- * "este reporte tiene 5 reseñas y 4 son favorables".
+ * Cómo entenderlo: es como pedirle a un encuestador "dame solo las últimas 5 reseñas de cada
+ * tienda", en lugar de todas las reseñas de siempre.
  *
  * Detalles técnicos: JpaRepository ya incluye, sin escribir código, estos métodos básicos:
  * - findAll(): todas las calificaciones (SELECT * FROM calificaciones).
  * - findById(id): una calificación por su id. Devuelve un Optional porque puede no existir.
  * - count(): cuántas calificaciones hay en total.
  * - existsById(id): true si existe una calificación con ese id.
- * Además define contarPorDisponibilidad, que MedicamentoDetalleService llama una sola vez
- * para todas las farmacias de un medicamento.
+ * Además define buscarRecientesPorDisponibilidad, que MedicamentoDetalleService llama una
+ * sola vez para todas las farmacias de un medicamento.
  */
 public interface CalificacionRepository extends JpaRepository<Calificacion, Long> {
 
   /**
-   * Resultado del conteo de un reporte: su id, cuántas calificaciones tiene en total y
-   * cuántas son del tipo favorable.
+   * Una calificación reciente: el id del reporte al que pertenece y el nombre de su tipo
+   * ("Si hay", "Bajo pedido" o "No hay").
    */
-  interface ConteoCalificaciones {
+  interface CalificacionReciente {
 
-    /** Id del reporte de disponibilidad al que pertenece el conteo. */
+    /** Id del reporte de disponibilidad al que pertenece la calificación. */
     Integer getDisponibilidadId();
 
-    /** Total de calificaciones del reporte. */
-    Long getTotal();
-
-    /** Cuántas de esas calificaciones son del tipo favorable. */
-    Long getFavorables();
+    /** Nombre del tipo de calificación, tal como está en tipos_calificacion. */
+    String getTipo();
   }
 
   /**
-   * Cuenta las calificaciones de varios reportes en una sola consulta.
+   * Trae, en una sola consulta, las calificaciones más recientes de varios reportes.
    *
-   * ids: ids de los reportes de disponibilidad a contar.
-   * tipoFavorable: nombre del tipo de calificación que cuenta a favor, por ejemplo "Si hay".
+   * ids: ids de los reportes de disponibilidad.
+   * limite: cuántas calificaciones recientes se traen por cada reporte.
    *
-   * Devuelve una fila por cada reporte que tenga al menos una calificación; los reportes
-   * sin calificaciones no aparecen en el resultado. Filtra por disponibilidad_id, la primera
-   * columna del índice idx_calificaciones_disponibilidad_fecha.
+   * Por cada reporte numera sus calificaciones de la más nueva a la más antigua (por
+   * fecha_hora y, si coinciden, por id) y deja solo las primeras "limite". Los reportes sin
+   * calificaciones no aparecen en el resultado. Filtra por disponibilidad_id, la primera
+   * columna del índice idx_calificaciones_disponibilidad_fecha. Es una consulta nativa
+   * porque JPQL no permite limitar filas por grupo.
    */
-  @Query("""
-      select c.disponibilidad.id as disponibilidadId,
-             count(c) as total,
-             sum(case when c.tipoCalificacion.nombre = :tipoFavorable then 1 else 0 end) as favorables
-      from Calificacion c
-      where c.disponibilidad.id in :ids
-      group by c.disponibilidad.id
-      """)
-  List<ConteoCalificaciones> contarPorDisponibilidad(
+  @Query(value = """
+      select recientes.disponibilidad_id as disponibilidadId,
+             recientes.tipo as tipo
+      from (
+        select c.disponibilidad_id as disponibilidad_id,
+               t.nombre as tipo,
+               row_number() over (partition by c.disponibilidad_id
+                                  order by c.fecha_hora desc, c.id desc) as posicion
+        from calificaciones c
+        join tipos_calificacion t on t.id = c.tipo_calificacion_id
+        where c.disponibilidad_id in (:ids)
+      ) recientes
+      where recientes.posicion <= :limite
+      """, nativeQuery = true)
+  List<CalificacionReciente> buscarRecientesPorDisponibilidad(
       @Param("ids") Collection<Integer> ids,
-      @Param("tipoFavorable") String tipoFavorable);
+      @Param("limite") int limite);
 }

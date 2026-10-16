@@ -2,23 +2,20 @@ package com.medlab.main.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.medlab.main.dto.ConfianzaDto;
 import com.medlab.main.dto.DisponibilidadReporteDto;
 import com.medlab.main.dto.MedicamentoDetalleDto;
+import com.medlab.main.dto.TendenciaDisponibilidad;
 import com.medlab.main.entity.Disponibilidad;
 import com.medlab.main.entity.Medicamento;
 import com.medlab.main.exception.MedicamentoNoEncontradoException;
 import com.medlab.main.repository.CalificacionRepository;
-import com.medlab.main.repository.CalificacionRepository.ConteoCalificaciones;
+import com.medlab.main.repository.CalificacionRepository.CalificacionReciente;
 import com.medlab.main.repository.DisponibilidadRepository;
 import com.medlab.main.repository.MedicamentoRepository;
 
@@ -26,29 +23,28 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Qué hace: arma el detalle de un medicamento: su información básica y un reporte de
- * disponibilidad por cada farmacia que lo reportó, con su tiempo relativo y su confianza.
+ * disponibilidad por cada farmacia que lo reportó, con su tiempo relativo y lo que dicen las
+ * calificaciones recientes.
  *
  * Cómo entenderlo: es como el empleado que arma la ficha de un producto: busca el producto
  * en el catálogo, pregunta en cada tienda cuándo actualizó su información, consulta las
- * reseñas y entrega todo junto en una sola hoja.
+ * últimas reseñas y entrega todo junto en una sola hoja.
  *
  * Detalles técnicos: obtiene el medicamento de MedicamentoRepository, sus reportes de
- * DisponibilidadRepository y el conteo de calificaciones de todos los reportes con una sola
- * consulta a CalificacionRepository. Calcula el texto relativo con TiempoRelativoService y
- * la confianza con ConfianzaService, usando la hora del servidor como "ahora". Entrega un
- * MedicamentoDetalleDto a MedicamentoDetalleController. Solo lee la base de datos: no
- * guarda ni modifica nada.
+ * DisponibilidadRepository y las calificaciones recientes de todos los reportes con una sola
+ * consulta a CalificacionRepository. Calcula el texto relativo con TiempoRelativoService y la
+ * tendencia de disponibilidad con MensajeDisponibilidadService, usando la hora del servidor
+ * como "ahora". Entrega un MedicamentoDetalleDto a MedicamentoDetalleController. Solo lee la
+ * base de datos: no guarda ni modifica nada.
  */
 @Service
 @RequiredArgsConstructor
 public class MedicamentoDetalleService {
 
-  private static final String SIN_CALIFICACIONES = "sin calificaciones aún";
-
   private final MedicamentoRepository medicamentoRepository;
   private final DisponibilidadRepository disponibilidadRepository;
   private final CalificacionRepository calificacionRepository;
-  private final ConfianzaService confianzaService;
+  private final MensajeDisponibilidadService mensajeDisponibilidadService;
   private final TiempoRelativoService tiempoRelativoService;
 
   /**
@@ -66,11 +62,12 @@ public class MedicamentoDetalleService {
 
     List<Disponibilidad> disponibilidades = disponibilidadRepository
         .findByMedicamentoIdConFarmacia(id);
-    Map<Integer, ConteoCalificaciones> conteos = contarCalificaciones(disponibilidades);
+    Map<Integer, List<String>> tiposRecientes = buscarTiposRecientes(disponibilidades);
     LocalDateTime ahora = LocalDateTime.now();
 
     List<DisponibilidadReporteDto> reportes = disponibilidades.stream()
-        .map(d -> aReporteDto(d, conteos.get(d.getId()), ahora)).toList();
+        .map(d -> aReporteDto(d, tiposRecientes.getOrDefault(d.getId(), List.of()), ahora))
+        .toList();
 
     return new MedicamentoDetalleDto(medicamento.getId(), medicamento.getNombreComercial(),
         medicamento.getPrincipioActivo(), medicamento.getCategoria().getNombre(),
@@ -78,37 +75,33 @@ public class MedicamentoDetalleService {
   }
 
   /**
-   * Cuenta las calificaciones de todos los reportes en una sola consulta y las organiza por
-   * id de reporte. Los reportes sin calificaciones no aparecen en el resultado.
+   * Trae las calificaciones recientes de todos los reportes en una sola consulta y las
+   * organiza por id de reporte, como lista de nombres de tipo. Los reportes sin
+   * calificaciones no aparecen en el resultado.
    */
-  private Map<Integer, ConteoCalificaciones> contarCalificaciones(
-      List<Disponibilidad> disponibilidades) {
+  private Map<Integer, List<String>> buscarTiposRecientes(List<Disponibilidad> disponibilidades) {
     if (disponibilidades.isEmpty()) {
       return Map.of();
     }
     List<Integer> ids = disponibilidades.stream().map(Disponibilidad::getId).toList();
-    return calificacionRepository.contarPorDisponibilidad(ids, ConfianzaService.TIPO_FAVORABLE)
+    return calificacionRepository
+        .buscarRecientesPorDisponibilidad(ids, MensajeDisponibilidadService.CALIFICACIONES_RECIENTES)
         .stream()
-        .collect(Collectors.toMap(ConteoCalificaciones::getDisponibilidadId, Function.identity()));
+        .collect(Collectors.groupingBy(CalificacionReciente::getDisponibilidadId,
+            Collectors.mapping(CalificacionReciente::getTipo, Collectors.toList())));
   }
 
   /**
-   * Convierte un reporte en el dato que se envía al frontend. Si conteo es null, el reporte
-   * no tiene calificaciones y su mensaje es "sin calificaciones aún".
+   * Convierte un reporte en el dato que se envía al frontend. Si tiposRecientes está vacía,
+   * el reporte no tiene calificaciones y su mensaje es "sin calificaciones aún".
    */
   private DisponibilidadReporteDto aReporteDto(Disponibilidad disponibilidad,
-      ConteoCalificaciones conteo, LocalDateTime ahora) {
+      List<String> tiposRecientes, LocalDateTime ahora) {
     LocalDateTime fecha = disponibilidad.getFechaHoraReporte();
-
-    Optional<ConfianzaDto> confianza = conteo == null ? Optional.empty()
-        : confianzaService.calcular(conteo.getFavorables(), conteo.getTotal(), fecha, ahora);
-
-    String mensaje = confianza
-        .map(c -> "Confianza " + c.nivel().name().toLowerCase(Locale.ROOT))
-        .orElse(SIN_CALIFICACIONES);
+    TendenciaDisponibilidad tendencia = mensajeDisponibilidadService.calcular(tiposRecientes);
 
     return new DisponibilidadReporteDto(disponibilidad.getId(),
         disponibilidad.getFarmacia().getNombreFarmacia(), fecha,
-        tiempoRelativoService.desde(fecha, ahora), confianza.orElse(null), mensaje);
+        tiempoRelativoService.desde(fecha, ahora), tendencia, tendencia.getMensaje());
   }
 }
