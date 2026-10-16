@@ -27,8 +27,9 @@ import lombok.NoArgsConstructor;
  * TipoCalificacion. La base de datos asigna el id y la fecha_hora al guardar, por eso
  * fechaHora es de solo lectura desde Java. La tabla también guarda el usuario que calificó
  * (usuario_id), que esta entity no mapea porque HU-4 no lo necesita.
- * CalificacionRepository cuenta estas filas por reporte y ConfianzaService las usa para
- * calcular la confianza de cada reporte.
+ * CalificacionRepository trae las calificaciones más recientes de cada reporte y
+ * MensajeDisponibilidadService las usa para decidir qué dice el mensaje de disponibilidad
+ * de ese reporte.
  */
 @Entity
 @Table(name = "calificaciones")

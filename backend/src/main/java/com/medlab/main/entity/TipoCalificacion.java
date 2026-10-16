@@ -18,9 +18,9 @@ import lombok.NoArgsConstructor;
  * quiera, escoge una de las opciones ya definidas.
  *
  * Detalles técnicos: cada Calificacion apunta a un TipoCalificacion por su id. El nombre es
- * único en la tabla. ConfianzaService cuenta como favorables las calificaciones cuyo
- * nombre es "Si hay", escrito igual que en la base de datos. En HU-4 el backend solo
- * lee esta tabla: no inserta ni modifica tipos.
+ * único en la tabla. MensajeDisponibilidadService cuenta las calificaciones recientes según
+ * este nombre: "Si hay", "Bajo pedido" o "No hay", escritos igual que en la base de datos.
+ * En HU-4 el backend solo lee esta tabla: no inserta ni modifica tipos.
  */
 @Entity
 @Table(name = "tipos_calificacion")
