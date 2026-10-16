@@ -1,0 +1,420 @@
+/*
+
+  el contenido de la página centrado, con un ancho máximo de 1200px. En celular
+  va todo en una columna: el panel, el mapa y la lista
+
+*/
+.contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/*
+
+  el enlace para volver a buscar otro medicamento, en verde y en negrilla
+
+*/
+.volver {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: var(--color-primario);
+}
+
+/*
+
+  el título de la página, grande y en negrilla
+
+*/
+h1 {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/*
+
+  el texto debajo del título, en gris
+
+*/
+.descripcion {
+  margin: 0 0 1.5rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--color-texto-secundario);
+}
+
+/*
+
+  los botones de la página. boton-primario es el verde relleno (usar mi
+  ubicación) y boton-secundario el de borde verde (buscar). Desactivados se ven
+  más claros y no se pueden tocar
+
+*/
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 1.25rem;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: 2px solid var(--color-primario);
+  border-radius: 0.75rem;
+}
+
+.boton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.boton-primario {
+  color: #ffffff;
+  background-color: var(--color-primario);
+}
+
+.boton-primario:hover:not(:disabled) {
+  background-color: var(--color-primario-hover);
+  border-color: var(--color-primario-hover);
+}
+
+.boton-secundario {
+  color: var(--color-primario);
+  background-color: var(--color-superficie);
+}
+
+.boton-secundario:hover:not(:disabled) {
+  background-color: var(--color-fondo);
+}
+
+/*
+
+  las formas de dar la ubicación, una debajo de la otra
+
+*/
+.ubicacion {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/*
+
+  el formulario de la dirección: el título arriba y debajo el campo con el
+  botón Buscar al lado
+
+*/
+.direccion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.direccion label {
+  font-weight: 700;
+}
+
+.fila {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/*
+
+  el campo de la dirección: alto para que sea fácil de tocar en celular. Al
+  seleccionarlo, el borde se pone verde
+
+*/
+input {
+  box-sizing: border-box;
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 1rem;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--color-texto);
+  background-color: var(--color-superficie);
+  border: 2px solid var(--color-borde);
+  border-radius: 0.75rem;
+}
+
+input:focus {
+  border-color: var(--color-primario);
+}
+
+/*
+
+  el mensaje del estado de la ubicación, en gris. Tiene una altura mínima para
+  que la página no salte cuando aparece
+
+*/
+.estado-ubicacion {
+  min-height: 1.5rem;
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+/*
+
+  la zona de resultados y sus mensajes. El mensaje de error va en rojo
+
+*/
+.resultados {
+  min-width: 0;
+}
+
+.mensaje {
+  margin: 0 0 0.5rem;
+  color: var(--color-texto-secundario);
+}
+
+.mensaje-error {
+  color: var(--color-error);
+}
+
+/*
+
+  la lista de farmacias, una debajo de la otra
+
+*/
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+
+  cada farmacia es un botón con forma de tarjeta, con el nombre en negrilla y
+  la distancia en gris. scroll-margin deja espacio arriba (por el encabezado
+  fijo) y abajo cuando la lista se mueve hasta ella. La elegida tiene el borde
+  verde y una franja verde a la izquierda
+
+*/
+.farmacia {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font: inherit;
+  color: var(--color-texto);
+  text-align: left;
+  cursor: pointer;
+  scroll-margin: calc(var(--alto-encabezado) + 1rem) 0 1rem;
+  background-color: var(--color-superficie);
+  border: 2px solid var(--color-borde);
+  border-radius: 0.75rem;
+}
+
+.farmacia:hover {
+  border-color: var(--color-marca);
+}
+
+.farmacia.seleccionada {
+  border-color: var(--color-primario);
+  box-shadow: inset 4px 0 0 var(--color-primario);
+}
+
+.nombre {
+  font-weight: 700;
+}
+
+.detalle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+/*
+
+  la etiqueta verde de "Más cercana" que lleva la primera farmacia
+
+*/
+.etiqueta-cercana {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: var(--color-primario);
+  border-radius: 999px;
+}
+
+/*
+
+  el recuadro del mapa con bordes redondeados
+
+*/
+.mapa {
+  height: 360px;
+  overflow: hidden;
+  border: 1px solid var(--color-borde);
+  border-radius: 1rem;
+}
+
+/*
+
+  la columna del mapa: la caja de cómo llegar arriba y el mapa debajo
+
+*/
+.columna-mapa {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+/*
+
+  la caja de cómo llegar: el selector de medio y el resumen de la ruta, uno al
+  lado del otro si caben
+
+*/
+.ruta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 1rem;
+}
+
+/*
+
+  el selector de medio: dos botones juntos dentro de un recuadro. El elegido
+  va en verde con letra blanca
+
+*/
+.medios {
+  display: inline-flex;
+  padding: 0.25rem;
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: 0.75rem;
+}
+
+.medio {
+  min-height: 40px;
+  padding: 0 1rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-texto-secundario);
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.medio.activo {
+  color: #ffffff;
+  background-color: var(--color-primario);
+}
+
+/*
+
+  el resumen de la ruta y la pista, en gris. La distancia y el tiempo van en
+  negrilla y en el color del texto
+
+*/
+.resumen-ruta,
+.pista-ruta {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.resumen-ruta strong {
+  color: var(--color-texto);
+}
+
+/*
+
+  el mensaje cuando no hay medicamento, con espacio arriba y abajo
+
+*/
+.sin-medicamento {
+  padding: 2rem 0;
+}
+
+/*
+
+  en tablet (desde 640px) hay más espacio, el título es más grande y el mapa
+  más alto
+
+*/
+@media (min-width: 640px) {
+  .contenido {
+    padding: 3rem 1.5rem;
+  }
+
+  h1 {
+    font-size: 2.25rem;
+  }
+
+  .mapa {
+    height: 440px;
+  }
+}
+
+/*
+
+  en computador (desde 1024px) la página se divide en dos columnas: a la
+  izquierda el panel arriba y la lista debajo, y a la derecha la columna del
+  mapa, que se queda quieta al bajar (sticky) y ocupa el alto de la pantalla
+
+*/
+@media (min-width: 1024px) {
+  .contenido {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    grid-template-areas:
+      "panel mapa"
+      "resultados mapa";
+    grid-template-rows: auto 1fr;
+    align-items: start;
+    column-gap: 3rem;
+    row-gap: 1.5rem;
+  }
+
+  .panel {
+    grid-area: panel;
+  }
+
+  .resultados {
+    grid-area: resultados;
+  }
+
+  .sin-medicamento {
+    grid-column: 1 / -1;
+  }
+
+  .columna-mapa {
+    grid-area: mapa;
+    position: sticky;
+    top: calc(var(--alto-encabezado) + 1.5rem);
+    height: calc(100dvh - var(--alto-encabezado) - 6rem);
+    min-height: 560px;
+  }
+
+  .mapa {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+  }
+}

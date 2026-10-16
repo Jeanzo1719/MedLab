@@ -43,6 +43,24 @@ export interface FarmaciaMapa {
 
 /**
  * 
+ * la forma de una farmacia cercana tal como llega del backend. Es el espejo de
+ * FarmaciaCercanaDto
+ * 
+ * tiene todo lo de FarmaciaMapa (por eso extends) más la distancia, así el mapa
+ * la puede dibujar igual que a las demás farmacias
+ * 
+ */
+export interface FarmaciaCercana extends FarmaciaMapa {
+  /**
+   * 
+   * qué tan lejos está la farmacia del usuario, en kilómetros
+   * 
+   */
+  distanciaKm: number;
+}
+
+/**
+ * 
  * el service de las farmacias en el frontend. Le pide al backend las farmacias
  * que se muestran en el mapa
  * 
@@ -65,5 +83,23 @@ export class FarmaciaService {
    */
   listarAprobadas(): Observable<FarmaciaMapa[]> {
     return this.stomp.consultar<FarmaciaMapa[]>("/app/farmacias/aprobadas");
+  }
+
+  /**
+   * 
+   * devuelve las farmacias aprobadas más cercanas al usuario que tienen el
+   * medicamento disponible, de la más cercana a la más lejana
+   * 
+   * se las pide al backend por WebSocket en el destino /app/farmacias/cercanas,
+   * enviando el medicamento y la ubicación del usuario como datos extra. Los
+   * números se envían como texto (String) porque así viajan los datos extra
+   * 
+   */
+  listarCercanas(medicamentoId: number, latitud: number, longitud: number): Observable<FarmaciaCercana[]> {
+    return this.stomp.consultar<FarmaciaCercana[]>("/app/farmacias/cercanas", {
+      medicamentoId: String(medicamentoId),
+      latitud: String(latitud),
+      longitud: String(longitud),
+    });
   }
 }

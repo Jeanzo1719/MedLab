@@ -7,6 +7,7 @@ import {
   signal,
 } from "@angular/core";
 import { toObservable, toSignal } from "@angular/core/rxjs-interop";
+import { RouterLink } from "@angular/router";
 import {
   Observable,
   catchError,
@@ -71,6 +72,7 @@ type EstadoBusqueda =
  */
 @Component({
   selector: "app-buscador-medicamentos",
+  imports: [RouterLink],
   templateUrl: "./buscador-medicamentos.component.html",
   styleUrl: "./buscador-medicamentos.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
