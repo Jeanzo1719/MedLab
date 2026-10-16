@@ -80,6 +80,13 @@
 
   */
   --alto-encabezado: 4rem;
+
+  --vidrio-fondo: light-dark(rgb(255 255 255 / 0.7), rgb(28 27 24 / 0.7));
+  --vidrio-borde: light-dark(rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.1));
+  --vidrio-sombra: 0 8px 32px rgb(0 0 0 / 0.12),
+    inset 0 1px 0 light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.08));
+  --vidrio-desenfoque: blur(16px) saturate(1.8);
+  --transicion: 0.25s ease;
 }
 
 :root[data-tema="claro"] {
@@ -144,4 +151,49 @@ body {
 :focus-visible {
   outline: 3px solid var(--color-acento);
   outline-offset: 2px;
+}
+
+.vidrio {
+  background-color: var(--vidrio-fondo);
+  border: 1px solid var(--vidrio-borde);
+  box-shadow: var(--vidrio-sombra);
+  -webkit-backdrop-filter: var(--vidrio-desenfoque);
+  backdrop-filter: var(--vidrio-desenfoque);
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a,
+  button,
+  input {
+    transition:
+      color var(--transicion),
+      background-color var(--transicion),
+      border-color var(--transicion),
+      box-shadow var(--transicion);
+  }
+
+  .aparecer {
+    animation: aparecer 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) var(--retraso, 0s) both;
+  }
+
+  @supports (animation-timeline: view()) {
+    .al-desplazar {
+      animation: aparecer linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.45s;
+    animation-timing-function: ease;
+  }
 }

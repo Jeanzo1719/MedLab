@@ -3,6 +3,14 @@
   el componente ocupa todo el espacio que le dé quien lo use
 
 */
+:host([data-tema="claro"]) {
+  color-scheme: light;
+}
+
+:host([data-tema="oscuro"]) {
+  color-scheme: dark;
+}
+
 :host {
   --mapa-farmacia: var(--color-marca);
   --mapa-seleccionada: light-dark(#107a4e, #ffc46b);
@@ -43,7 +51,7 @@
   stroke: var(--mapa-ruta);
 }
 
-:host-context([data-tema="oscuro"]) ::ng-deep .leaflet-tile-pane {
+:host([data-tema="oscuro"]) ::ng-deep .leaflet-tile-pane {
   filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9);
 }
 
@@ -58,9 +66,20 @@
   border-color: var(--color-borde);
 }
 
+:host ::ng-deep .leaflet-bar,
+:host ::ng-deep .leaflet-control-attribution {
+  -webkit-backdrop-filter: var(--vidrio-desenfoque);
+  backdrop-filter: var(--vidrio-desenfoque);
+}
+
+:host ::ng-deep .leaflet-bar a,
+:host ::ng-deep .leaflet-control-attribution,
+.control-tema button {
+  background-color: var(--vidrio-fondo);
+}
+
 :host ::ng-deep .leaflet-control-attribution {
   color: var(--color-texto-secundario);
-  background-color: var(--color-superficie);
 }
 
 :host ::ng-deep .leaflet-control-attribution a {
@@ -73,4 +92,28 @@
 
 :host ::ng-deep .leaflet-tooltip-right::before {
   border-right-color: var(--color-superficie);
+}
+
+.control-tema button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  color: var(--color-texto);
+  cursor: pointer;
+  border: 0;
+  border-radius: 2px;
+}
+
+.control-tema button:hover {
+  color: var(--color-primario);
+}
+
+.control-tema svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
 }

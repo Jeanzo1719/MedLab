@@ -24,12 +24,8 @@
         el título principal de la página (el único h1), la descripción y el buscador
 
       -->
-      <div class="presentacion">
+      <div class="presentacion aparecer">
         <h1 id="titulo-inicio">Encuentra tus medicamentos en farmacias cercanas</h1>
-        <p class="descripcion">
-          Consulta en qué farmacias de Medellín hay disponibilidad, compara precios
-          y ayuda a otros reportando lo que encuentras.
-        </p>
 
       </div>
 
@@ -39,16 +35,21 @@
         de pantalla para describirlo
 
       -->
-      <div class="mapa">
+      <div class="mapa aparecer" style="--retraso: 0.1s">
         <app-mapa
           [farmacias]="farmacias()"
           descripcion="Mapa de farmacias aprobadas en Medellín"
         />
 
-        <div class="panel-busqueda">
+        <div class="panel-busqueda vidrio">
           <app-buscador-medicamentos />
         </div>
       </div>
+
+      <p class="descripcion aparecer" style="--retraso: 0.2s">
+        Consulta en qué farmacias de Medellín hay disponibilidad, compara precios
+        y ayuda a otros reportando lo que encuentras.
+      </p>
     </div>
   </section>
 
@@ -73,7 +74,7 @@
       -->
       <ul class="tarjetas">
         @for (servicio of servicios; track servicio.titulo) {
-          <li class="tarjeta">
+          <li class="tarjeta al-desplazar">
             <span class="icono" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="28" height="28">
                 <path [attr.d]="servicio.icono" />
@@ -111,7 +112,7 @@
       <address>
         <ul class="medios">
           @for (medio of mediosContacto; track medio.titulo) {
-            <li class="medio">
+            <li class="medio al-desplazar">
               <span class="icono" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="24" height="24">
                   <path [attr.d]="medio.icono" />

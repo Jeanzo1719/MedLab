@@ -33,7 +33,7 @@
       medicamento, la explicación y las formas de dar la ubicación
 
     -->
-    <div class="presentacion">
+    <div class="presentacion aparecer">
       <a class="volver" routerLink="/" fragment="inicio">← Buscar otro medicamento</a>
       <h1 id="titulo-farmacias">Farmacias cercanas con {{ nombreMedicamento() }}</h1>
       <p class="descripcion">
@@ -42,7 +42,7 @@
       </p>
     </div>
 
-    <div class="vista">
+    <div class="vista aparecer" style="--retraso: 0.1s">
 
       <!--
 
@@ -61,7 +61,7 @@
         />
       </div>
 
-      <section class="panel" aria-label="Buscar farmacias cercanas">
+      <section class="panel vidrio" aria-label="Buscar farmacias cercanas">
         <!--
 
           las dos formas de dar la ubicación: el botón para usar la del dispositivo o
@@ -235,8 +235,8 @@
 
               -->
               <ol class="lista">
-                @for (farmacia of resultado.farmacias; track farmacia.id; let primera = $first) {
-                  <li>
+                @for (farmacia of resultado.farmacias; track farmacia.id; let primera = $first, i = $index) {
+                  <li class="aparecer" [style.--retraso.s]="i * 0.04">
                     <button
                       type="button"
                       class="farmacia"

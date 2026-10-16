@@ -66,7 +66,8 @@ h2 {
   inicio: el título principal, grande y en negrilla
 
 */
-.presentacion {
+.presentacion,
+.descripcion {
   max-width: 48rem;
   margin: 0 auto;
   text-align: center;
@@ -74,7 +75,7 @@ h2 {
 
 h1 {
   margin: 0 0 1rem;
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 800;
   line-height: 1.15;
   letter-spacing: -0.02em;
@@ -86,7 +87,6 @@ h1 {
 
 */
 .descripcion {
-  margin: 0;
   font-size: 1.0625rem;
   line-height: 1.6;
   color: var(--color-texto-secundario);
@@ -113,10 +113,7 @@ h1 {
   max-height: calc(100% - 1.5rem);
   overflow-y: auto;
   padding: 1rem;
-  background-color: var(--color-superficie);
-  border: 1px solid var(--color-borde);
   border-radius: 1rem;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.15);
 }
 
 /*
@@ -399,7 +396,7 @@ address {
   }
 
   h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
 
   h2 {
@@ -434,7 +431,7 @@ address {
 */
 @media (min-width: 1024px) {
   h1 {
-    font-size: 3rem;
+    font-size: 2.25rem;
   }
 
   .tarjetas {

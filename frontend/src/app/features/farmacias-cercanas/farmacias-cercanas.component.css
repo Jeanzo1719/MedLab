@@ -284,8 +284,6 @@ input:focus {
   gap: 1rem;
   box-sizing: border-box;
   padding: 1rem;
-  background-color: var(--color-superficie);
-  border: 1px solid var(--color-borde);
   border-radius: 1rem;
 }
 
@@ -404,6 +402,5 @@ input:focus {
     width: 26rem;
     max-height: calc(100% - 1.5rem);
     overflow-y: auto;
-    box-shadow: 0 8px 24px rgb(0 0 0 / 0.15);
   }
 }
