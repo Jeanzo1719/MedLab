@@ -8,6 +8,7 @@ import { provideRouter, withInMemoryScrolling } from "@angular/router";
 
 import { routes } from "./app.routes";
 import { MetadatosService } from "./core/services/metadatos.service";
+import { TemaService } from "./core/services/tema.service";
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,5 +21,6 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideAppInitializer(() => inject(MetadatosService).aplicarGenerales()),
+    provideAppInitializer(() => inject(TemaService).iniciar()),
   ],
 };

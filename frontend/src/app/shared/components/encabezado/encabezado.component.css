@@ -33,6 +33,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.5rem;
   height: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -60,7 +61,7 @@
   el botón ☰ del menú y su ícono
 
 */
-.boton-menu {
+.boton-icono {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -74,7 +75,16 @@
   cursor: pointer;
 }
 
-.boton-menu svg {
+.boton-icono:hover {
+  color: var(--color-primario);
+  background-color: var(--color-fondo);
+}
+
+.boton-tema {
+  margin-left: auto;
+}
+
+.boton-icono svg {
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
@@ -200,9 +210,15 @@ nav a:hover {
     display: none;
   }
 
+  .boton-tema {
+    order: 1;
+    margin-left: 0;
+  }
+
   .menu {
     display: flex;
     position: static;
+    margin-left: auto;
     flex-direction: row;
     align-items: center;
     gap: 2rem;

@@ -82,6 +82,14 @@
   --alto-encabezado: 4rem;
 }
 
+:root[data-tema="claro"] {
+  color-scheme: light;
+}
+
+:root[data-tema="oscuro"] {
+  color-scheme: dark;
+}
+
 /*
 
   la página ocupa todo el alto de la pantalla y sin márgenes alrededor
