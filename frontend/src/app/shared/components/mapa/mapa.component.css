@@ -4,6 +4,11 @@
 
 */
 :host {
+  --mapa-farmacia: var(--color-marca);
+  --mapa-seleccionada: light-dark(#107a4e, #ffc46b);
+  --mapa-ruta: var(--color-primario);
+  --mapa-ubicacion: light-dark(#f2a93b, #1fb87a);
+
   display: block;
   width: 100%;
   height: 100%;
@@ -19,4 +24,53 @@
   width: 100%;
   height: 100%;
   min-height: 320px;
+}
+
+:host ::ng-deep .marcador {
+  fill: var(--mapa-farmacia);
+  stroke: var(--color-superficie);
+}
+
+:host ::ng-deep .marcador-seleccionado {
+  fill: var(--mapa-seleccionada);
+}
+
+:host ::ng-deep .marcador-ubicacion {
+  fill: var(--mapa-ubicacion);
+}
+
+:host ::ng-deep .ruta {
+  stroke: var(--mapa-ruta);
+}
+
+:host-context([data-tema="oscuro"]) ::ng-deep .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9);
+}
+
+:host ::ng-deep .leaflet-container {
+  background-color: var(--color-fondo);
+}
+
+:host ::ng-deep .leaflet-bar a,
+:host ::ng-deep .leaflet-tooltip {
+  color: var(--color-texto);
+  background-color: var(--color-superficie);
+  border-color: var(--color-borde);
+}
+
+:host ::ng-deep .leaflet-control-attribution {
+  color: var(--color-texto-secundario);
+  background-color: var(--color-superficie);
+}
+
+:host ::ng-deep .leaflet-control-attribution a {
+  color: var(--color-primario);
+}
+
+:host ::ng-deep .leaflet-tooltip-left::before {
+  border-left-color: var(--color-superficie);
+}
+
+:host ::ng-deep .leaflet-tooltip-right::before {
+  border-right-color: var(--color-superficie);
 }

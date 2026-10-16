@@ -97,10 +97,9 @@ const CAPA_BASE: Readonly<{ url: string; atribucion: string }> = {
  *
  */
 const ESTILO_MARCADOR: CircleMarkerOptions = {
+  className: "marcador",
   radius: 8,
-  color: "#ffffff",
   weight: 2,
-  fillColor: "#159a63",
   fillOpacity: 1,
 };
 
@@ -112,9 +111,9 @@ const ESTILO_MARCADOR: CircleMarkerOptions = {
  */
 const ESTILO_MARCADOR_SELECCIONADO: CircleMarkerOptions = {
   ...ESTILO_MARCADOR,
+  className: "marcador marcador-seleccionado",
   radius: 12,
   weight: 3,
-  fillColor: "#107a4e",
 };
 
 /**
@@ -124,10 +123,9 @@ const ESTILO_MARCADOR_SELECCIONADO: CircleMarkerOptions = {
  *
  */
 const ESTILO_UBICACION: CircleMarkerOptions = {
+  className: "marcador marcador-ubicacion",
   radius: 9,
-  color: "#ffffff",
   weight: 3,
-  fillColor: "#f2a93b",
   fillOpacity: 1,
 };
 
@@ -138,7 +136,7 @@ const ESTILO_UBICACION: CircleMarkerOptions = {
  *
  */
 const ESTILO_RUTA: PolylineOptions = {
-  color: "#107a4e",
+  className: "ruta",
   weight: 5,
   opacity: 0.85,
 };
