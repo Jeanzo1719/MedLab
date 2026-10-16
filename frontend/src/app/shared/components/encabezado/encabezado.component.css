@@ -160,7 +160,7 @@ nav a:hover {
 }
 
 .boton-primario {
-  color: #ffffff;
+  color: var(--color-sobre-primario);
   background-color: var(--color-primario);
 }
 

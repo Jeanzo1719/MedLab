@@ -148,7 +148,7 @@ h1 {
   width: 48px;
   height: 48px;
   margin-bottom: 1rem;
-  color: #ffffff;
+  color: var(--color-sobre-primario);
   background-color: var(--color-marca);
   border-radius: 0.75rem;
 }
@@ -271,8 +271,9 @@ address {
 
 */
 .pie {
-  color: var(--color-fondo);
+  color: var(--color-texto-invertido);
   background-color: var(--color-negro);
+  border-top: 1px solid var(--color-borde);
 }
 
 /*

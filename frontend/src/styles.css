@@ -10,6 +10,8 @@
 
 */
 :root {
+  color-scheme: light dark;
+
   /*
 
     los colores oficiales de MedLab: el verde de la marca (para el logo y
@@ -17,7 +19,7 @@
     negro del pie de página
 
   */
-  --color-marca: #159a63;
+  --color-marca: light-dark(#159a63, #f2a93b);
   --color-acento: #f2a93b;
   --color-negro: #131210;
 
@@ -27,22 +29,24 @@
     Es más oscuro que el de la marca para que el texto blanco encima se lea bien
 
   */
-  --color-primario: #107a4e;
-  --color-primario-hover: #0d6b44;
+  --color-primario: light-dark(#107a4e, #f2a93b);
+  --color-primario-hover: light-dark(#0d6b44, #f5bc66);
+  --color-sobre-primario: light-dark(#ffffff, #131210);
 
   /*
 
     el color del texto principal (casi negro) y del texto secundario (gris)
 
   */
-  --color-texto: #101208;
-  --color-texto-secundario: #4a4d45;
+  --color-texto: light-dark(#101208, #f4f4ef);
+  --color-texto-secundario: light-dark(#4a4d45, #a7a9a1);
 
   /*
 
     el gris claro del texto secundario sobre fondo oscuro, como en el pie de página
 
   */
+  --color-texto-invertido: #fbfbf8;
   --color-texto-invertido-secundario: #a7a9a1;
 
   /*
@@ -50,7 +54,7 @@
     el rojo de los mensajes de error
 
   */
-  --color-error: #b42318;
+  --color-error: light-dark(#b42318, #ff6b5e);
 
   /*
 
@@ -58,9 +62,9 @@
     encabezado (blanco), y de las líneas de los bordes (gris claro)
 
   */
-  --color-fondo: #fbfbf8;
-  --color-superficie: #ffffff;
-  --color-borde: #e3e4de;
+  --color-fondo: light-dark(#fbfbf8, #131210);
+  --color-superficie: light-dark(#ffffff, #1c1b18);
+  --color-borde: light-dark(#e3e4de, #34332e);
 
   /*
 
