@@ -25,6 +25,7 @@ import {
   Polyline,
   PolylineOptions,
   circleMarker,
+  control,
   latLngBounds,
   layerGroup,
   map,
@@ -370,7 +371,10 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
       maxZoom: ZOOM_MAXIMO,
       maxBounds: LIMITES_MUNDO,
       maxBoundsViscosity: 1,
+      zoomControl: false,
     });
+
+    control.zoom({ position: "bottomright" }).addTo(mapa);
 
     tileLayer(CAPA_BASE.url, {
       attribution: CAPA_BASE.atribucion,

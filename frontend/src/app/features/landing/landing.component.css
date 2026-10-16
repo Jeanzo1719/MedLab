@@ -66,6 +66,12 @@ h2 {
   inicio: el título principal, grande y en negrilla
 
 */
+.presentacion {
+  max-width: 48rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
 h1 {
   margin: 0 0 1rem;
   font-size: 2rem;
@@ -80,7 +86,7 @@ h1 {
 
 */
 .descripcion {
-  margin: 0 0 2rem;
+  margin: 0;
   font-size: 1.0625rem;
   line-height: 1.6;
   color: var(--color-texto-secundario);
@@ -92,10 +98,25 @@ h1 {
 
 */
 .mapa {
-  height: 360px;
+  position: relative;
+  height: 70dvh;
+  min-height: 460px;
   overflow: hidden;
   border: 1px solid var(--color-borde);
   border-radius: 1rem;
+}
+
+.panel-busqueda {
+  position: absolute;
+  inset: 0.75rem 0.75rem auto;
+  z-index: 1000;
+  max-height: calc(100% - 1.5rem);
+  overflow-y: auto;
+  padding: 1rem;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.15);
 }
 
 /*
@@ -386,7 +407,13 @@ address {
   }
 
   .mapa {
-    height: 440px;
+    height: 75dvh;
+    min-height: 520px;
+  }
+
+  .panel-busqueda {
+    right: auto;
+    width: 24rem;
   }
 
   .tarjetas {
@@ -406,22 +433,8 @@ address {
 
 */
 @media (min-width: 1024px) {
-  .inicio .contenido {
-    display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    align-items: start;
-    gap: 3rem;
-  }
-
   h1 {
     font-size: 3rem;
-  }
-
-  .mapa {
-    position: sticky;
-    top: calc(var(--alto-encabezado) + 1.5rem);
-    height: calc(100dvh - var(--alto-encabezado) - 6rem);
-    min-height: 480px;
   }
 
   .tarjetas {
