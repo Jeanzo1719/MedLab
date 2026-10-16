@@ -209,7 +209,7 @@ CREATE TABLE tipos_calificacion (
 );
 
 CREATE TABLE calificaciones (
-    id                      INT             AUTO_INCREMENT PRIMARY KEY,
+    id                      BIGINT          AUTO_INCREMENT PRIMARY KEY,
     disponibilidad_id       INT             NOT NULL,
     usuario_id              INT             NOT NULL,
     tipo_calificacion_id    INT             NOT NULL,
