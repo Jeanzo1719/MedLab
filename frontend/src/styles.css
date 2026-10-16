@@ -30,6 +30,15 @@
   --color-primario: #107a4e;
   --color-primario-hover: #0d6b44;
 
+    /*
+
+    el verde oscuro para fondos destacados y el verde muy suave para etiquetas
+    y detalles decorativos
+
+  */
+  --color-primario-oscuro: #0a3d2a;
+  --color-primario-suave: #e7f5ee;
+
   /*
 
     el color del texto principal (casi negro) y del texto secundario (gris)

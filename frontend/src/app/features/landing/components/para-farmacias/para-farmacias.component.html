@@ -1,0 +1,74 @@
+<!--
+
+  la sección para farmacias. id="farmacias" es a donde salta el menú
+
+-->
+<section id="farmacias" class="farmacias" aria-labelledby="titulo-farmacias">
+  <div class="contenido">
+    <!--
+
+      el mensaje: etiqueta, título, beneficios y los botones de acción
+
+    -->
+    <div class="mensaje">
+      <p class="etiqueta">Para farmacias</p>
+      <h2 id="titulo-farmacias">Haz que más pacientes encuentren tu farmacia</h2>
+      <p class="introduccion">
+        Súmate a MedLab, aparece en el mapa de Medellín y mantén tu inventario al
+        día desde un solo panel.
+      </p>
+
+      <ul class="beneficios">
+        @for (beneficio of beneficios; track beneficio.titulo) {
+          <li>
+            <span class="check" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16">
+                <path d="M5 12l4 4 10-10" />
+              </svg>
+            </span>
+            <span>
+              <strong>{{ beneficio.titulo }}</strong>
+              {{ beneficio.descripcion }}
+            </span>
+          </li>
+        }
+      </ul>
+
+      <!--
+
+        el botón principal lleva al registro (esa página llega con el login) y el
+        secundario salta a la sección de contacto
+
+      -->
+      <div class="acciones">
+        <a class="boton boton-principal" routerLink="/registro">Registra tu farmacia</a>
+        <a class="boton boton-secundario" routerLink="/" fragment="contacto">
+          Hablar con nosotros
+        </a>
+      </div>
+    </div>
+
+    <!--
+
+      una ilustración de cómo se vería el panel de inventario. Es solo decoración
+      (aria-hidden) y lo dice en el texto: "Vista de ejemplo"
+
+    -->
+    <div class="panel" aria-hidden="true">
+      <div class="panel-cabecera">
+        <span class="punto"></span>
+        <span>Panel de inventario · Vista de ejemplo</span>
+      </div>
+      <ul class="panel-lista">
+        @for (item of ejemplo; track item.nombre) {
+          <li>
+            <span>{{ item.nombre }}</span>
+            <span class="estado" [class.agotado]="!item.disponible">
+              {{ item.disponible ? "Disponible" : "Agotado" }}
+            </span>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</section>
