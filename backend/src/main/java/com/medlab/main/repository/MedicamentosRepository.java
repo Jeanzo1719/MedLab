@@ -2,11 +2,25 @@ package com.medlab.main.repository;
 
 import com.medlab.main.entity.MedicamentosEntity;
 import java.util.List;
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-public interface MedicamentosRepository extends JpaRepository<MedicamentosEntity, Long> {
+public interface MedicamentosRepository {
 
-  List<MedicamentosEntity> findByNombreComercial(String nombreComercial);
+  List<MedicamentosEntity> findAll();
 
-  List<MedicamentosEntity> findByPrincipioActivo(String principioActivo);
+  Page<MedicamentosEntity> findAll(Pageable pageable);
+
+  Optional<MedicamentosEntity> findById(Long id);
+
+  MedicamentosEntity save(MedicamentosEntity medicamentosEntity);
+
+  void deleteById(Long id);
+
+  Optional<MedicamentosEntity> findByNombreComercial(String nombreComercial);
+
+  Optional<MedicamentosEntity> findByPrincipioActivo(String principioActivo);
+
+  List<MedicamentosEntity> findByPrincipioActivoAndIdNot(String principioActivo, Long id);
 }
