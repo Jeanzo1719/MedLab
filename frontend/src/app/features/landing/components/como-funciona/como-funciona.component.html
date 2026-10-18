@@ -1,0 +1,36 @@
+<!--
+
+  la sección "Cómo funciona": tres pasos numerados. id="como-funciona" es a donde
+  se puede saltar con un enlace y aria-labelledby le da su nombre al lector de
+  pantalla
+
+-->
+<section id="como-funciona" aria-labelledby="titulo-como-funciona">
+  <div class="contenido">
+    <h2 id="titulo-como-funciona">Encuentra tu medicamento en 3 pasos</h2>
+    <p class="introduccion">
+      Sin registros ni vueltas: busca, mira el mapa y ayuda a otros.
+    </p>
+
+    <!--
+
+      una tarjeta por paso. El número y el ícono son decorativos (aria-hidden)
+      porque la lista ordenada (ol) ya le dice al lector de pantalla el orden
+
+    -->
+    <ol class="pasos">
+      @for (paso of pasos; track paso.titulo; let i = $index) {
+        <li class="paso">
+          <span class="numero" aria-hidden="true">{{ i + 1 }}</span>
+          <span class="icono" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="28" height="28">
+              <path [attr.d]="paso.icono" />
+            </svg>
+          </span>
+          <h3>{{ paso.titulo }}</h3>
+          <p>{{ paso.descripcion }}</p>
+        </li>
+      }
+    </ol>
+  </div>
+</section>

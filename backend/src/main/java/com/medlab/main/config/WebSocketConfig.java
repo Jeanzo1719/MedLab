@@ -57,9 +57,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	 * cuando el frontend se suscribe a /app/farmacias/aprobadas, Spring le quita el /app y busca 
 	 * el método marcado con "/farmacias/aprobadas"
 	 * 
+	 * los mensajes cuyo destino empieza por /topic los reparte el broker a todos los clientes
+	 * suscritos; lo usa MedicamentoDetalleNotificador para avisar cambios del detalle
+	 * 
 	 */
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
 		registry.setApplicationDestinationPrefixes("/app");
+		registry.enableSimpleBroker("/topic");
 	}
+	
 }

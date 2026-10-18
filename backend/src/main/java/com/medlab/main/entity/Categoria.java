@@ -1,5 +1,6 @@
 package com.medlab.main.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,10 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * esta es una clase java que representa la tabla categorias: el grupo terapéutico del medicamento, por ejemplo "Analgésicos"
- * solo tienen id y nombre. Representan listas fijas de opciones que otras tablas referencian
- */
+/** Tabla categorias: grupo terapéutico del medicamento (ej. "Analgésicos"). */
 @Entity
 @Table(name = "categorias")
 @Getter
@@ -20,9 +18,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Categoria {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-	private String nombre;
+  @Column(name = "nombre", nullable = false, length = 100)
+  private String nombre;
 }
