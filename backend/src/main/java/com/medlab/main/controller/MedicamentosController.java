@@ -36,153 +36,152 @@ public class MedicamentosController {
 
   @PostMapping
   public ResponseEntity<ApiResponse<MedicamentoResponseDto>> createMedicamento(
-      @Valid @RequestBody MedicamentoRequestDto dto) {
-    MedicamentoResponseDto creado = medicamentosService.crear(dto);
+      @Valid @RequestBody MedicamentoRequestDto medicamentoRequestDto) {
+    MedicamentoResponseDto medicamento = medicamentosService.createMedicamento(medicamentoRequestDto);
 
-    ApiResponse<MedicamentoResponseDto> response = ApiResponse.<MedicamentoResponseDto>builder()
+    ApiResponse<MedicamentoResponseDto> medicamentoResponse = ApiResponse.<MedicamentoResponseDto>builder()
         .code(HttpStatus.CREATED.value())
         .message("Medicamento creado correctamente")
-        .data(creado)
+        .data(medicamento)
         .build();
 
-    messagingTemplate.convertAndSend("/ws/medicamentos/creados", creado);
-    messagingTemplate.convertAndSend("/ws/medicamentos", creado);
+    messagingTemplate.convertAndSend("/ws/medicamentos/creados", medicamento);
+    messagingTemplate.convertAndSend("/ws/medicamentos", medicamento);
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    return ResponseEntity.status(HttpStatus.CREATED).body(medicamentoResponse);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<ApiResponse<MedicamentoResponseDto>> getMedicamentoById(@PathVariable Long id) {
-    MedicamentoResponseDto dto = medicamentosService.obtenerPorId(id);
+    MedicamentoResponseDto medicamento = medicamentosService.getMedicamentoById(id);
 
-    ApiResponse<MedicamentoResponseDto> response = ApiResponse.<MedicamentoResponseDto>builder()
+    ApiResponse<MedicamentoResponseDto> medicamentoResponse = ApiResponse.<MedicamentoResponseDto>builder()
         .code(HttpStatus.OK.value())
         .message("Medicamento obtenido correctamente")
-        .data(dto)
+        .data(medicamento)
         .build();
 
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(medicamentoResponse);
   }
 
   @GetMapping
   public ResponseEntity<ApiResponse<List<MedicamentoResponseDto>>> getAllMedicamentos() {
-    List<MedicamentoResponseDto> lista = medicamentosService.listarTodos();
+    List<MedicamentoResponseDto> medicamentos = medicamentosService.getAllMedicamentos();
 
-    ApiResponse<List<MedicamentoResponseDto>> response = ApiResponse.<List<MedicamentoResponseDto>>builder()
+    ApiResponse<List<MedicamentoResponseDto>> medicamentosResponse = ApiResponse.<List<MedicamentoResponseDto>>builder()
         .code(HttpStatus.OK.value())
         .message("Medicamentos listados correctamente")
-        .data(lista)
+        .data(medicamentos)
         .build();
 
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/buscar/nombre-comercial")
-  public ResponseEntity<ApiResponse<MedicamentoResponseDto>> searchByNombreComercial(
-      @RequestParam String nombreComercial) {
-    MedicamentoResponseDto dto = medicamentosService.buscarPorNombreComercial(nombreComercial);
-
-    ApiResponse<MedicamentoResponseDto> response = ApiResponse.<MedicamentoResponseDto>builder()
-        .code(HttpStatus.OK.value())
-        .message("Medicamento encontrado")
-        .data(dto)
-        .build();
-
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/buscar/principio-activo")
-  public ResponseEntity<ApiResponse<MedicamentoResponseDto>> searchByPrincipioActivo(
-      @RequestParam String principioActivo) {
-    MedicamentoResponseDto dto = medicamentosService.buscarPorPrincipioActivo(principioActivo);
-
-    ApiResponse<MedicamentoResponseDto> response = ApiResponse.<MedicamentoResponseDto>builder()
-        .code(HttpStatus.OK.value())
-        .message("Medicamento encontrado")
-        .data(dto)
-        .build();
-
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/buscar/precio")
-  public ResponseEntity<ApiResponse<List<MedicamentoResponseDto>>> searchByPrecioRange(
-      @RequestParam BigDecimal precioMin, @RequestParam BigDecimal precioMax) {
-    List<MedicamentoResponseDto> lista = medicamentosService.buscarPorRangoPrecio(precioMin, precioMax);
-
-    ApiResponse<List<MedicamentoResponseDto>> response = ApiResponse.<List<MedicamentoResponseDto>>builder()
-        .code(HttpStatus.OK.value())
-        .message("Medicamentos encontrados")
-        .data(lista)
-        .build();
-
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/buscar/farmacia")
-  public ResponseEntity<ApiResponse<List<MedicamentoResponseDto>>> searchByFarmacia(
-      @RequestParam String nombreFarmacia) {
-    List<MedicamentoResponseDto> lista = medicamentosService.buscarPorFarmacia(nombreFarmacia);
-
-    ApiResponse<List<MedicamentoResponseDto>> response = ApiResponse.<List<MedicamentoResponseDto>>builder()
-        .code(HttpStatus.OK.value())
-        .message("Medicamentos encontrados")
-        .data(lista)
-        .build();
-
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/{id}/recomendaciones")
-  public ResponseEntity<ApiResponse<List<MedicamentoResponseDto>>> getRecomendaciones(
-      @PathVariable Long id) {
-    List<MedicamentoResponseDto> lista = medicamentosService.recomendar(id);
-
-    ApiResponse<List<MedicamentoResponseDto>> response = ApiResponse.<List<MedicamentoResponseDto>>builder()
-        .code(HttpStatus.OK.value())
-        .message("Recomendaciones obtenidas correctamente")
-        .data(lista)
-        .build();
-
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(medicamentosResponse);
   }
 
   @GetMapping("/paginado")
-  public ResponseEntity<ApiResponse<Page<MedicamentoResponseDto>>> getAllMedicamentosPaginado(
-      Pageable pageable) {
-    Page<MedicamentoResponseDto> pagina = medicamentosService.listarPaginado(pageable);
+  public ResponseEntity<ApiResponse<Page<MedicamentoResponseDto>>> getMedicamentosPaginated(Pageable pageable) {
+    Page<MedicamentoResponseDto> paginaMedicamentos = medicamentosService.getMedicamentosPaginated(pageable);
 
-    ApiResponse<Page<MedicamentoResponseDto>> response = ApiResponse.<Page<MedicamentoResponseDto>>builder()
+    ApiResponse<Page<MedicamentoResponseDto>> medicamentosResponse = ApiResponse.<Page<MedicamentoResponseDto>>builder()
         .code(HttpStatus.OK.value())
         .message("Medicamentos paginados correctamente")
-        .data(pagina)
+        .data(paginaMedicamentos)
         .build();
 
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(medicamentosResponse);
+  }
+
+  @GetMapping("/buscar/nombre-comercial")
+  public ResponseEntity<ApiResponse<MedicamentoResponseDto>> getMedicamentoByNombreComercial(
+      @RequestParam String nombreComercial) {
+    MedicamentoResponseDto medicamento = medicamentosService.getMedicamentoByNombreComercial(nombreComercial);
+
+    ApiResponse<MedicamentoResponseDto> medicamentoResponse = ApiResponse.<MedicamentoResponseDto>builder()
+        .code(HttpStatus.OK.value())
+        .message("Medicamento encontrado")
+        .data(medicamento)
+        .build();
+
+    return ResponseEntity.ok(medicamentoResponse);
+  }
+
+  @GetMapping("/buscar/principio-activo")
+  public ResponseEntity<ApiResponse<MedicamentoResponseDto>> getMedicamentoByPrincipioActivo(
+      @RequestParam String principioActivo) {
+    MedicamentoResponseDto medicamento = medicamentosService.getMedicamentoByPrincipioActivo(principioActivo);
+
+    ApiResponse<MedicamentoResponseDto> medicamentoResponse = ApiResponse.<MedicamentoResponseDto>builder()
+        .code(HttpStatus.OK.value())
+        .message("Medicamento encontrado")
+        .data(medicamento)
+        .build();
+
+    return ResponseEntity.ok(medicamentoResponse);
+  }
+
+  @GetMapping("/buscar/precio")
+  public ResponseEntity<ApiResponse<List<MedicamentoResponseDto>>> searchMedicamentosByPrecioRange(
+      @RequestParam BigDecimal precioMin, @RequestParam BigDecimal precioMax) {
+    List<MedicamentoResponseDto> medicamentos = medicamentosService.searchMedicamentosByPrecioRange(precioMin, precioMax);
+
+    ApiResponse<List<MedicamentoResponseDto>> medicamentosResponse = ApiResponse.<List<MedicamentoResponseDto>>builder()
+        .code(HttpStatus.OK.value())
+        .message("Medicamentos encontrados")
+        .data(medicamentos)
+        .build();
+
+    return ResponseEntity.ok(medicamentosResponse);
+  }
+
+  @GetMapping("/buscar/farmacia")
+  public ResponseEntity<ApiResponse<List<MedicamentoResponseDto>>> searchMedicamentosByFarmacia(
+      @RequestParam String nombreFarmacia) {
+    List<MedicamentoResponseDto> medicamentos = medicamentosService.searchMedicamentosByFarmacia(nombreFarmacia);
+
+    ApiResponse<List<MedicamentoResponseDto>> medicamentosResponse = ApiResponse.<List<MedicamentoResponseDto>>builder()
+        .code(HttpStatus.OK.value())
+        .message("Medicamentos encontrados")
+        .data(medicamentos)
+        .build();
+
+    return ResponseEntity.ok(medicamentosResponse);
+  }
+
+  @GetMapping("/{id}/recomendaciones")
+  public ResponseEntity<ApiResponse<List<MedicamentoResponseDto>>> getMedicamentoRecomendaciones(
+      @PathVariable Long id) {
+    List<MedicamentoResponseDto> recomendaciones = medicamentosService.getMedicamentoRecomendaciones(id);
+
+    ApiResponse<List<MedicamentoResponseDto>> recomendacionesResponse = ApiResponse.<List<MedicamentoResponseDto>>builder()
+        .code(HttpStatus.OK.value())
+        .message("Recomendaciones obtenidas correctamente")
+        .data(recomendaciones)
+        .build();
+
+    return ResponseEntity.ok(recomendacionesResponse);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<ApiResponse<MedicamentoResponseDto>> updateData(@PathVariable Long id,
-      @Valid @RequestBody MedicamentoRequestDto dto) {
-    MedicamentoResponseDto actualizado = medicamentosService.actualizar(id, dto);
+  public ResponseEntity<ApiResponse<MedicamentoResponseDto>> updateMedicamento(@PathVariable Long id,
+      @Valid @RequestBody MedicamentoRequestDto medicamentoRequestDto) {
+    MedicamentoResponseDto medicamentoActualizado = medicamentosService.updateMedicamento(id, medicamentoRequestDto);
 
-    ApiResponse<MedicamentoResponseDto> response = ApiResponse.<MedicamentoResponseDto>builder()
+    ApiResponse<MedicamentoResponseDto> medicamentoResponse = ApiResponse.<MedicamentoResponseDto>builder()
         .code(HttpStatus.OK.value())
         .message("Medicamento actualizado correctamente")
-        .data(actualizado)
+        .data(medicamentoActualizado)
         .build();
 
-    messagingTemplate.convertAndSend("/ws/medicamentos/actualizados", actualizado);
-    messagingTemplate.convertAndSend("/ws/medicamentos", actualizado);
+    messagingTemplate.convertAndSend("/ws/medicamentos/actualizados", medicamentoActualizado);
+    messagingTemplate.convertAndSend("/ws/medicamentos", medicamentoActualizado);
 
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(medicamentoResponse);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<ApiResponse<Void>> deleteData(@PathVariable Long id) {
-    medicamentosService.eliminar(id);
+  public ResponseEntity<ApiResponse<Void>> deleteMedicamento(@PathVariable Long id) {
+    medicamentosService.deleteMedicamento(id);
 
-    ApiResponse<Void> response = ApiResponse.<Void>builder()
+    ApiResponse<Void> medicamentoResponse = ApiResponse.<Void>builder()
         .code(HttpStatus.OK.value())
         .message("Medicamento eliminado correctamente")
         .data(null)
@@ -191,6 +190,6 @@ public class MedicamentosController {
     messagingTemplate.convertAndSend("/ws/medicamentos/eliminados", id);
     messagingTemplate.convertAndSend("/ws/medicamentos", "deleted:" + id);
 
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(medicamentoResponse);
   }
 }

@@ -18,12 +18,12 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(NoSuchElementException.class)
   public ResponseEntity<ApiResponse<Void>> handleNoSuchElementException(NoSuchElementException ex) {
-    ApiResponse<Void> response = ApiResponse.<Void>builder()
+    ApiResponse<Void> notFoundResponse = ApiResponse.<Void>builder()
         .code(HttpStatus.NOT_FOUND.value())
         .message(ex.getMessage())
         .data(null)
         .build();
 
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(notFoundResponse);
   }
 }

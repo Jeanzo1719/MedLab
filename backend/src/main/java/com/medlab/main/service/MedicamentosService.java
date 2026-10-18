@@ -9,25 +9,25 @@ import org.springframework.data.domain.Pageable;
 
 public interface MedicamentosService {
 
-    MedicamentoResponseDto crear(MedicamentoRequestDto dto);
+    MedicamentoResponseDto createMedicamento(MedicamentoRequestDto medicamentoRequest);
 
-    MedicamentoResponseDto obtenerPorId(Long id);
+    MedicamentoResponseDto getMedicamentoById(Long id);
 
-    List<MedicamentoResponseDto> listarTodos();
+    List<MedicamentoResponseDto> getAllMedicamentos();
 
-    Page<MedicamentoResponseDto> listarPaginado(Pageable pageable);
+    Page<MedicamentoResponseDto> getMedicamentosPaginated(Pageable pageable);
 
-    MedicamentoResponseDto actualizar(Long id, MedicamentoRequestDto dto);
+    MedicamentoResponseDto updateMedicamento(Long id, MedicamentoRequestDto medicamentoRequest);
 
-    void eliminar(Long id);
+    void deleteMedicamento(Long id);
 
-    MedicamentoResponseDto buscarPorNombreComercial(String nombreComercial);
+    MedicamentoResponseDto getMedicamentoByNombreComercial(String nombreComercial);
 
-    MedicamentoResponseDto buscarPorPrincipioActivo(String principioActivo);
+    MedicamentoResponseDto getMedicamentoByPrincipioActivo(String principioActivo);
 
-    List<MedicamentoResponseDto> buscarPorRangoPrecio(BigDecimal precioMin, BigDecimal precioMax);
+    List<MedicamentoResponseDto> searchMedicamentosByPrecioRange(BigDecimal precioMin, BigDecimal precioMax);
 
-    List<MedicamentoResponseDto> buscarPorFarmacia(String nombreFarmacia);
+    List<MedicamentoResponseDto> searchMedicamentosByFarmacia(String nombreFarmacia);
 
-    List<MedicamentoResponseDto> recomendar(Long id);
+    List<MedicamentoResponseDto> getMedicamentoRecomendaciones(Long id);
 }

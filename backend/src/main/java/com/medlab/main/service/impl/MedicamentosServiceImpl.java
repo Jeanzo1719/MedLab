@@ -34,138 +34,139 @@ public class MedicamentosServiceImpl implements MedicamentosService {
     private final FormasFarmaceuticasRepository formasFarmaceuticasRepository;
 
     // ---------- MAPPERS INLINE ----------
-    private MedicamentosEntity toEntity(MedicamentoRequestDto dto) {
-        if (dto == null) {
+    private MedicamentosEntity toMedicamentoEntity(MedicamentoRequestDto medicamentoRequest) {
+        if (medicamentoRequest == null) {
             return null;
         }
 
-        MedicamentosEntity entity = new MedicamentosEntity();
-        entity.setNombreComercial(dto.nombreComercial());
-        entity.setPrincipioActivo(dto.principioActivo());
-        entity.setPresentacion(dto.presentacion());
+        MedicamentosEntity medicamento = new MedicamentosEntity();
+        medicamento.setNombreComercial(medicamentoRequest.nombreComercial());
+        medicamento.setPrincipioActivo(medicamentoRequest.principioActivo());
+        medicamento.setPresentacion(medicamentoRequest.presentacion());
 
-        if (dto.categoriaId() != null) {
-            entity.setCategoria(buscarCategoria(dto.categoriaId()));
+        if (medicamentoRequest.categoriaId() != null) {
+            medicamento.setCategoria(getCategoriaById(medicamentoRequest.categoriaId()));
         }
 
-        if (dto.formaFarmaceuticaId() != null) {
-            entity.setFormaFarmaceutica(buscarFormaFarmaceutica(dto.formaFarmaceuticaId()));
+        if (medicamentoRequest.formaFarmaceuticaId() != null) {
+            medicamento.setFormaFarmaceutica(getFormaFarmaceuticaById(medicamentoRequest.formaFarmaceuticaId()));
         }
 
-        return entity;
+        return medicamento;
     }
 
-    private MedicamentoResponseDto toResponse(MedicamentosEntity entity) {
-        if (entity == null) {
+    private MedicamentoResponseDto toMedicamentoResponse(MedicamentosEntity medicamento) {
+        if (medicamento == null) {
             return null;
         }
 
         Long categoriaId = null;
         String categoriaNombre = null;
-        if (entity.getCategoria() != null) {
-            categoriaId = entity.getCategoria().getId();
-            categoriaNombre = entity.getCategoria().getNombre();
+        if (medicamento.getCategoria() != null) {
+            categoriaId = medicamento.getCategoria().getId();
+            categoriaNombre = medicamento.getCategoria().getNombre();
         }
 
-        Long formaId = null;
-        String formaNombre = null;
-        if (entity.getFormaFarmaceutica() != null) {
-            formaId = entity.getFormaFarmaceutica().getId();
-            formaNombre = entity.getFormaFarmaceutica().getNombre();
+        Long formaFarmaceuticaId = null;
+        String formaFarmaceuticaNombre = null;
+        if (medicamento.getFormaFarmaceutica() != null) {
+            formaFarmaceuticaId = medicamento.getFormaFarmaceutica().getId();
+            formaFarmaceuticaNombre = medicamento.getFormaFarmaceutica().getNombre();
         }
 
         return new MedicamentoResponseDto(
-                entity.getId(),
-                entity.getNombreComercial(),
-                entity.getPrincipioActivo(),
+                medicamento.getId(),
+                medicamento.getNombreComercial(),
+                medicamento.getPrincipioActivo(),
                 categoriaId,
                 categoriaNombre,
-                entity.getPresentacion(),
-                formaId,
-                formaNombre
+                medicamento.getPresentacion(),
+                formaFarmaceuticaId,
+                formaFarmaceuticaNombre
         );
     }
 
-    private void updateEntityFromDto(MedicamentoRequestDto dto, MedicamentosEntity entity) {
-        if (dto == null || entity == null) {
+    private void updateMedicamentoEntityFromRequest(MedicamentoRequestDto medicamentoRequest,
+            MedicamentosEntity medicamento) {
+        if (medicamentoRequest == null || medicamento == null) {
             return;
         }
 
-        entity.setNombreComercial(dto.nombreComercial());
-        entity.setPrincipioActivo(dto.principioActivo());
-        entity.setPresentacion(dto.presentacion());
+        medicamento.setNombreComercial(medicamentoRequest.nombreComercial());
+        medicamento.setPrincipioActivo(medicamentoRequest.principioActivo());
+        medicamento.setPresentacion(medicamentoRequest.presentacion());
 
-        if (dto.categoriaId() != null) {
-            entity.setCategoria(buscarCategoria(dto.categoriaId()));
+        if (medicamentoRequest.categoriaId() != null) {
+            medicamento.setCategoria(getCategoriaById(medicamentoRequest.categoriaId()));
         } else {
-            entity.setCategoria(null);
+            medicamento.setCategoria(null);
         }
 
-        if (dto.formaFarmaceuticaId() != null) {
-            entity.setFormaFarmaceutica(buscarFormaFarmaceutica(dto.formaFarmaceuticaId()));
+        if (medicamentoRequest.formaFarmaceuticaId() != null) {
+            medicamento.setFormaFarmaceutica(getFormaFarmaceuticaById(medicamentoRequest.formaFarmaceuticaId()));
         } else {
-            entity.setFormaFarmaceutica(null);
+            medicamento.setFormaFarmaceutica(null);
         }
     }
 
-    private CategoriasEntity buscarCategoria(Long id) {
+    private CategoriasEntity getCategoriaById(Long id) {
         return categoriasRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("Categoría no encontrada con id: " + id));
     }
 
-    private FormasFarmaceuticasEntity buscarFormaFarmaceutica(Long id) {
+    private FormasFarmaceuticasEntity getFormaFarmaceuticaById(Long id) {
         return formasFarmaceuticasRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("Forma farmacéutica no encontrada con id: " + id));
     }
 
-    private List<MedicamentoResponseDto> toResponseList(List<MedicamentosEntity> entities) {
-        if (entities == null) {
+    private List<MedicamentoResponseDto> toMedicamentoResponseList(List<MedicamentosEntity> medicamentos) {
+        if (medicamentos == null) {
             return List.of();
         }
 
-        return entities.stream()
-                .map(this::toResponse)
+        return medicamentos.stream()
+                .map(this::toMedicamentoResponse)
                 .toList();
     }
 
     @Override
     @Transactional
-    public MedicamentoResponseDto crear(MedicamentoRequestDto dto) {
-        MedicamentosEntity entity = toEntity(dto);
-        MedicamentosEntity saved = medicamentosRepository.save(entity);
-        return toResponse(saved);
+    public MedicamentoResponseDto createMedicamento(MedicamentoRequestDto medicamentoRequest) {
+        MedicamentosEntity medicamento = toMedicamentoEntity(medicamentoRequest);
+        MedicamentosEntity medicamentoCreado = medicamentosRepository.save(medicamento);
+        return toMedicamentoResponse(medicamentoCreado);
     }
 
     @Override
-    public MedicamentoResponseDto obtenerPorId(Long id) {
-        MedicamentosEntity entity = medicamentosRepository.findById(id)
+    public MedicamentoResponseDto getMedicamentoById(Long id) {
+        MedicamentosEntity medicamento = medicamentosRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Medicamento no encontrado con id: " + id));
-        return toResponse(entity);
+        return toMedicamentoResponse(medicamento);
     }
 
     @Override
-    public List<MedicamentoResponseDto> listarTodos() {
-        return toResponseList(medicamentosRepository.findAll());
+    public List<MedicamentoResponseDto> getAllMedicamentos() {
+        return toMedicamentoResponseList(medicamentosRepository.findAll());
     }
 
     @Override
-    public Page<MedicamentoResponseDto> listarPaginado(Pageable pageable) {
-        return medicamentosRepository.findAll(pageable).map(this::toResponse);
+    public Page<MedicamentoResponseDto> getMedicamentosPaginated(Pageable pageable) {
+        return medicamentosRepository.findAll(pageable).map(this::toMedicamentoResponse);
     }
 
     @Override
     @Transactional
-    public MedicamentoResponseDto actualizar(Long id, MedicamentoRequestDto dto) {
-        MedicamentosEntity entity = medicamentosRepository.findById(id)
+    public MedicamentoResponseDto updateMedicamento(Long id, MedicamentoRequestDto medicamentoRequest) {
+        MedicamentosEntity medicamento = medicamentosRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Medicamento no encontrado con id: " + id));
-        updateEntityFromDto(dto, entity);
-        MedicamentosEntity updated = medicamentosRepository.save(entity);
-        return toResponse(updated);
+        updateMedicamentoEntityFromRequest(medicamentoRequest, medicamento);
+        MedicamentosEntity medicamentoActualizado = medicamentosRepository.save(medicamento);
+        return toMedicamentoResponse(medicamentoActualizado);
     }
 
     @Override
     @Transactional
-    public void eliminar(Long id) {
+    public void deleteMedicamento(Long id) {
         if (medicamentosRepository.findById(id).isEmpty()) {
             throw new NoSuchElementException("Medicamento no encontrado con id: " + id);
         }
@@ -173,21 +174,23 @@ public class MedicamentosServiceImpl implements MedicamentosService {
     }
 
     @Override
-    public MedicamentoResponseDto buscarPorNombreComercial(String nombreComercial) {
-        MedicamentosEntity entity = medicamentosRepository.findByNombreComercial(nombreComercial)
-                .orElseThrow(() -> new NoSuchElementException("Medicamento no encontrado con nombre comercial: " + nombreComercial));
-        return toResponse(entity);
+    public MedicamentoResponseDto getMedicamentoByNombreComercial(String nombreComercial) {
+        MedicamentosEntity medicamento = medicamentosRepository.findByNombreComercial(nombreComercial)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Medicamento no encontrado con nombre comercial: " + nombreComercial));
+        return toMedicamentoResponse(medicamento);
     }
 
     @Override
-    public MedicamentoResponseDto buscarPorPrincipioActivo(String principioActivo) {
-        MedicamentosEntity entity = medicamentosRepository.findByPrincipioActivo(principioActivo)
-                .orElseThrow(() -> new NoSuchElementException("Medicamento no encontrado con principio activo: " + principioActivo));
-        return toResponse(entity);
+    public MedicamentoResponseDto getMedicamentoByPrincipioActivo(String principioActivo) {
+        MedicamentosEntity medicamento = medicamentosRepository.findByPrincipioActivo(principioActivo)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Medicamento no encontrado con principio activo: " + principioActivo));
+        return toMedicamentoResponse(medicamento);
     }
 
     @Override
-    public List<MedicamentoResponseDto> buscarPorRangoPrecio(BigDecimal precioMin, BigDecimal precioMax) {
+    public List<MedicamentoResponseDto> searchMedicamentosByPrecioRange(BigDecimal precioMin, BigDecimal precioMax) {
         List<DisponibilidadEntity> disponibilidades =
                 disponibilidadRepository.findByPrecioBetween(precioMin, precioMax);
 
@@ -196,8 +199,8 @@ public class MedicamentosServiceImpl implements MedicamentosService {
         Map<Long, DisponibilidadEntity> mejorPrecioPorMedicamento = new LinkedHashMap<>();
         for (DisponibilidadEntity disponibilidad : disponibilidades) {
             Long medicamentoId = disponibilidad.getMedicamento().getId();
-            DisponibilidadEntity actual = mejorPrecioPorMedicamento.get(medicamentoId);
-            if (actual == null || disponibilidad.getPrecio().compareTo(actual.getPrecio()) < 0) {
+            DisponibilidadEntity disponibilidadActual = mejorPrecioPorMedicamento.get(medicamentoId);
+            if (disponibilidadActual == null || disponibilidad.getPrecio().compareTo(disponibilidadActual.getPrecio()) < 0) {
                 mejorPrecioPorMedicamento.put(medicamentoId, disponibilidad);
             }
         }
@@ -208,12 +211,12 @@ public class MedicamentosServiceImpl implements MedicamentosService {
 
         return mejorPrecioPorMedicamento.values().stream()
                 .sorted(Comparator.comparing(DisponibilidadEntity::getPrecio))
-                .map(disponibilidad -> toResponse(disponibilidad.getMedicamento()))
+                .map(disponibilidad -> toMedicamentoResponse(disponibilidad.getMedicamento()))
                 .toList();
     }
 
     @Override
-    public List<MedicamentoResponseDto> buscarPorFarmacia(String nombreFarmacia) {
+    public List<MedicamentoResponseDto> searchMedicamentosByFarmacia(String nombreFarmacia) {
         List<MedicamentosEntity> medicamentos =
                 disponibilidadRepository.findMedicamentosByNombreFarmaciaAprobada(nombreFarmacia);
 
@@ -221,18 +224,18 @@ public class MedicamentosServiceImpl implements MedicamentosService {
             throw new NoSuchElementException("No se encontraron medicamentos para la farmacia indicada");
         }
 
-        return toResponseList(medicamentos);
+        return toMedicamentoResponseList(medicamentos);
     }
 
     @Override
-    public List<MedicamentoResponseDto> recomendar(Long id) {
-        MedicamentosEntity buscado = medicamentosRepository.findById(id)
+    public List<MedicamentoResponseDto> getMedicamentoRecomendaciones(Long id) {
+        MedicamentosEntity medicamentoBuscado = medicamentosRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Medicamento no encontrado con id: " + id));
 
         // Mismo principio activo, excluyendo el medicamento buscado.
-        List<MedicamentosEntity> recomendaciones =
-                medicamentosRepository.findByPrincipioActivoAndIdNot(buscado.getPrincipioActivo(), id);
+        List<MedicamentosEntity> recomendaciones = medicamentosRepository
+                .findByPrincipioActivoAndIdNot(medicamentoBuscado.getPrincipioActivo(), id);
 
-        return toResponseList(recomendaciones);
+        return toMedicamentoResponseList(recomendaciones);
     }
 }
