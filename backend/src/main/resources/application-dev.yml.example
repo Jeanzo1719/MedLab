@@ -5,7 +5,7 @@ spring:
     password: 
 
   cors:
-    allowed-origins:
+    allowed-origins: http://localhost:1420,tauri://localhost,http://tauri.localhost
 
 jpa:
   hibernate:

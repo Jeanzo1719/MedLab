@@ -13,37 +13,37 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** Tabla medicamentos. */
-@Entity
-@Table(name = "medicamentos")
+/**
+ * Tabla medicamentos. La unicidad la define la base de datos sobre el compuesto
+ * (nombre_comercial, principio_activo, presentacion, forma_farmaceutica_id),
+ * por eso las columnas individuales no tienen unique.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
-public class Medicamento {
+@Entity
+@Table(name = "medicamentos")
+public class MedicamentosEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  @Column(name = "id")
+  private Long id;
 
-  /** Nombre de marca (ej. "Dolex"). */
   @Column(name = "nombre_comercial", nullable = false, length = 100)
   private String nombreComercial;
 
-  /** Sustancia activa (ej. "Acetaminofén"); el buscador también filtra por aquí. */
   @Column(name = "principio_activo", nullable = false, length = 150)
   private String principioActivo;
 
-  /** Guarda el id de la categoría; JPA carga el resto solo cuando se usa. */
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "categoria_id", nullable = false)
-  private Categoria categoria;
+  private CategoriasEntity categoria;
 
-  /** Empaque (ej. "500 mg x 10"). */
   @Column(name = "presentacion", nullable = false, length = 100)
   private String presentacion;
 
-  /** Forma del medicamento (ej. tableta); funciona igual que categoria. */
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "forma_farmaceutica_id", nullable = false)
-  private FormaFarmaceutica formaFarmaceutica;
+  private FormasFarmaceuticasEntity formaFarmaceutica;
 }
