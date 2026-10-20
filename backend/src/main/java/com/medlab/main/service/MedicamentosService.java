@@ -1,5 +1,6 @@
 package com.medlab.main.service;
 
+import com.medlab.main.dto.MedicamentoBusquedaDto;
 import com.medlab.main.dto.MedicamentoRequestDto;
 import com.medlab.main.dto.MedicamentoResponseDto;
 import java.math.BigDecimal;
@@ -30,4 +31,6 @@ public interface MedicamentosService {
     List<MedicamentoResponseDto> searchMedicamentosByFarmacia(String nombreFarmacia);
 
     List<MedicamentoResponseDto> getMedicamentoRecomendaciones(Long id);
+
+    List<MedicamentoBusquedaDto> searchMedicamentosByTexto(String texto);
 }

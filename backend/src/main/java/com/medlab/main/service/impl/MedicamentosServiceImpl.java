@@ -1,5 +1,6 @@
 package com.medlab.main.service.impl;
 
+import com.medlab.main.dto.MedicamentoBusquedaDto;
 import com.medlab.main.dto.MedicamentoRequestDto;
 import com.medlab.main.dto.MedicamentoResponseDto;
 import com.medlab.main.entity.CategoriasEntity;
@@ -237,5 +238,26 @@ public class MedicamentosServiceImpl implements MedicamentosService {
                 .findByPrincipioActivoAndIdNot(medicamentoBuscado.getPrincipioActivo(), id);
 
         return toMedicamentoResponseList(recomendaciones);
+    }
+
+    @Override
+    public List<MedicamentoBusquedaDto> searchMedicamentosByTexto(String texto) {
+        // La misma palabra se busca en el nombre comercial y en el principio activo; basta
+        // con que coincida uno de los dos campos. La forma farmaceutica viaja ya cargada
+        // gracias al @EntityGraph del repositorio.
+        return medicamentosRepository
+                .findByNombreComercialContainingIgnoreCaseOrPrincipioActivoContainingIgnoreCase(texto, texto)
+                .stream()
+                .map(this::toMedicamentoBusquedaDto)
+                .toList();
+    }
+
+    private MedicamentoBusquedaDto toMedicamentoBusquedaDto(MedicamentosEntity medicamento) {
+        return new MedicamentoBusquedaDto(
+                medicamento.getId(),
+                medicamento.getNombreComercial(),
+                medicamento.getPrincipioActivo(),
+                medicamento.getPresentacion(),
+                medicamento.getFormaFarmaceutica().getNombre());
     }
 }

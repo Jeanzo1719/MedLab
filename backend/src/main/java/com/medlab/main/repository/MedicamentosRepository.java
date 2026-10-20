@@ -23,4 +23,7 @@ public interface MedicamentosRepository {
   Optional<MedicamentosEntity> findByPrincipioActivo(String principioActivo);
 
   List<MedicamentosEntity> findByPrincipioActivoAndIdNot(String principioActivo, Long id);
+
+  List<MedicamentosEntity> findByNombreComercialContainingIgnoreCaseOrPrincipioActivoContainingIgnoreCase(
+      String nombreComercial, String principioActivo);
 }

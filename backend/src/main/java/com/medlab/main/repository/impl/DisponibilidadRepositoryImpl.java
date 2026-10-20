@@ -25,6 +25,11 @@ public class DisponibilidadRepositoryImpl implements DisponibilidadRepository {
   }
 
   @Override
+  public List<DisponibilidadEntity> findByMedicamentoIdOrderByFechaHoraReporteDesc(Long medicamentoId) {
+    return jpaRepository.findByMedicamento_IdOrderByFechaHoraReporteDesc(medicamentoId);
+  }
+
+  @Override
   public List<MedicamentosEntity> findMedicamentosByNombreFarmaciaAprobada(String nombreFarmacia) {
     List<DisponibilidadEntity> disponibilidades =
         jpaRepository.findByFarmacia_NombreFarmaciaAndFarmacia_EstadoAprobacion_Nombre(

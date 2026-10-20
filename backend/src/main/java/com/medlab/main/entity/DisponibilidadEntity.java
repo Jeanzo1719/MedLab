@@ -10,13 +10,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * DisponibilidadEntity - mapea la tabla disponibilidad. La fecha_hora_reporte
- * no se mapea porque la gestiona la base de datos (DEFAULT/ON UPDATE).
+ * DisponibilidadEntity - mapea la tabla disponibilidad: el reporte que una farmacia
+ * hace sobre un medicamento (qué tiene, cuánto cuesta y cuándo se actualizó).
+ * La fecha_hora_reporte la actualiza la base de datos sola (DEFAULT/ON UPDATE),
+ * por eso solo se mapea de lectura.
  */
 @Getter
 @Setter
@@ -46,4 +49,8 @@ public class DisponibilidadEntity {
 
   @Column(name = "estado_disponibilidad_id", nullable = false)
   private Integer estadoDisponibilidadId;
+
+  /** Fecha y hora del último reporte. La actualiza la base de datos sola. */
+  @Column(name = "fecha_hora_reporte", nullable = false, insertable = false, updatable = false)
+  private LocalDateTime fechaHoraReporte;
 }

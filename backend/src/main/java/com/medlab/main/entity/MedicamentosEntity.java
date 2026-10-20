@@ -14,7 +14,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * MedicamentosEntity
+ * Tabla medicamentos. La unicidad la define la base de datos sobre el compuesto
+ * (nombre_comercial, principio_activo, presentacion, forma_farmaceutica_id),
+ * por eso las columnas individuales no tienen unique.
  */
 @Getter
 @Setter
@@ -28,17 +30,17 @@ public class MedicamentosEntity {
   @Column(name = "id")
   private Long id;
 
-  @Column(name = "nombre_comercial", nullable = false, length = 100, unique = true)
+  @Column(name = "nombre_comercial", nullable = false, length = 100)
   private String nombreComercial;
 
-  @Column(name = "principio_activo", nullable = false, length = 150, unique = true)
+  @Column(name = "principio_activo", nullable = false, length = 150)
   private String principioActivo;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "categoria_id", nullable = false)
   private CategoriasEntity categoria;
 
-  @Column(name = "presentacion", nullable = false, length = 100, unique = true)
+  @Column(name = "presentacion", nullable = false, length = 100)
   private String presentacion;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)

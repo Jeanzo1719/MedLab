@@ -1,0 +1,126 @@
+<app-encabezado />
+
+<main>
+  <!-- Inicio: título, buscador y mapa -->
+  <section id="inicio" class="inicio" aria-labelledby="titulo-inicio">
+    <div class="contenido">
+      <div class="presentacion">
+        <p class="etiqueta-hero">Gratis y sin cuenta · Medellín</p>
+        <h1 id="titulo-inicio">
+          Encuentra tus <span class="resaltado">medicamentos</span> en farmacias cercanas
+        </h1>
+        <p class="descripcion">
+          Consulta en qué farmacias de Medellín hay disponibilidad, compara precios
+          y ayuda a otros reportando lo que encuentras.
+        </p>
+
+        <app-buscador-medicamentos />
+
+        <p class="enlace-farmacia">
+          ¿Tienes una farmacia?
+          <a routerLink="/registro">Regístrala y aparece en el mapa</a>
+        </p>
+      </div>
+
+      <div class="mapa">
+        <app-mapa
+          [farmacias]="farmacias()"
+          descripcion="Mapa de farmacias aprobadas en Medellín"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Servicios: una tarjeta por servicio (íconos decorativos) -->
+  <section id="servicios" class="servicios" aria-labelledby="titulo-servicios">
+    <div class="contenido">
+      <h2 id="titulo-servicios">Todo lo que necesitas para encontrar tus medicamentos</h2>
+      <p class="introduccion">
+        MedLab reúne la información de farmacias y pacientes en un solo lugar,
+        gratis y sin necesidad de crear una cuenta para consultar.
+      </p>
+
+      <ul class="tarjetas">
+        @for (servicio of servicios; track servicio.titulo) {
+          <li class="tarjeta">
+            <span class="icono" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28">
+                <path [attr.d]="servicio.icono" />
+              </svg>
+            </span>
+            <h3>{{ servicio.titulo }}</h3>
+            <p>{{ servicio.descripcion }}</p>
+          </li>
+        }
+      </ul>
+    </div>
+  </section>
+
+  <app-como-funciona />
+  <app-para-farmacias />
+
+  <!-- Contacto: address indica que son datos de contacto -->
+  <section id="contacto" class="contacto" aria-labelledby="titulo-contacto">
+    <div class="contenido">
+      <h2 id="titulo-contacto">Contacto</h2>
+      <p class="introduccion">
+        ¿Tienes dudas, quieres reportar un problema o registrar tu farmacia como
+        aliada? Escríbenos.
+      </p>
+
+      <address>
+        <ul class="medios">
+          @for (medio of mediosContacto; track medio.titulo) {
+            <li class="medio">
+              <span class="icono" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                  <path [attr.d]="medio.icono" />
+                </svg>
+              </span>
+              <span class="texto">
+                <span class="titulo">{{ medio.titulo }}</span>
+                @if (medio.enlace) {
+                  <a [href]="medio.enlace">{{ medio.valor }}</a>
+                } @else {
+                  <span>{{ medio.valor }}</span>
+                }
+              </span>
+            </li>
+          }
+        </ul>
+      </address>
+    </div>
+  </section>
+</main>
+
+<!-- Pie de página -->
+<footer class="pie">
+  <div class="contenido">
+    <div class="marca">
+      <img
+        src="assets/images/marca/medlab-icono-oscuro.svg"
+        alt=""
+        width="36"
+        height="36"
+        loading="lazy"
+      />
+      <span class="nombre">MedLab</span>
+    </div>
+
+    <p class="lema">
+      Disponibilidad de medicamentos en farmacias cercanas, reportada por la
+      comunidad.
+    </p>
+
+    <nav aria-label="Secciones de la página (pie de página)">
+      <ul>
+        <li><a routerLink="/" fragment="inicio">Inicio</a></li>
+        <li><a routerLink="/" fragment="servicios">Servicios</a></li>
+        <li><a routerLink="/" fragment="farmacias">Para farmacias</a></li>
+        <li><a routerLink="/" fragment="contacto">Contacto</a></li>
+      </ul>
+    </nav>
+
+    <p class="derechos">© {{ anioActual }} MedLab. Todos los derechos reservados.</p>
+  </div>
+</footer>

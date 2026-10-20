@@ -55,4 +55,11 @@ public class MedicamentosRepositoryImpl implements MedicamentosRepository {
   public List<MedicamentosEntity> findByPrincipioActivoAndIdNot(String principioActivo, Long id) {
     return jpaRepository.findByPrincipioActivoAndIdNot(principioActivo, id);
   }
+
+  @Override
+  public List<MedicamentosEntity> findByNombreComercialContainingIgnoreCaseOrPrincipioActivoContainingIgnoreCase(
+      String nombreComercial, String principioActivo) {
+    return jpaRepository.findByNombreComercialContainingIgnoreCaseOrPrincipioActivoContainingIgnoreCase(
+        nombreComercial, principioActivo);
+  }
 }

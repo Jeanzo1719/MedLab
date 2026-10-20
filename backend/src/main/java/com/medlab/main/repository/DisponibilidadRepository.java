@@ -10,4 +10,6 @@ public interface DisponibilidadRepository {
   List<DisponibilidadEntity> findByPrecioBetween(BigDecimal precioMin, BigDecimal precioMax);
 
   List<MedicamentosEntity> findMedicamentosByNombreFarmaciaAprobada(String nombreFarmacia);
+
+  List<DisponibilidadEntity> findByMedicamentoIdOrderByFechaHoraReporteDesc(Long medicamentoId);
 }

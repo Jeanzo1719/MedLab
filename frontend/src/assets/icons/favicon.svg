@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Official MedLab icon; switches to the dark variant with the system theme -->
+  <style>
+    .fondo { fill: #159a63; }
+    .pin { fill: #fbfbf8; }
+    @media (prefers-color-scheme: dark) {
+      .fondo { fill: #131210; }
+      .pin { fill: #f2a93b; }
+    }
+  </style>
+  <rect class="fondo" width="120" height="120" rx="28"/>
+  <path class="pin" d="M60,97 C46,81 36,67 36,53 A24,24 0 1,1 84,53 C84,67 74,81 60,97 Z"/>
+  <rect class="fondo" x="53" y="35" width="14" height="34" rx="3"/><rect class="fondo" x="43" y="45" width="34" height="14" rx="3"/>
+</svg>
