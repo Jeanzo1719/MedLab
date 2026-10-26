@@ -1,7 +1,10 @@
 <section aria-labelledby="titulo-inventario">
   <header class="cabecera">
     <h1 id="titulo-inventario">Inventario</h1>
-    <button type="button" class="boton boton-primario" (click)="abrirCreacion()">Agregar producto</button>
+    <div class="acciones">
+      <button type="button" class="boton" (click)="abrirManual()">Reportar medicamento manualmente</button>
+      <button type="button" class="boton boton-primario" (click)="abrirCreacion()">Agregar producto</button>
+    </div>
   </header>
 
   <!--
@@ -45,12 +48,130 @@
 
   <!--
 
-    el formulario de agregar o editar. Al agregar se busca el medicamento; al editar
-    el medicamento ya viene fijo y solo se cambian cantidad, precio y estado
+    los formularios. Reportar a mano (HU-7) pide todos los datos del medicamento; agregar
+    busca un medicamento del catálogo y editar lo trae fijo desde la fila, y en esos dos
+    solo se cambian cantidad, precio y estado
 
   -->
   @let modo = formularioAbierto();
-  @if (modo) {
+  @if (modo === "manual") {
+    <form class="formulario" [formGroup]="formularioManual" (ngSubmit)="guardarManual()" novalidate aria-labelledby="titulo-formulario">
+      <h2 id="titulo-formulario">Reportar medicamento manualmente</h2>
+      <p class="detalle">
+        Si el medicamento ya existe en el catálogo con el mismo nombre, principio activo, presentación y forma,
+        se reutiliza: no se crea un duplicado.
+      </p>
+
+      @let errorOpciones = errorCatalogos();
+      @if (errorOpciones) {
+        <p class="error-formulario" role="alert">
+          No se pudieron cargar las opciones: {{ errorOpciones }}
+          <button type="button" class="boton boton-texto" (click)="cargarCatalogos()">Reintentar</button>
+        </p>
+      }
+
+      <div class="fila-campos">
+        @let nombreManual = formularioManual.controls.nombreComercial;
+        <div class="campo">
+          <label for="manual-nombre">Nombre comercial</label>
+          <input id="manual-nombre" type="text" autocomplete="off" maxlength="100" formControlName="nombreComercial" />
+          @if (nombreManual.touched && nombreManual.invalid) {
+            <p class="error-campo">Debe tener entre 2 y 100 caracteres.</p>
+          }
+        </div>
+
+        @let principioManual = formularioManual.controls.principioActivo;
+        <div class="campo">
+          <label for="manual-principio">Principio activo</label>
+          <input id="manual-principio" type="text" autocomplete="off" maxlength="150" formControlName="principioActivo" />
+          @if (principioManual.touched && principioManual.invalid) {
+            <p class="error-campo">Debe tener entre 2 y 150 caracteres.</p>
+          }
+        </div>
+      </div>
+
+      <div class="fila-campos">
+        @let categoriaManual = formularioManual.controls.categoriaId;
+        <div class="campo">
+          <label for="manual-categoria">Categoría</label>
+          <select id="manual-categoria" formControlName="categoriaId">
+            <option [ngValue]="null">Selecciona…</option>
+            @for (opcion of categorias(); track opcion.id) {
+              <option [ngValue]="opcion.id">{{ opcion.nombre }}</option>
+            }
+          </select>
+          @if (categoriaManual.touched && categoriaManual.invalid) {
+            <p class="error-campo">Elige una categoría.</p>
+          }
+        </div>
+
+        @let formaManual = formularioManual.controls.formaFarmaceuticaId;
+        <div class="campo">
+          <label for="manual-forma">Forma farmacéutica</label>
+          <select id="manual-forma" formControlName="formaFarmaceuticaId">
+            <option [ngValue]="null">Selecciona…</option>
+            @for (opcion of formas(); track opcion.id) {
+              <option [ngValue]="opcion.id">{{ opcion.nombre }}</option>
+            }
+          </select>
+          @if (formaManual.touched && formaManual.invalid) {
+            <p class="error-campo">Elige una forma farmacéutica.</p>
+          }
+        </div>
+
+        @let presentacionManual = formularioManual.controls.presentacion;
+        <div class="campo">
+          <label for="manual-presentacion">Presentación</label>
+          <input id="manual-presentacion" type="text" autocomplete="off" maxlength="100" placeholder="Ej.: 400 mg x 10" formControlName="presentacion" />
+          @if (presentacionManual.touched && presentacionManual.invalid) {
+            <p class="error-campo">Escribe la presentación (hasta 100 caracteres).</p>
+          }
+        </div>
+      </div>
+
+      <div class="fila-campos">
+        @let cantidadManual = formularioManual.controls.cantidad;
+        <div class="campo">
+          <label for="manual-cantidad">Cantidad disponible</label>
+          <input id="manual-cantidad" type="number" inputmode="numeric" min="0" step="1" formControlName="cantidad" />
+          @if (cantidadManual.touched && cantidadManual.invalid) {
+            <p class="error-campo">Escribe un número entero de 0 en adelante.</p>
+          }
+        </div>
+
+        @let precioManual = formularioManual.controls.precio;
+        <div class="campo">
+          <label for="manual-precio">Precio (COP)</label>
+          <input id="manual-precio" type="number" inputmode="decimal" min="0.01" step="0.01" formControlName="precio" />
+          @if (precioManual.touched && precioManual.invalid) {
+            <p class="error-campo">Debe ser mayor que 0, con hasta 8 enteros y 2 decimales.</p>
+          }
+        </div>
+
+        <div class="campo">
+          <label for="manual-estado">Estado</label>
+          <select id="manual-estado" formControlName="estado">
+            <option value="">Automático (según la cantidad)</option>
+            @for (estadoOpcion of estadosManual(); track estadoOpcion) {
+              <option [value]="estadoOpcion">{{ etiquetaEstado[estadoOpcion] }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      @let errorManual = errorFormulario();
+      @if (errorManual) {
+        <p class="error-formulario" role="alert">{{ errorManual }}</p>
+      }
+
+      <div class="acciones">
+        <button type="submit" class="boton boton-primario" [disabled]="guardando() || !catalogos()">
+          {{ guardando() ? "Guardando…" : "Guardar" }}
+        </button>
+        <button type="button" class="boton" [disabled]="guardando()" (click)="cerrarFormulario()">Cancelar</button>
+      </div>
+    </form>
+  } @else if (modo) {
     <form class="formulario" [formGroup]="formulario" (ngSubmit)="guardar()" novalidate aria-labelledby="titulo-formulario">
       <h2 id="titulo-formulario">{{ modo === "crear" ? "Agregar producto" : "Editar producto" }}</h2>
 
@@ -92,6 +213,9 @@
               </li>
             }
           </ul>
+          <button type="button" class="boton boton-texto" (click)="abrirManual()">
+            ¿No lo encuentras? Reportarlo manualmente
+          </button>
         </div>
       }
 
