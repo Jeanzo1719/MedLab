@@ -6,7 +6,7 @@
  * (configurado en angular.json), así que el código no necesita saber cuál está activo
  * 
  */
-export const environment: Readonly<{ wsUrl: string }> = {
+export const environment: Readonly<{ wsUrl: string; apiUrl: string; farmaciaIdTemporal: number }> = {
   /**
    * 
    * la dirección del WebSocket del backend corriendo en la máquina local
@@ -14,4 +14,19 @@ export const environment: Readonly<{ wsUrl: string }> = {
    * 
    */
   wsUrl: "ws://localhost:8080/ws",
+
+  /**
+   * 
+   * la dirección de la API REST del backend local, la que usa el panel de la farmacia
+   * 
+   */
+  apiUrl: "http://localhost:8080/api",
+
+  /**
+   * 
+   * TEMPORAL: el id de la farmacia que usa el panel, porque todavía no hay login (HU-2).
+   * 9001 es la farmacia de prueba de la base de datos local
+   * 
+   */
+  farmaciaIdTemporal: 9001,
 };

@@ -1,3 +1,4 @@
+import { provideHttpClient } from "@angular/common/http";
 import {
   ApplicationConfig,
   inject,
@@ -12,6 +13,7 @@ import { MetadatosService } from "./core/services/metadatos.service";
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    provideHttpClient(),
     provideRouter(
       routes,
       withInMemoryScrolling({

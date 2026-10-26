@@ -1,0 +1,24 @@
+<header class="barra">
+  <a class="marca" routerLink="/">MedLab</a>
+  <span class="rol">Panel de la farmacia</span>
+</header>
+
+<nav class="pestanas" aria-label="Secciones del panel">
+  <a routerLink="/farmacia/resumen" routerLinkActive="activa" ariaCurrentWhenActive="page">Resumen</a>
+  <a routerLink="/farmacia/inventario" routerLinkActive="activa" ariaCurrentWhenActive="page">Inventario</a>
+  <a routerLink="/farmacia/datos" routerLinkActive="activa" ariaCurrentWhenActive="page">Mi farmacia</a>
+</nav>
+
+<!--
+
+  quitar este aviso cuando exista el login (HU-2): por ahora el panel siempre
+  trabaja con la farmacia de prueba
+
+-->
+<p class="temporal" role="note">
+  Modo de prueba: todavía no hay inicio de sesión, así que el panel usa una farmacia fija.
+</p>
+
+<main class="contenido">
+  <router-outlet />
+</main>

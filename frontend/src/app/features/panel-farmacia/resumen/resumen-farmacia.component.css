@@ -1,0 +1,64 @@
+h1 {
+  margin: 0 0 1.25rem;
+  font-size: 1.5rem;
+}
+
+.mensaje {
+  color: var(--color-texto-secundario);
+}
+
+.mensaje-error {
+  color: var(--color-error);
+}
+
+.tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1.25rem;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-left-width: 6px;
+  border-radius: 0.75rem;
+}
+
+.cifra {
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.rotulo {
+  color: var(--color-texto-secundario);
+}
+
+/* cada estado tiene su color, el mismo que usan las insignias del inventario */
+.tarjeta[data-estado="total"] {
+  border-left-color: var(--color-texto-secundario);
+}
+
+.tarjeta[data-estado="disponible"] {
+  border-left-color: var(--color-primario);
+}
+
+.tarjeta[data-estado="bajo_pedido"] {
+  border-left-color: var(--color-acento);
+}
+
+.tarjeta[data-estado="agotado"] {
+  border-left-color: var(--color-error);
+}
+
+.enlace {
+  font-weight: 600;
+  color: var(--color-primario);
+}
