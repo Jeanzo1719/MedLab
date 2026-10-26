@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.Modifying;
 
 import com.medlab.main.entity.Medicamento;
 
@@ -54,4 +55,32 @@ public interface MedicamentoRepository extends JpaRepository<Medicamento, Intege
   @EntityGraph(attributePaths = "formaFarmaceutica")
   List<Medicamento> findByNombreComercialContainingIgnoreCaseOrPrincipioActivoContainingIgnoreCase(
       String nombreComercial, String principioActivo);
+
+      /**
+   * Crea el medicamento solo si esa combinación no existe (HU-7). El "id = id" no cambia nada,
+   * solo evita el error por duplicado. No se usa INSERT IGNORE porque taparía también fallos
+   * de llave foránea y de CHECK.
+   */
+  @Modifying(flushAutomatically = true, clearAutomatically = true)
+  @Query(value = """
+      INSERT INTO medicamentos
+        (nombre_comercial, principio_activo, categoria_id, presentacion, forma_farmaceutica_id)
+      VALUES (:nombre, :principio, :categoriaId, :presentacion, :formaId)
+      ON DUPLICATE KEY UPDATE id = id
+      """, nativeQuery = true)
+  int crearSiNoExiste(@Param("nombre") String nombre, @Param("principio") String principio,
+      @Param("categoriaId") Integer categoriaId, @Param("presentacion") String presentacion,
+      @Param("formaId") Integer formaId);
+
+  /** Id del medicamento con esa combinación única; vacío si no existe. */
+  @Query("""
+      select m.id from Medicamento m
+      where m.nombreComercial = :nombre
+        and m.principioActivo = :principio
+        and m.presentacion = :presentacion
+        and m.formaFarmaceutica.id = :formaId
+      """)
+  Optional<Integer> buscarIdPorCombinacion(@Param("nombre") String nombre,
+      @Param("principio") String principio, @Param("presentacion") String presentacion,
+      @Param("formaId") Integer formaId);
 }
