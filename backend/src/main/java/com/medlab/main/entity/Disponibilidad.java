@@ -1,5 +1,6 @@
 package com.medlab.main.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -16,18 +17,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * Qué hace: representa una fila de la tabla disponibilidad, es decir, el reporte que una
- * farmacia hace sobre un medicamento.
+ * Lo que una farmacia tiene de un medicamento: cantidad, precio y estado.
+ * Hay una sola fila por pareja farmacia-medicamento.
  *
- * Cómo entenderlo: es como la etiqueta de un estante: dice qué farmacia tiene qué
- * medicamento y cuándo se actualizó esa información por última vez.
- *
- * Detalles técnicos: une un Medicamento con una Farmacia, y la base de datos garantiza una
- * sola fila por cada pareja farmacia-medicamento. La columna fecha_hora_reporte la
- * actualiza la base de datos sola cada vez que la fila cambia, por eso fechaHoraReporte es
- * de solo lectura desde Java. Esta entity solo mapea las columnas que usa HU-4; la tabla
- * también guarda cantidad, precio y estado de disponibilidad. DisponibilidadRepository la
- * lee y MedicamentoDetalleService la convierte en un DisponibilidadReporteDto.
+ * Solo se lee con JPA. Las escrituras (HU-11 y HU-7) pasan por el upsert nativo de
+ * DisponibilidadRepository, que es atómico: si dos reportes llegan a la vez no se
+ * duplica la fila. Por eso aquí no hay setters.
  */
 @Entity
 @Table(name = "disponibilidad")
@@ -35,22 +30,29 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Disponibilidad {
 
-  /** Número que identifica al reporte. Lo asigna la base de datos (1, 2, 3...). */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  /** Farmacia que hace el reporte. */
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "farmacia_id", nullable = false)
   private Farmacia farmacia;
 
-  /** Medicamento sobre el que trata el reporte. */
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "medicamento_id", nullable = false)
   private Medicamento medicamento;
 
-  /** Fecha y hora del último reporte. La actualiza la base de datos sola. */
+  @Column(name = "cantidad_disponible", nullable = false)
+  private Integer cantidadDisponible;
+
+  @Column(nullable = false, precision = 10, scale = 2)
+  private BigDecimal precio;
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "estado_disponibilidad_id", nullable = false)
+  private EstadoDisponibilidad estadoDisponibilidad;
+
+  /** La base de datos la actualiza sola en cada cambio; desde Java es solo lectura. */
   @Column(name = "fecha_hora_reporte", nullable = false, insertable = false, updatable = false)
   private LocalDateTime fechaHoraReporte;
 }
