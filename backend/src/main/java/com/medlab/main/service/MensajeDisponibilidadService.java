@@ -26,7 +26,7 @@ import com.medlab.main.dto.TendenciaDisponibilidad;
 public class MensajeDisponibilidadService {
 
   /** Cuántas calificaciones, las más recientes de cada reporte, se tienen en cuenta. */
-  public static final int CALIFICACIONES_RECIENTES = 5;
+  public static final int CALIFICACIONES_RECIENTES = 20;
 
   /** Nombres de los tipos de calificación, escritos igual que en la base de datos. */
   public static final String TIPO_SI_HAY = "Si hay";
