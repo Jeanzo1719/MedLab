@@ -9,7 +9,15 @@ import {
   signal,
 } from "@angular/core";
 import { takeUntilDestroyed, toObservable, toSignal } from "@angular/core/rxjs-interop";
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from "@angular/forms";
 import {
   Observable,
   catchError,
@@ -27,8 +35,11 @@ import {
   MedicamentoService,
 } from "../../../core/services/medicamento.service";
 import {
+  Catalogos,
   EstadoProducto,
   GuardarProducto,
+  GuardarProductoManual,
+  OpcionCatalogo,
   Pagina,
   PanelFarmaciaService,
   ProductoInventario,
@@ -54,6 +65,29 @@ const ESPERA_ESCRITURA_MS: number = 300;
  * 
  */
 const LONGITUD_MINIMA_BUSQUEDA: number = 2;
+
+/**
+ * 
+ * quita los espacios de los bordes y junta los repetidos, igual que hace el backend antes
+ * de buscar el medicamento: así lo que se valida aquí es lo que se guarda
+ * 
+ */
+function limpiarTexto(valor: string): string {
+  return valor.trim().replace(/\s+/g, " ");
+}
+
+/**
+ * 
+ * valida que el texto, ya limpio, tenga entre min y max caracteres. Es la misma regla que
+ * aplica el backend (el CHECK de la base de datos cuenta el texto limpio)
+ * 
+ */
+function largoLimpio(min: number, max: number): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const largo: number = limpiarTexto(String(control.value ?? "")).length;
+    return largo >= min && largo <= max ? null : { largo: { min, max } };
+  };
+}
 
 /**
  * 
@@ -95,6 +129,10 @@ interface Aviso {
  * dar de baja no borra: deja el producto en 0 y agotado, y por eso pide confirmación.
  * Crear y editar usan el mismo formulario y la misma llamada, porque el backend
  * crea el producto o actualiza el que ya existía
+ * 
+ * HU-7: además de elegir un medicamento del catálogo, la farmacia puede reportar uno
+ * escribiendo sus datos (formulario "manual"). El backend reutiliza el medicamento si ya
+ * existe con esa combinación y, si no, lo crea
  * 
  */
 @Component({
@@ -171,10 +209,11 @@ export class InventarioFarmaciaComponent {
 
   /**
    * 
-   * el formulario de agregar o editar. Es null mientras está cerrado
+   * el formulario que está abierto: agregar desde el catálogo, editar una fila o reportar
+   * un medicamento a mano. Es null mientras está cerrado
    * 
    */
-  protected readonly formularioAbierto: WritableSignal<"crear" | "editar" | null> = signal(null);
+  protected readonly formularioAbierto: WritableSignal<"crear" | "editar" | "manual" | null> = signal(null);
   protected readonly medicamentoElegido: WritableSignal<MedicamentoElegido | null> = signal(null);
   protected readonly textoMedicamento: WritableSignal<string> = signal("");
   protected readonly errorFormulario: WritableSignal<string | null> = signal(null);
@@ -203,6 +242,40 @@ export class InventarioFarmaciaComponent {
   protected readonly formulario = new FormGroup({
     cantidad: new FormControl<number | null>(null, [Validators.required, Validators.pattern("^[0-9]+$")]),
     precio: new FormControl<number | null>(null, [Validators.required, Validators.min(0.01)]),
+    estado: new FormControl<"" | EstadoProducto>("", { nonNullable: true }),
+  });
+
+  /**
+   * 
+   * las opciones de los selectores del reporte manual (HU-7). Se piden la primera vez que
+   * se abre el formulario manual; si fallan, se muestra el error con un botón para reintentar
+   * 
+   */
+  protected readonly catalogos: WritableSignal<Catalogos | null> = signal(null);
+  protected readonly errorCatalogos: WritableSignal<string | null> = signal(null);
+  protected readonly categorias: Signal<OpcionCatalogo[]> = computed(() => this.catalogos()?.categorias ?? []);
+  protected readonly formas: Signal<OpcionCatalogo[]> = computed(() => this.catalogos()?.formasFarmaceuticas ?? []);
+  protected readonly estadosManual: Signal<EstadoProducto[]> = computed(() => this.catalogos()?.estados ?? []);
+
+  /**
+   * 
+   * el formulario del reporte manual. Las reglas son las mismas del backend: nombre comercial
+   * de 2 a 100 caracteres, principio activo de 2 a 150, cantidad entera desde 0 y precio mayor
+   * que 0 con hasta 8 enteros y 2 decimales
+   * 
+   */
+  protected readonly formularioManual = new FormGroup({
+    nombreComercial: new FormControl<string>("", { nonNullable: true, validators: [largoLimpio(2, 100)] }),
+    principioActivo: new FormControl<string>("", { nonNullable: true, validators: [largoLimpio(2, 150)] }),
+    categoriaId: new FormControl<number | null>(null, [Validators.required]),
+    presentacion: new FormControl<string>("", { nonNullable: true, validators: [largoLimpio(1, 100)] }),
+    formaFarmaceuticaId: new FormControl<number | null>(null, [Validators.required]),
+    cantidad: new FormControl<number | null>(null, [Validators.required, Validators.pattern("^[0-9]+$")]),
+    precio: new FormControl<number | null>(null, [
+      Validators.required,
+      Validators.min(0.01),
+      Validators.pattern("^[0-9]{1,8}([.][0-9]{1,2})?$"),
+    ]),
     estado: new FormControl<"" | EstadoProducto>("", { nonNullable: true }),
   });
 
@@ -265,6 +338,45 @@ export class InventarioFarmaciaComponent {
     this.formularioAbierto.set("editar");
   }
 
+  /**
+   * 
+   * abre el formulario para reportar un medicamento escribiendo sus datos (HU-7). Las
+   * opciones de los selectores se piden solo la primera vez
+   * 
+   */
+  protected abrirManual(): void {
+    this.aviso.set(null);
+    this.productoPorDarDeBaja.set(null);
+    this.errorFormulario.set(null);
+    this.medicamentoElegido.set(null);
+    this.textoMedicamento.set("");
+    this.formularioManual.reset({
+      nombreComercial: "",
+      principioActivo: "",
+      categoriaId: null,
+      presentacion: "",
+      formaFarmaceuticaId: null,
+      cantidad: null,
+      precio: null,
+      estado: "",
+    });
+    this.formularioAbierto.set("manual");
+    if (!this.catalogos()) {
+      this.cargarCatalogos();
+    }
+  }
+
+  protected cargarCatalogos(): void {
+    this.errorCatalogos.set(null);
+    this.panel
+      .obtenerCatalogos()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (catalogos: Catalogos) => this.catalogos.set(catalogos),
+        error: (error: unknown) => this.errorCatalogos.set(mensajeDeError(error)),
+      });
+  }
+
   protected cerrarFormulario(): void {
     this.formularioAbierto.set(null);
     this.medicamentoElegido.set(null);
@@ -311,6 +423,43 @@ export class InventarioFarmaciaComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (producto) => {
+          this.guardando.set(false);
+          this.cerrarFormulario();
+          this.aviso.set({ tipo: "ok", texto: `Se guardó ${producto.nombreComercial}` });
+          this.recarga.update((n) => n + 1);
+        },
+        error: (error: unknown) => {
+          this.guardando.set(false);
+          this.errorFormulario.set(mensajeDeError(error));
+        },
+      });
+  }
+
+  protected guardarManual(): void {
+    if (this.formularioManual.invalid) {
+      this.formularioManual.markAllAsTouched();
+      return;
+    }
+
+    const valores = this.formularioManual.getRawValue();
+    const datos: GuardarProductoManual = {
+      nombreComercial: limpiarTexto(valores.nombreComercial),
+      principioActivo: limpiarTexto(valores.principioActivo),
+      categoriaId: valores.categoriaId ?? 0,
+      presentacion: limpiarTexto(valores.presentacion),
+      formaFarmaceuticaId: valores.formaFarmaceuticaId ?? 0,
+      cantidad: valores.cantidad ?? 0,
+      precio: valores.precio ?? 0,
+      estado: valores.estado === "" ? null : valores.estado,
+    };
+
+    this.errorFormulario.set(null);
+    this.guardando.set(true);
+    this.panel
+      .guardarProductoManual(datos)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (producto: ProductoInventario) => {
           this.guardando.set(false);
           this.cerrarFormulario();
           this.aviso.set({ tipo: "ok", texto: `Se guardó ${producto.nombreComercial}` });

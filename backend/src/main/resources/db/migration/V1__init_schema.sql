@@ -138,10 +138,40 @@ CREATE TABLE categorias (
     nombre          VARCHAR(100)    NOT NULL UNIQUE
 );
 
+INSERT INTO categorias (nombre) VALUES
+    ('Analgesico'),
+    ('Antibiotico'),
+    ('Antiinflamatorio'),
+    ('Antialergico'),
+    ('Antihipertensivo'),
+    ('Antidiabetico'),
+    ('Gastrointestinal'),
+    ('Respiratorio'),
+    ('Dermatologico'),
+    ('Vitaminas y suplementos');
+
 CREATE TABLE formas_farmaceuticas (
     id              BIGINT          AUTO_INCREMENT PRIMARY KEY,
     nombre          VARCHAR(30)     NOT NULL UNIQUE
 );
+
+INSERT INTO formas_farmaceuticas (nombre) VALUES
+    ('tableta'),
+    ('cápsula'),
+    ('polvo'),
+    ('granulado'),
+    ('solución'),
+    ('suspensión'),
+    ('emulsión'),
+    ('jarabe'),
+    ('gel'),
+    ('crema'),
+    ('ungüento'),
+    ('pomada'),
+    ('supositorio'),
+    ('óvulo'),
+    ('aerosol'),
+    ('gas');
 
 CREATE TABLE medicamentos (
     id                      BIGINT          AUTO_INCREMENT PRIMARY KEY,

@@ -69,6 +69,46 @@ export interface GuardarProducto {
 
 /**
  * 
+ * una opción de un selector (categoría o forma farmacéutica). Es el espejo de
+ * CatalogosDto.Opcion
+ * 
+ */
+export interface OpcionCatalogo {
+  id: number;
+  nombre: string;
+}
+
+/**
+ * 
+ * las opciones del formulario de reporte manual (HU-7). Es el espejo de CatalogosDto
+ * 
+ */
+export interface Catalogos {
+  categorias: OpcionCatalogo[];
+  formasFarmaceuticas: OpcionCatalogo[];
+  estados: EstadoProducto[];
+}
+
+/**
+ * 
+ * lo que se envía al reportar un medicamento a mano (HU-7): los datos del medicamento
+ * más cantidad, precio y estado. Es el espejo de GuardarDisponibilidadManualDto. Si el
+ * medicamento ya existe con esa combinación, el backend lo reutiliza en vez de crear otro
+ * 
+ */
+export interface GuardarProductoManual {
+  nombreComercial: string;
+  principioActivo: string;
+  categoriaId: number;
+  presentacion: string;
+  formaFarmaceuticaId: number;
+  cantidad: number;
+  precio: number;
+  estado?: EstadoProducto | null;
+}
+
+/**
+ * 
  * los datos de la farmacia tal como los muestra el panel. Es el espejo de
  * DatosFarmaciaDto; direccion ya viene armada para mostrarla tal cual
  * 
@@ -151,6 +191,27 @@ export class PanelFarmaciaService {
    */
   guardarProducto(datos: GuardarProducto): Observable<ProductoInventario> {
     return this.http.put<ProductoInventario>(`${this.base}/inventario`, datos, {
+      headers: this.encabezados(),
+    });
+  }
+
+    /**
+   * 
+   * pide las opciones de los selectores del formulario de reporte manual
+   * 
+   */
+  obtenerCatalogos(): Observable<Catalogos> {
+    return this.http.get<Catalogos>(`${this.base}/catalogos`, { headers: this.encabezados() });
+  }
+
+  /**
+   * 
+   * reporta un medicamento por sus datos: si no estaba en el catálogo lo crea, y guarda
+   * su disponibilidad en la farmacia (o la actualiza si ya la tenía)
+   * 
+   */
+  guardarProductoManual(datos: GuardarProductoManual): Observable<ProductoInventario> {
+    return this.http.put<ProductoInventario>(`${this.base}/inventario/manual`, datos, {
       headers: this.encabezados(),
     });
   }
