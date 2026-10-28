@@ -102,6 +102,7 @@ public class MedicamentoDetalleService {
 
     return new DisponibilidadReporteDto(disponibilidad.getId(),
         disponibilidad.getFarmacia().getNombreFarmacia(), fecha,
-        tiempoRelativoService.desde(fecha, ahora), tendencia, tendencia.getMensaje());
+        tiempoRelativoService.desde(fecha, ahora), tendencia,
+        mensajeDisponibilidadService.mensaje(tendencia, fecha, ahora));
   }
 }
