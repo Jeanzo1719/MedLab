@@ -1,0 +1,236 @@
+:host {
+  display: block;
+}
+
+/*
+
+  el fondo verde oscuro que hace que esta sección destaque en toda la página
+
+*/
+.farmacias {
+  color: #ffffff;
+  background: linear-gradient(
+    135deg,
+    var(--color-primario-oscuro),
+    var(--color-primario)
+  );
+}
+
+/*
+
+  en celular el mensaje va arriba y el panel debajo
+
+*/
+.contenido {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3.5rem 1rem;
+}
+
+.etiqueta {
+  display: inline-block;
+  margin: 0 0 1rem;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-negro);
+  background-color: var(--color-acento);
+  border-radius: 999px;
+}
+
+h2 {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.introduccion {
+  margin: 0 0 1.5rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: rgb(255 255 255 / 0.88);
+}
+
+/*
+
+  la lista de beneficios, cada uno con un círculo y una marca de verificación
+
+*/
+.beneficios {
+  display: grid;
+  gap: 0.875rem;
+  margin: 0 0 2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.beneficios li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  line-height: 1.5;
+}
+
+.check {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-top: 0.125rem;
+  color: var(--color-negro);
+  background-color: var(--color-acento);
+  border-radius: 50%;
+}
+
+.check svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/*
+
+  los botones: el principal en naranja de acento y el secundario solo con borde
+
+*/
+.acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: 2px solid transparent;
+  border-radius: 0.75rem;
+  transition: transform 0.15s ease;
+}
+
+.boton:hover {
+  transform: translateY(-2px);
+}
+
+.boton-principal {
+  color: var(--color-negro);
+  background-color: var(--color-acento);
+}
+
+.boton-secundario {
+  color: #ffffff;
+  border-color: rgb(255 255 255 / 0.6);
+}
+
+.boton-secundario:hover {
+  background-color: rgb(255 255 255 / 0.12);
+}
+
+/*
+
+  la ilustración del panel de inventario: una tarjeta blanca con filas
+
+*/
+.panel {
+  align-self: center;
+  color: var(--color-texto);
+  background-color: var(--color-superficie);
+  border-radius: 1rem;
+  box-shadow: 0 24px 48px rgb(0 0 0 / 0.25);
+  overflow: hidden;
+}
+
+.panel-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 1rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.punto {
+  width: 10px;
+  height: 10px;
+  background-color: var(--color-marca);
+  border-radius: 50%;
+}
+
+.panel-lista {
+  margin: 0;
+  padding: 0.5rem 0;
+  list-style: none;
+}
+
+.panel-lista li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 1.25rem;
+  font-weight: 600;
+}
+
+.panel-lista li + li {
+  border-top: 1px solid var(--color-borde);
+}
+
+.estado {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-primario-hover);
+  background-color: var(--color-primario-suave);
+  border-radius: 999px;
+}
+
+.estado.agotado {
+  color: var(--color-error);
+  background-color: #fdecea;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boton {
+    transition: none;
+  }
+
+  .boton:hover {
+    transform: none;
+  }
+}
+
+@media (min-width: 640px) {
+  .contenido {
+    padding: 4.5rem 1.5rem;
+  }
+
+  h2 {
+    font-size: 2.25rem;
+  }
+
+  .acciones {
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 1024px) {
+  .contenido {
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 4rem;
+    padding: 5.5rem 1.5rem;
+  }
+}
