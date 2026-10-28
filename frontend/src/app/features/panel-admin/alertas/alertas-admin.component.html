@@ -1,0 +1,105 @@
+<section aria-labelledby="titulo-alertas">
+  <header class="cabecera">
+    <h1 id="titulo-alertas">Alertas de inactividad</h1>
+    <button type="button" class="boton boton-primario" [disabled]="confirmando() || revisando()" (click)="pedirRevision()">
+      Revisar inactividad ahora
+    </button>
+  </header>
+
+  <p class="mensaje">
+    Una farmacia recibe una alerta por cada 30 días sin actualizar sus datos o su inventario; con 3 alertas sin
+    atender se suspende. Las alertas se atienden solas cuando la farmacia actualiza algo.
+  </p>
+
+  <!--
+
+    el resultado de la última acción. aria-live hace que el lector de pantalla lo
+    anuncie sin que el usuario tenga que buscarlo
+
+  -->
+  <div aria-live="polite">
+    @let avisoActual = aviso();
+    @if (avisoActual) {
+      <p class="aviso" [class.aviso-error]="avisoActual.tipo === 'error'">
+        <span>{{ avisoActual.texto }}</span>
+        <button type="button" class="boton boton-texto" (click)="cerrarAviso()">Cerrar</button>
+      </p>
+    }
+  </div>
+
+  @if (confirmando()) {
+    <div class="confirmacion" role="group" aria-labelledby="texto-revision">
+      <p id="texto-revision">
+        ¿Revisar la inactividad ahora? Es la misma revisión que se hace cada noche: genera alertas a las farmacias con
+        30 días sin actualizar y suspende las que lleguen a 3 alertas sin atender.
+      </p>
+      <div class="acciones">
+        <button type="button" class="boton boton-peligro" [disabled]="revisando()" (click)="confirmarRevision()">
+          {{ revisando() ? "Revisando…" : "Sí, revisar" }}
+        </button>
+        <button type="button" class="boton" [disabled]="revisando()" (click)="cancelarRevision()">Cancelar</button>
+      </div>
+    </div>
+  }
+
+  @let estadoActual = estado();
+  @if (estadoActual.tipo === "cargando") {
+    <p class="mensaje">Cargando alertas…</p>
+  } @else if (estadoActual.tipo === "error") {
+    <p class="mensaje mensaje-error" role="alert">{{ estadoActual.mensaje }}</p>
+  } @else if (estadoActual.tipo === "listo") {
+    @let resultado = estadoActual.resultado;
+    @if (resultado.totalElementos === 0) {
+      <p class="mensaje">Ninguna farmacia tiene alertas de inactividad.</p>
+    } @else {
+      <p class="mensaje">
+        {{ resultado.totalElementos }} {{ resultado.totalElementos === 1 ? "farmacia" : "farmacias" }} con alertas
+      </p>
+
+      <div class="tabla-contenedor">
+        <table>
+          <caption class="solo-lectores">Farmacias con alertas de inactividad</caption>
+          <thead>
+            <tr>
+              <th scope="col">Farmacia</th>
+              <th scope="col">Estado</th>
+              <th scope="col" class="numero">Alertas pendientes</th>
+              <th scope="col" class="numero">Alertas en total</th>
+              <th scope="col">Última alerta</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (farmacia of resultado.contenido; track farmacia.id) {
+              <tr>
+                <td>
+                  <span class="nombre">{{ farmacia.nombre }}</span>
+                </td>
+                <td>
+                  <span class="insignia" [attr.data-estado]="farmacia.estado">{{ farmacia.estado }}</span>
+                </td>
+                <td class="numero">{{ farmacia.alertasPendientes }}</td>
+                <td class="numero">{{ farmacia.totalAlertas }}</td>
+                <td>{{ farmacia.ultimaAlerta ? formatearFecha(farmacia.ultimaAlerta) : "—" }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <nav class="paginacion" aria-label="Páginas de alertas">
+        <button type="button" class="boton" [disabled]="resultado.pagina === 0" (click)="irAPagina(resultado.pagina - 1)">
+          Anterior
+        </button>
+        <span>Página {{ resultado.pagina + 1 }} de {{ resultado.totalPaginas }}</span>
+        <button
+          type="button"
+          class="boton"
+          [disabled]="resultado.pagina + 1 >= resultado.totalPaginas"
+          (click)="irAPagina(resultado.pagina + 1)"
+        >
+          Siguiente
+        </button>
+      </nav>
+    }
+  }
+</section>

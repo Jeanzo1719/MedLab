@@ -6,7 +6,12 @@
  * (configurado en angular.json), así que el código no necesita saber cuál está activo
  * 
  */
-export const environment: Readonly<{ wsUrl: string; apiUrl: string; farmaciaIdTemporal: number }> = {
+export const environment: Readonly<{
+  wsUrl: string;
+  apiUrl: string;
+  farmaciaIdTemporal: number;
+  adminIdTemporal: number;
+}> = {
   /**
    * 
    * la dirección del WebSocket del backend corriendo en la máquina local
@@ -29,4 +34,12 @@ export const environment: Readonly<{ wsUrl: string; apiUrl: string; farmaciaIdTe
    * 
    */
   farmaciaIdTemporal: 9001,
+
+  /**
+   * 
+   * TEMPORAL: el id del administrador que usa su panel, porque todavía no hay login (HU-2).
+   * 1 es el administrador de la base de datos local
+   * 
+   */
+  adminIdTemporal: 1,
 };

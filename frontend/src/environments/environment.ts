@@ -8,7 +8,12 @@
  * Angular lo reemplaza por environment.development.ts (configurado en angular.json)
  * 
  */
-export const environment: Readonly<{ wsUrl: string; apiUrl: string; farmaciaIdTemporal: number }> = {
+export const environment: Readonly<{
+  wsUrl: string;
+  apiUrl: string;
+  farmaciaIdTemporal: number;
+  adminIdTemporal: number;
+}> = {
   /**
    * 
    * la dirección del WebSocket del backend, adonde se conecta el frontend para
@@ -32,4 +37,12 @@ export const environment: Readonly<{ wsUrl: string; apiUrl: string; farmaciaIdTe
    * 
    */
   farmaciaIdTemporal: 9001,
+
+  /**
+   * 
+   * TEMPORAL: el id del administrador que usa su panel, porque todavía no hay login (HU-2).
+   * Cuando exista, esto desaparece y el administrador sale de la sesión
+   * 
+   */
+  adminIdTemporal: 1,
 };

@@ -1,0 +1,89 @@
+@let abierta = seleccionada();
+@if (abierta) {
+  <app-farmacia-detalle-admin [farmacia]="abierta" (volver)="cerrarDetalle()" />
+} @else {
+  <section aria-labelledby="titulo-farmacias">
+    <header class="cabecera">
+      <h1 id="titulo-farmacias">Farmacias</h1>
+      <div class="campo">
+        <label for="filtro-estado">Filtrar por estado</label>
+        <select #campoEstado id="filtro-estado" [value]="estadoFiltro()" (change)="alCambiarEstado(campoEstado.value)">
+          <option value="">Todas</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="aprobada">Aprobadas</option>
+          <option value="suspendida">Suspendidas</option>
+        </select>
+      </div>
+    </header>
+
+    @let estadoActual = estado();
+    @if (estadoActual.tipo === "cargando") {
+      <p class="mensaje">Cargando farmacias…</p>
+    } @else if (estadoActual.tipo === "error") {
+      <p class="mensaje mensaje-error" role="alert">{{ estadoActual.mensaje }}</p>
+    } @else if (estadoActual.tipo === "listo") {
+      @let resultado = estadoActual.resultado;
+      @if (resultado.totalElementos === 0) {
+        <p class="mensaje">No hay farmacias con ese filtro.</p>
+      } @else {
+        <p class="mensaje">
+          {{ resultado.totalElementos }} {{ resultado.totalElementos === 1 ? "farmacia" : "farmacias" }}
+        </p>
+
+        <div class="tabla-contenedor">
+          <table>
+            <caption class="solo-lectores">Historial de farmacias</caption>
+            <thead>
+              <tr>
+                <th scope="col">Farmacia</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Última actualización</th>
+                <th scope="col" class="numero">Alertas pendientes</th>
+                <th scope="col"><span class="solo-lectores">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (farmacia of resultado.contenido; track farmacia.id) {
+                <tr>
+                  <td>
+                    <span class="nombre">{{ farmacia.nombre }}</span>
+                  </td>
+                  <td>
+                    <span class="insignia" [attr.data-estado]="farmacia.estado">{{ farmacia.estado }}</span>
+                  </td>
+                  <td>{{ formatearFecha(farmacia.fechaUltimaActualizacion) }}</td>
+                  <td class="numero">{{ farmacia.alertasPendientes }}</td>
+                  <td class="acciones">
+                    <button
+                      type="button"
+                      class="boton boton-pequeno"
+                      [attr.aria-label]="'Ver detalle de ' + farmacia.nombre"
+                      (click)="abrirDetalle(farmacia)"
+                    >
+                      Ver detalle
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <nav class="paginacion" aria-label="Páginas de farmacias">
+          <button type="button" class="boton" [disabled]="resultado.pagina === 0" (click)="irAPagina(resultado.pagina - 1)">
+            Anterior
+          </button>
+          <span>Página {{ resultado.pagina + 1 }} de {{ resultado.totalPaginas }}</span>
+          <button
+            type="button"
+            class="boton"
+            [disabled]="resultado.pagina + 1 >= resultado.totalPaginas"
+            (click)="irAPagina(resultado.pagina + 1)"
+          >
+            Siguiente
+          </button>
+        </nav>
+      }
+    }
+  </section>
+}

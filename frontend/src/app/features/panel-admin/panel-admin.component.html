@@ -1,0 +1,25 @@
+<header class="barra">
+  <a class="marca" routerLink="/">MedLab</a>
+  <span class="rol">Panel del administrador</span>
+</header>
+
+<nav class="pestanas" aria-label="Secciones del panel">
+  <a routerLink="/administrador/usuarios" routerLinkActive="activa" ariaCurrentWhenActive="page">Usuarios</a>
+  <a routerLink="/administrador/farmacias" routerLinkActive="activa" ariaCurrentWhenActive="page">Farmacias</a>
+  <a routerLink="/administrador/alertas" routerLinkActive="activa" ariaCurrentWhenActive="page">Alertas</a>
+  <a routerLink="/administrador/calificaciones" routerLinkActive="activa" ariaCurrentWhenActive="page">Calificaciones</a>
+</nav>
+
+<!--
+
+  quitar este aviso cuando exista el login (HU-2): por ahora el panel siempre
+  trabaja con un administrador fijo
+
+-->
+<p class="temporal" role="note">
+  Modo de prueba: todavía no hay inicio de sesión, así que el panel usa un administrador fijo.
+</p>
+
+<main class="contenido">
+  <router-outlet />
+</main>

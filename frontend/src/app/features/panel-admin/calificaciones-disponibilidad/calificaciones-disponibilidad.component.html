@@ -1,0 +1,101 @@
+<section aria-label="Calificaciones de la publicación">
+  <!--
+
+    el resultado de la última acción. aria-live hace que el lector de pantalla lo
+    anuncie sin que el usuario tenga que buscarlo
+
+  -->
+  <div aria-live="polite">
+    @let avisoActual = aviso();
+    @if (avisoActual) {
+      <p class="aviso" [class.aviso-error]="avisoActual.tipo === 'error'">
+        <span>{{ avisoActual.texto }}</span>
+        <button type="button" class="boton boton-texto" (click)="cerrarAviso()">Cerrar</button>
+      </p>
+    }
+  </div>
+
+  @let aEliminar = porEliminar();
+  @if (aEliminar) {
+    <div class="confirmacion" role="group" aria-labelledby="texto-eliminar-calificacion">
+      <p id="texto-eliminar-calificacion">
+        ¿Eliminar la calificación «{{ aEliminar.tipo }}» del usuario <strong>{{ aEliminar.identificacionUsuario }}</strong>?
+        La publicación no se modifica y esta acción no se puede deshacer.
+      </p>
+      <div class="acciones">
+        <button type="button" class="boton boton-peligro" [disabled]="procesando()" (click)="confirmarEliminar()">
+          Sí, eliminar
+        </button>
+        <button type="button" class="boton" [disabled]="procesando()" (click)="cancelarEliminar()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  }
+
+  @let estadoActual = estado();
+  @if (estadoActual.tipo === "cargando") {
+    <p class="mensaje">Cargando calificaciones…</p>
+  } @else if (estadoActual.tipo === "error") {
+    <p class="mensaje mensaje-error" role="alert">{{ estadoActual.mensaje }}</p>
+  } @else if (estadoActual.tipo === "listo") {
+    @let resultado = estadoActual.resultado;
+    @if (resultado.totalElementos === 0) {
+      <p class="mensaje">Esta publicación no tiene calificaciones.</p>
+    } @else {
+      <p class="mensaje">
+        {{ resultado.totalElementos }} {{ resultado.totalElementos === 1 ? "calificación" : "calificaciones" }}
+      </p>
+
+      <div class="tabla-contenedor">
+        <table>
+          <caption class="solo-lectores">Calificaciones de la publicación</caption>
+          <thead>
+            <tr>
+              <th scope="col">Usuario</th>
+              <th scope="col">Calificación</th>
+              <th scope="col">Fecha</th>
+              <th scope="col"><span class="solo-lectores">Acciones</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (calificacion of resultado.contenido; track calificacion.id) {
+              <tr>
+                <td>{{ calificacion.identificacionUsuario }}</td>
+                <td>
+                  <span class="insignia">{{ calificacion.tipo }}</span>
+                </td>
+                <td>{{ formatearFecha(calificacion.fechaHora) }}</td>
+                <td class="acciones">
+                  <button
+                    type="button"
+                    class="boton boton-pequeno boton-peligro-suave"
+                    [attr.aria-label]="'Eliminar la calificación del usuario ' + calificacion.identificacionUsuario"
+                    (click)="pedirEliminar(calificacion)"
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <nav class="paginacion" aria-label="Páginas de calificaciones">
+        <button type="button" class="boton" [disabled]="resultado.pagina === 0" (click)="irAPagina(resultado.pagina - 1)">
+          Anterior
+        </button>
+        <span>Página {{ resultado.pagina + 1 }} de {{ resultado.totalPaginas }}</span>
+        <button
+          type="button"
+          class="boton"
+          [disabled]="resultado.pagina + 1 >= resultado.totalPaginas"
+          (click)="irAPagina(resultado.pagina + 1)"
+        >
+          Siguiente
+        </button>
+      </nav>
+    }
+  }
+</section>

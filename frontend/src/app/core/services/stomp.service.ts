@@ -61,4 +61,19 @@ export class StompService {
       map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T),
     );
   }
+
+  /**
+   * 
+   * se queda escuchando un topic del backend (por ejemplo /topic/admin/calificaciones) y
+   * emite cada aviso que llega, ya convertido de JSON a objeto
+   * 
+   * a diferencia de consultar, no termina ni tiene límite de espera: los avisos llegan
+   * cuando pasa algo, no cuando se piden. Quien se suscribe debe cancelar al destruirse
+   * 
+   */
+  escuchar<T>(destino: string): Observable<T> {
+    return this.cliente
+      .watch(destino)
+      .pipe(map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T));
+  }
 }
