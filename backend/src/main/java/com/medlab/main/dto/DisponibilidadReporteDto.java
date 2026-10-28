@@ -9,9 +9,10 @@ import java.time.LocalDateTime;
  * Cómo entenderlo: es como una ficha por farmacia en una lista: el nombre, hace cuánto
  * actualizó su información y un resumen de lo que opinan los últimos usuarios.
  *
- * Detalles técnicos: MedicamentoDetalleService lo arma a partir de una Disponibilidad, del
- * texto relativo que calcula TiempoRelativoService y de la tendencia que calcula
- * MensajeDisponibilidadService. Viaja al frontend como JSON dentro de MedicamentoDetalleDto.
+ * Detalles técnicos: MedicamentoDetalleServiceImpl lo arma a partir de una
+ * DisponibilidadEntity, del texto relativo que calcula TiempoRelativoService y de la
+ * tendencia que calcula MensajeDisponibilidadService. Viaja al frontend como JSON dentro de
+ * MedicamentoDetalleDto.
  *
  * disponibilidadId: id del reporte.
  * farmacia: nombre de la farmacia que lo hizo.

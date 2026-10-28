@@ -1,19 +1,17 @@
 package com.medlab.main.controller;
 
+import com.medlab.main.dto.MedicamentoDetalleDto;
+import com.medlab.main.exception.MedicamentoNotFoundException;
+import com.medlab.main.service.MedicamentoDetalleService;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-
-import com.medlab.main.dto.MedicamentoDetalleDto;
-import com.medlab.main.exception.MedicamentoNoEncontradoException;
-import com.medlab.main.service.MedicamentoDetalleService;
-
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Qué hace: atiende el pedido del detalle de un medicamento cuando el usuario lo selecciona
@@ -31,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Controller
 @Validated
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class MedicamentoDetalleController {
 
   private final MedicamentoDetalleService medicamentoDetalleService;
@@ -44,17 +42,15 @@ public class MedicamentoDetalleController {
    * identificar la suscripción.
    */
   @SubscribeMapping("/medicamentos/detalle")
-  public MedicamentoDetalleDto detalle(
-      @Header("medicamentoId") @NotNull @Positive Integer medicamentoId) {
-    return medicamentoDetalleService.obtener(medicamentoId);
+  public MedicamentoDetalleDto getMedicamentoDetalle(
+      @Header("medicamentoId") @NotNull @Positive Long medicamentoId) {
+    return medicamentoDetalleService.getMedicamentoDetalleById(medicamentoId);
   }
 
-  /**
-   * Si el medicamento no existe, deja solo un aviso corto en el log del backend. El cliente
-   * no recibe respuesta.
-   */
-  @MessageExceptionHandler(MedicamentoNoEncontradoException.class)
-  public void medicamentoNoEncontrado(MedicamentoNoEncontradoException ex) {
+  /** Si el medicamento no existe, deja solo un aviso corto en el log del backend. El cliente
+   * no recibe respuesta. */
+  @MessageExceptionHandler(MedicamentoNotFoundException.class)
+  public void handleMedicamentoNotFound(MedicamentoNotFoundException ex) {
     log.warn(ex.getMessage());
   }
 }
