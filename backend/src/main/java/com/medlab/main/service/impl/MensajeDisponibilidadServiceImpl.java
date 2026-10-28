@@ -2,6 +2,7 @@ package com.medlab.main.service.impl;
 
 import com.medlab.main.dto.TendenciaDisponibilidad;
 import com.medlab.main.service.MensajeDisponibilidadService;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,10 @@ import org.springframework.stereotype.Service;
  * Detalles técnicos: cuenta cuántas calificaciones recientes son "Si hay", "Bajo pedido" y
  * "No hay" (escritos igual que en la tabla tipos_calificacion). Gana el tipo con más votos;
  * si dos o más empatan en el primer lugar, devuelve SIN_CONSENSO. Los nombres que no son
- * estos tres se ignoran. Si no queda ningún voto válido, devuelve SIN_CALIFICACIONES.
+ * estos tres se ignoran. Si no queda ningún voto válido, devuelve SIN_CALIFICACIONES. Al
+ * armar el mensaje, compara la fecha del reporte con "ahora" y, si pasaron más de
+ * DIAS_REPORTE_VIGENTE días (contados exactos, no por días completos), agrega el aviso de
+ * reporte desactualizado después del texto de la tendencia.
  * MedicamentoDetalleServiceImpl lo usa una vez por reporte, con las calificaciones que le
  * entrega CalificacionesRepository. No consulta la base de datos.
  */
@@ -47,6 +51,16 @@ public class MensajeDisponibilidadServiceImpl implements MensajeDisponibilidadSe
       return TendenciaDisponibilidad.BAJO_PEDIDO;
     }
     return TendenciaDisponibilidad.NO_DISPONIBLE;
+  }
+
+  @Override
+  public String buildMensajeDisponibilidad(TendenciaDisponibilidad tendencia,
+      LocalDateTime fechaHoraReporte, LocalDateTime ahora) {
+    if (!fechaHoraReporte.isBefore(ahora.minusDays(DIAS_REPORTE_VIGENTE))) {
+      return tendencia.getMensaje();
+    }
+    return tendencia.getMensaje() + ". El reporte de la farmacia tiene más de "
+        + DIAS_REPORTE_VIGENTE + " días y puede estar desactualizado";
   }
 
   private long countTipoCalificacion(List<String> tipos, String tipoCalificacion) {

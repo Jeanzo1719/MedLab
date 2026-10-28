@@ -1,10 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  Signal,
   WritableSignal,
+  inject,
   signal,
 } from "@angular/core";
 import { RouterLink } from "@angular/router";
+
+import { Tema, TemaService } from "../../../core/services/tema.service";
 
 /**
  * 
@@ -28,7 +32,10 @@ export class EncabezadoComponent {
    * si el menú está abierto o cerrado en celular y tablet. Empieza cerrado
    * 
    */
+  private readonly temaService: TemaService = inject(TemaService);
+
   protected readonly menuAbierto: WritableSignal<boolean> = signal(false);
+  protected readonly tema: Signal<Tema> = this.temaService.tema;
 
   /**
    * 
@@ -47,5 +54,9 @@ export class EncabezadoComponent {
    */
   protected cerrarMenu(): void {
     this.menuAbierto.set(false);
+  }
+
+  protected alternarTema(): void {
+    this.temaService.alternar();
   }
 }

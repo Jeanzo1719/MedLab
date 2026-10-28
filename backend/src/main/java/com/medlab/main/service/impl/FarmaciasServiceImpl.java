@@ -65,10 +65,11 @@ public class FarmaciasServiceImpl implements FarmaciasService {
   }
 
   /** Convierte una fila de la búsqueda de farmacias cercanas en el dato que se envía al
-   * frontend: pasa la latitud y la longitud de BigDecimal a double, que es como usa el mapa. */
+   * frontend: copia el id del reporte de disponibilidad y pasa la latitud y la longitud de
+   * BigDecimal a double, que es como usa el mapa. */
   private FarmaciaCercanaDto toFarmaciaCercanaDto(FarmaciaCercana farmacia) {
     return new FarmaciaCercanaDto(farmacia.getId(), farmacia.getNombre(),
         farmacia.getLatitud().doubleValue(), farmacia.getLongitud().doubleValue(),
-        farmacia.getDistanciaKm());
+        farmacia.getDistanciaKm(), farmacia.getDisponibilidadId());
   }
 }

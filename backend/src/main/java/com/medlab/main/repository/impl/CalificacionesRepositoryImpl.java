@@ -18,4 +18,10 @@ public class CalificacionesRepositoryImpl implements CalificacionesRepository {
       Collection<Integer> disponibilidadIds, int limite) {
     return jpaRepository.findCalificacionesRecientesByDisponibilidad(disponibilidadIds, limite);
   }
+
+  @Override
+  public int saveCalificacion(Integer disponibilidadId, Integer usuarioId,
+      Integer tipoCalificacionId) {
+    return jpaRepository.upsertCalificacion(disponibilidadId, usuarioId, tipoCalificacionId);
+  }
 }

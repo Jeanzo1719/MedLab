@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -27,6 +28,11 @@ public class DisponibilidadRepositoryImpl implements DisponibilidadRepository {
   @Override
   public List<DisponibilidadEntity> findByMedicamentoIdOrderByFechaHoraReporteDesc(Long medicamentoId) {
     return jpaRepository.findByMedicamento_IdOrderByFechaHoraReporteDesc(medicamentoId);
+  }
+
+  @Override
+  public Optional<DisponibilidadEntity> findById(Integer disponibilidadId) {
+    return jpaRepository.findById(disponibilidadId);
   }
 
   @Override

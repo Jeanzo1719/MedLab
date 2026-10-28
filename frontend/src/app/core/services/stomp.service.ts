@@ -61,4 +61,21 @@ export class StompService {
       map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T),
     );
   }
+
+  /**
+   * 
+   * escucha un destino del backend y devuelve cada mensaje que llegue
+   * 
+   * a diferencia de consultar, no termina con la primera respuesta: sigue
+   * recibiendo cada vez que el backend publica algo en ese destino (por ejemplo
+   * /topic/medicamentos/5), hasta que se deje de escuchar
+   * 
+   * T es el tipo del dato que se espera recibir, por ejemplo MedicamentoDetalle
+   * 
+   */
+  escuchar<T>(destino: string): Observable<T> {
+    return this.cliente
+      .watch({ destination: destino })
+      .pipe(map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T));
+  }
 }
