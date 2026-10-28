@@ -1,3 +1,4 @@
+import { provideHttpClient } from "@angular/common/http";
 import {
   ApplicationConfig,
   inject,
@@ -13,6 +14,7 @@ import { TemaService } from "./core/services/tema.service";
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    provideHttpClient(),
     provideRouter(
       routes,
       withInMemoryScrolling({

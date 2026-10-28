@@ -8,13 +8,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * FarmaciasEntity - mapea la tabla farmacias. La fecha_ultima_actualizacion
- * no se mapea porque la gestiona la base de datos (DEFAULT/ON UPDATE).
+ * FarmaciasEntity - mapea la tabla farmacias.
+ * La fecha_ultima_actualizacion solo tiene DEFAULT en la base (sin ON UPDATE): al crear la
+ * fila la pone la base, y al editar los datos la fija el panel de la farmacia (HU-11).
  */
 @Getter
 @Setter
@@ -78,4 +80,8 @@ public class FarmaciasEntity {
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "estado_aprobacion_id", nullable = false)
   private EstadosFarmaciaEntity estadoAprobacion;
+
+  /** Última vez que la farmacia editó sus datos; al crear la fila la pone la base (DEFAULT). */
+  @Column(name = "fecha_ultima_actualizacion", nullable = false, insertable = false)
+  private LocalDateTime fechaUltimaActualizacion;
 }

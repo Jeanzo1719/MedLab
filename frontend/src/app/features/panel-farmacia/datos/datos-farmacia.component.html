@@ -1,0 +1,245 @@
+<section aria-labelledby="titulo-datos">
+  <header class="cabecera">
+    <h1 id="titulo-datos">Mi farmacia</h1>
+  </header>
+
+  @let estadoActual = estado();
+  @if (estadoActual.tipo === "cargando") {
+    <p class="mensaje">Cargando los datos de tu farmacia…</p>
+  } @else if (estadoActual.tipo === "error") {
+    <p class="mensaje mensaje-error" role="alert">{{ estadoActual.mensaje }}</p>
+    <button type="button" class="boton" (click)="cargar()">Reintentar</button>
+  } @else if (estadoActual.tipo === "listo") {
+    @let datos = estadoActual.datos;
+
+    <dl class="resumen">
+      <div>
+        <dt>Dirección registrada</dt>
+        <dd>{{ datos.direccion }}</dd>
+      </div>
+      <div>
+        <dt>Estado</dt>
+        <dd class="estado">{{ datos.estado }}</dd>
+      </div>
+      <div>
+        <dt>Última actualización</dt>
+        <dd>{{ formatearFecha(datos.fechaUltimaActualizacion) }}</dd>
+      </div>
+    </dl>
+
+    <!-- aria-live: el lector de pantalla anuncia el resultado sin que haya que buscarlo -->
+    <div aria-live="polite">
+      @if (avisoGuardado()) {
+        <p class="aviso">
+          <span>Los datos se guardaron.</span>
+          <button type="button" class="boton boton-texto" (click)="cerrarAviso()">Cerrar</button>
+        </p>
+      }
+    </div>
+
+    <form class="formulario" [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+      @let nombre = formulario.controls.nombreFarmacia;
+      <div class="campo">
+        <label for="campo-nombre">Nombre de la farmacia</label>
+        <input id="campo-nombre" type="text" maxlength="150" autocomplete="off" formControlName="nombreFarmacia" />
+        @if (nombre.touched && nombre.invalid) {
+          <p class="error-campo">El nombre es obligatorio (máximo 150 caracteres).</p>
+        }
+      </div>
+
+      <fieldset>
+        <legend>Dirección</legend>
+
+        <div class="fila-campos">
+          @let tipoVia = formulario.controls.tipoViaPrincipal;
+          <div class="campo">
+            <label for="campo-tipo-via">Tipo de vía</label>
+            <input
+              id="campo-tipo-via"
+              type="text"
+              list="tipos-via"
+              maxlength="20"
+              autocomplete="off"
+              formControlName="tipoViaPrincipal"
+            />
+            <datalist id="tipos-via">
+              @for (tipo of tiposVia; track tipo) {
+                <option [value]="tipo"></option>
+              }
+            </datalist>
+            @if (tipoVia.touched && tipoVia.invalid) {
+              <p class="error-campo">Indica el tipo de vía.</p>
+            }
+          </div>
+
+          @let numeroPrincipal = formulario.controls.numeroViaPrincipal;
+          <div class="campo campo-corto">
+            <label for="campo-numero-principal">Número</label>
+            <input
+              id="campo-numero-principal"
+              type="text"
+              maxlength="10"
+              autocomplete="off"
+              formControlName="numeroViaPrincipal"
+            />
+            @if (numeroPrincipal.touched && numeroPrincipal.invalid) {
+              <p class="error-campo">Obligatorio.</p>
+            }
+          </div>
+
+          @let letraPrincipal = formulario.controls.letraViaPrincipal;
+          <div class="campo campo-corto">
+            <label for="campo-letra-principal">Letra</label>
+            <input
+              id="campo-letra-principal"
+              type="text"
+              maxlength="5"
+              autocomplete="off"
+              formControlName="letraViaPrincipal"
+            />
+            @if (letraPrincipal.touched && letraPrincipal.invalid) {
+              <p class="error-campo">Máximo 5 caracteres.</p>
+            }
+          </div>
+        </div>
+
+        <div class="fila-campos">
+          @let numeroGeneradora = formulario.controls.numeroViaGeneradora;
+          <div class="campo campo-corto">
+            <label for="campo-numero-generadora">Número de la vía generadora (#)</label>
+            <input
+              id="campo-numero-generadora"
+              type="text"
+              maxlength="10"
+              autocomplete="off"
+              formControlName="numeroViaGeneradora"
+            />
+            @if (numeroGeneradora.touched && numeroGeneradora.invalid) {
+              <p class="error-campo">Obligatorio.</p>
+            }
+          </div>
+
+          @let letraGeneradora = formulario.controls.letraViaGeneradora;
+          <div class="campo campo-corto">
+            <label for="campo-letra-generadora">Letra</label>
+            <input
+              id="campo-letra-generadora"
+              type="text"
+              maxlength="5"
+              autocomplete="off"
+              formControlName="letraViaGeneradora"
+            />
+            @if (letraGeneradora.touched && letraGeneradora.invalid) {
+              <p class="error-campo">Máximo 5 caracteres.</p>
+            }
+          </div>
+
+          @let predio = formulario.controls.numeroPredio;
+          <div class="campo campo-corto">
+            <label for="campo-predio">Número del predio</label>
+            <input id="campo-predio" type="text" maxlength="10" autocomplete="off" formControlName="numeroPredio" />
+            @if (predio.touched && predio.invalid) {
+              <p class="error-campo">Obligatorio.</p>
+            }
+          </div>
+        </div>
+
+        @let complemento = formulario.controls.complemento;
+        <div class="campo">
+          <label for="campo-complemento">Complemento (opcional)</label>
+          <input
+            id="campo-complemento"
+            type="text"
+            maxlength="100"
+            autocomplete="off"
+            placeholder="Local, piso, barrio…"
+            formControlName="complemento"
+          />
+          @if (complemento.touched && complemento.invalid) {
+            <p class="error-campo">Máximo 100 caracteres.</p>
+          }
+        </div>
+      </fieldset>
+
+      @let horario = formulario.controls.horarioAtencion;
+      <div class="campo">
+        <label for="campo-horario">Horario de atención (opcional)</label>
+        <input
+          id="campo-horario"
+          type="text"
+          maxlength="100"
+          autocomplete="off"
+          placeholder="Lunes a sábado, 8:00 a. m. - 8:00 p. m."
+          formControlName="horarioAtencion"
+        />
+        @if (horario.touched && horario.invalid) {
+          <p class="error-campo">Máximo 100 caracteres.</p>
+        }
+      </div>
+
+      <fieldset>
+        <legend>Ubicación en el mapa (opcional)</legend>
+        <p class="ayuda">Si la llenas, escribe la latitud y la longitud. Si las dejas vacías, el marcador no se mueve.</p>
+
+        <div class="fila-campos">
+          @let latitud = formulario.controls.latitud;
+          <div class="campo">
+            <label for="campo-latitud">Latitud</label>
+            <input
+              id="campo-latitud"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              min="-90"
+              max="90"
+              formControlName="latitud"
+            />
+            @if (latitud.touched && latitud.invalid) {
+              <p class="error-campo">La latitud debe estar entre -90 y 90.</p>
+            }
+          </div>
+
+          @let longitud = formulario.controls.longitud;
+          <div class="campo">
+            <label for="campo-longitud">Longitud</label>
+            <input
+              id="campo-longitud"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              min="-180"
+              max="180"
+              formControlName="longitud"
+            />
+            @if (longitud.touched && longitud.invalid) {
+              <p class="error-campo">La longitud debe estar entre -180 y 180.</p>
+            }
+          </div>
+        </div>
+
+        @if (formulario.hasError("coordenadasIncompletas") && (latitud.touched || longitud.touched)) {
+          <p class="error-campo">La latitud y la longitud van juntas: llena las dos o deja las dos vacías.</p>
+        }
+      </fieldset>
+
+      @let errorActual = errorFormulario();
+      @if (errorActual) {
+        <p class="error-formulario" role="alert">{{ errorActual }}</p>
+      }
+
+      <div class="acciones">
+        <button type="submit" class="boton boton-primario" [disabled]="guardando()">
+          {{ guardando() ? "Guardando…" : "Guardar cambios" }}
+        </button>
+        <button
+          type="button"
+          class="boton"
+          [disabled]="guardando() || formulario.pristine"
+          (click)="descartar()"
+        >
+          Descartar cambios
+        </button>
+      </div>
+    </form>
+  }
+</section>
