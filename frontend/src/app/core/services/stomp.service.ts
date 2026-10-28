@@ -61,4 +61,10 @@ export class StompService {
       map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T),
     );
   }
+
+  escuchar<T>(destino: string): Observable<T> {
+    return this.cliente
+      .watch({ destination: destino })
+      .pipe(map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T));
+  }
 }

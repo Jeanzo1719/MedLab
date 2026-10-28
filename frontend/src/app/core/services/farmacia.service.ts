@@ -57,6 +57,8 @@ export interface FarmaciaCercana extends FarmaciaMapa {
    * 
    */
   distanciaKm: number;
+
+  disponibilidadId: number;
 }
 
 /**

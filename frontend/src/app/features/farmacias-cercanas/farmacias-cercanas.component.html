@@ -252,6 +252,9 @@
                           <span class="etiqueta-cercana">Más cercana</span>
                         }
                       </span>
+                      @if (mensajesDisponibilidad().get(farmacia.disponibilidadId); as mensaje) {
+                        <span class="veracidad">{{ mensaje }}</span>
+                      }
                     </button>
                   </li>
                 }

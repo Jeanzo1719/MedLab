@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { Observable } from "rxjs";
+import { EMPTY, Observable, catchError, merge } from "rxjs";
 
 import { StompService } from "./stomp.service";
 
@@ -48,6 +48,16 @@ export interface MedicamentoBusqueda {
   formaFarmaceutica: string;
 }
 
+export interface ReporteDisponibilidad {
+  disponibilidadId: number;
+  mensajeDisponibilidad: string;
+}
+
+export interface MedicamentoDetalle {
+  id: number;
+  reportes: ReporteDisponibilidad[];
+}
+
 /**
  * 
  * el service de los medicamentos en el frontend. Le pide al backend los
@@ -74,5 +84,14 @@ export class MedicamentoService {
    */
   buscar(texto: string): Observable<MedicamentoBusqueda[]> {
     return this.stomp.consultar<MedicamentoBusqueda[]>("/app/medicamentos/buscar", { q: texto });
+  }
+
+  seguirDetalle(id: number): Observable<MedicamentoDetalle> {
+    return merge(
+      this.stomp
+        .consultar<MedicamentoDetalle>("/app/medicamentos/detalle", { medicamentoId: String(id) })
+        .pipe(catchError(() => EMPTY)),
+      this.stomp.escuchar<MedicamentoDetalle>(`/topic/medicamentos/${id}`),
+    );
   }
 }

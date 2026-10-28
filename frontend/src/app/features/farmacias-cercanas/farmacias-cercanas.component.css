@@ -238,6 +238,10 @@ input:focus {
   font-weight: 700;
 }
 
+.veracidad {
+  font-size: 0.875rem;
+}
+
 .detalle {
   display: flex;
   flex-wrap: wrap;

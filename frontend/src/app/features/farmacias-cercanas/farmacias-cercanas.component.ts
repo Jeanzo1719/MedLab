@@ -13,6 +13,11 @@ import { ActivatedRoute, ParamMap, RouterLink } from "@angular/router";
 import { Observable, catchError, combineLatest, map, of, startWith, switchMap } from "rxjs";
 
 import { FarmaciaCercana, FarmaciaService } from "../../core/services/farmacia.service";
+import {
+  MedicamentoDetalle,
+  MedicamentoService,
+  ReporteDisponibilidad,
+} from "../../core/services/medicamento.service";
 import { MetadatosService } from "../../core/services/metadatos.service";
 import { MedioRuta, Ruta, RutaService } from "../../core/services/ruta.service";
 import { Coordenadas, UbicacionService } from "../../core/services/ubicacion.service";
@@ -125,6 +130,8 @@ export class FarmaciasCercanasComponent {
    */
   private readonly farmaciaService: FarmaciaService = inject(FarmaciaService);
 
+  private readonly medicamentoService: MedicamentoService = inject(MedicamentoService);
+
   /**
    *
    * el service que consigue la ubicación del dispositivo o de una dirección
@@ -228,6 +235,15 @@ export class FarmaciasCercanasComponent {
       switchMap(([medicamentoId, ubicacion]) => this.buscarFarmacias(medicamentoId, ubicacion)),
     ),
     { initialValue: { tipo: "inactivo" } as EstadoFarmacias },
+  );
+
+  protected readonly mensajesDisponibilidad: Signal<Map<number, string>> = toSignal(
+    toObservable(this.medicamentoId).pipe(
+      switchMap((medicamentoId) =>
+        medicamentoId === null ? of(new Map<number, string>()) : this.seguirMensajes(medicamentoId),
+      ),
+    ),
+    { initialValue: new Map<number, string>() },
   );
 
   /**
@@ -442,6 +458,20 @@ export class FarmaciasCercanasComponent {
       map((ruta: Ruta | null): EstadoRuta => (ruta ? { tipo: "lista", ruta } : { tipo: "sin-ruta" })),
       catchError(() => of<EstadoRuta>({ tipo: "error" })),
       startWith<EstadoRuta>({ tipo: "cargando" }),
+    );
+  }
+
+  private seguirMensajes(medicamentoId: number): Observable<Map<number, string>> {
+    return this.medicamentoService.seguirDetalle(medicamentoId).pipe(
+      map(
+        (detalle: MedicamentoDetalle): Map<number, string> =>
+          new Map(
+            detalle.reportes.map((reporte: ReporteDisponibilidad): [number, string] => [
+              reporte.disponibilidadId,
+              reporte.mensajeDisponibilidad,
+            ]),
+          ),
+      ),
     );
   }
 
