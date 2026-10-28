@@ -33,44 +33,47 @@ import org.springframework.data.domain.Pageable;
 import com.medlab.main.dto.DisponibilidadFarmaciaDto;
 import com.medlab.main.dto.GuardarDisponibilidadDto;
 import com.medlab.main.dto.ResumenInventarioDto;
-import com.medlab.main.entity.Disponibilidad;
+import com.medlab.main.entity.DisponibilidadEntity;
 import com.medlab.main.entity.EstadoDisponibilidad;
-import com.medlab.main.entity.EstadoFarmacia;
-import com.medlab.main.entity.Farmacia;
-import com.medlab.main.entity.Medicamento;
+import com.medlab.main.entity.EstadosFarmaciaEntity;
+import com.medlab.main.entity.FarmaciasEntity;
+import com.medlab.main.entity.MedicamentosEntity;
 import com.medlab.main.exception.AccesoPanelDenegadoException;
 import com.medlab.main.exception.DatosInvalidosException;
 import com.medlab.main.exception.RecursoNoEncontradoException;
-import com.medlab.main.repository.DisponibilidadRepository;
+import com.medlab.main.repository.DisponibilidadJpaRepository;
 import com.medlab.main.repository.EstadoDisponibilidadRepository;
-import com.medlab.main.repository.FarmaciaRepository;
-import com.medlab.main.repository.MedicamentoRepository;
+import com.medlab.main.repository.FarmaciasJpaRepository;
+import com.medlab.main.repository.MedicamentosJpaRepository;
 
 /**
  * Pruebas de DisponibilidadService sin base de datos. Se centran en las reglas que la BD no
  * hace cumplir sola: coherencia entre estado y cantidad, farmacia aprobada, límites de la
  * paginación y que un aviso en vivo fallido nunca deshaga un guardado.
  *
- * Las filas de disponibilidad no tienen setters, así que se simulan con Mockito. Cada mock
- * se guarda en una variable antes de usarlo dentro de un when(...).
+ * Las filas de disponibilidad se simulan con Mockito. Cada mock se guarda en una variable
+ * antes de usarlo dentro de un when(...).
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class DisponibilidadServiceTest {
 
   private static final int FARMACIA_ID = 9001;
+  /** Id tal como lo reciben los DTOs (Integer). */
   private static final int MEDICAMENTO_ID = 1;
+  /** El mismo id tal como lo maneja la base de datos y el notificador (Long). */
+  private static final Long ID_BD = 1L;
   private static final int ID_ESTADO = 3;
   private static final BigDecimal PRECIO = new BigDecimal("5500.00");
 
   @Mock
-  private DisponibilidadRepository disponibilidadRepository;
+  private DisponibilidadJpaRepository disponibilidadRepository;
   @Mock
   private EstadoDisponibilidadRepository estadoDisponibilidadRepository;
   @Mock
-  private FarmaciaRepository farmaciaRepository;
+  private FarmaciasJpaRepository farmaciaRepository;
   @Mock
-  private MedicamentoRepository medicamentoRepository;
+  private MedicamentosJpaRepository medicamentoRepository;
   @Mock
   private MedicamentoDetalleNotificador notificador;
 
@@ -82,7 +85,7 @@ class DisponibilidadServiceTest {
         farmaciaRepository, medicamentoRepository, notificador);
     // Caso normal por defecto: farmacia aprobada y medicamento existente.
     when(farmaciaRepository.findById(FARMACIA_ID)).thenReturn(Optional.of(farmacia("aprobada")));
-    when(medicamentoRepository.existsById(MEDICAMENTO_ID)).thenReturn(true);
+    when(medicamentoRepository.existsById(ID_BD)).thenReturn(true);
   }
 
   @Test
@@ -92,11 +95,11 @@ class DisponibilidadServiceTest {
     DisponibilidadFarmaciaDto dto = servicio.guardar(FARMACIA_ID,
         new GuardarDisponibilidadDto(MEDICAMENTO_ID, 10, PRECIO, null));
 
-    verify(disponibilidadRepository).guardar(FARMACIA_ID, MEDICAMENTO_ID, 10, PRECIO, ID_ESTADO);
+    verify(disponibilidadRepository).guardar(FARMACIA_ID, ID_BD, 10, PRECIO, ID_ESTADO);
     assertEquals("Dolex", dto.nombreComercial());
     assertEquals(10, dto.cantidadDisponible());
     assertEquals(EstadoDisponibilidad.DISPONIBLE, dto.estado());
-    verify(notificador).publicar(MEDICAMENTO_ID);
+    verify(notificador).publishMedicamentoDetalleUpdate(ID_BD);
   }
 
   @Test
@@ -106,7 +109,7 @@ class DisponibilidadServiceTest {
     servicio.guardar(FARMACIA_ID, new GuardarDisponibilidadDto(MEDICAMENTO_ID, 0, PRECIO, null));
 
     verify(estadoDisponibilidadRepository).findByNombre(EstadoDisponibilidad.AGOTADO);
-    verify(disponibilidadRepository).guardar(FARMACIA_ID, MEDICAMENTO_ID, 0, PRECIO, ID_ESTADO);
+    verify(disponibilidadRepository).guardar(FARMACIA_ID, ID_BD, 0, PRECIO, ID_ESTADO);
   }
 
   @Test
@@ -116,7 +119,7 @@ class DisponibilidadServiceTest {
     servicio.guardar(FARMACIA_ID,
         new GuardarDisponibilidadDto(MEDICAMENTO_ID, 0, PRECIO, "bajo_pedido"));
 
-    verify(disponibilidadRepository).guardar(FARMACIA_ID, MEDICAMENTO_ID, 0, PRECIO, ID_ESTADO);
+    verify(disponibilidadRepository).guardar(FARMACIA_ID, ID_BD, 0, PRECIO, ID_ESTADO);
   }
 
   @Test
@@ -143,7 +146,7 @@ class DisponibilidadServiceTest {
 
   @Test
   void medicamentoInexistenteLanzaNoEncontrado() {
-    when(medicamentoRepository.existsById(99)).thenReturn(false);
+    when(medicamentoRepository.existsById(99L)).thenReturn(false);
 
     assertThrows(RecursoNoEncontradoException.class, () -> servicio.guardar(FARMACIA_ID,
         new GuardarDisponibilidadDto(99, 5, PRECIO, null)));
@@ -180,7 +183,7 @@ class DisponibilidadServiceTest {
   @Test
   void siFallaElAvisoEnVivoElGuardadoSigueSiendoValido() {
     prepararGuardado(10, EstadoDisponibilidad.DISPONIBLE);
-    doThrow(new RuntimeException("sin conexión")).when(notificador).publicar(MEDICAMENTO_ID);
+    doThrow(new RuntimeException("sin conexión")).when(notificador).publishMedicamentoDetalleUpdate(ID_BD);
 
     DisponibilidadFarmaciaDto dto = servicio.guardar(FARMACIA_ID,
         new GuardarDisponibilidadDto(MEDICAMENTO_ID, 10, PRECIO, null));
@@ -193,11 +196,11 @@ class DisponibilidadServiceTest {
     EstadoDisponibilidad agotado = estado(EstadoDisponibilidad.AGOTADO);
     when(estadoDisponibilidadRepository.findByNombre(EstadoDisponibilidad.AGOTADO))
         .thenReturn(Optional.of(agotado));
-    when(disponibilidadRepository.marcarAgotado(FARMACIA_ID, MEDICAMENTO_ID, ID_ESTADO)).thenReturn(1);
+    when(disponibilidadRepository.marcarAgotado(FARMACIA_ID, ID_BD, ID_ESTADO)).thenReturn(1);
 
     servicio.marcarAgotado(FARMACIA_ID, MEDICAMENTO_ID);
 
-    verify(notificador).publicar(MEDICAMENTO_ID);
+    verify(notificador).publishMedicamentoDetalleUpdate(ID_BD);
   }
 
   @Test
@@ -205,17 +208,17 @@ class DisponibilidadServiceTest {
     EstadoDisponibilidad agotado = estado(EstadoDisponibilidad.AGOTADO);
     when(estadoDisponibilidadRepository.findByNombre(EstadoDisponibilidad.AGOTADO))
         .thenReturn(Optional.of(agotado));
-    when(disponibilidadRepository.marcarAgotado(FARMACIA_ID, MEDICAMENTO_ID, ID_ESTADO)).thenReturn(0);
+    when(disponibilidadRepository.marcarAgotado(FARMACIA_ID, ID_BD, ID_ESTADO)).thenReturn(0);
 
     assertThrows(RecursoNoEncontradoException.class,
         () -> servicio.marcarAgotado(FARMACIA_ID, MEDICAMENTO_ID));
 
-    verify(notificador, never()).publicar(any());
+    verify(notificador, never()).publishMedicamentoDetalleUpdate(any());
   }
 
   @Test
   void resumenTraLosTresEstadosAunqueAlgunoEsteEnCero() {
-    DisponibilidadRepository.ConteoEstado conteo = mock(DisponibilidadRepository.ConteoEstado.class);
+    DisponibilidadJpaRepository.ConteoEstado conteo = mock(DisponibilidadJpaRepository.ConteoEstado.class);
     when(conteo.getEstado()).thenReturn(EstadoDisponibilidad.DISPONIBLE);
     when(conteo.getTotal()).thenReturn(2L);
     when(disponibilidadRepository.contarPorEstado(FARMACIA_ID)).thenReturn(List.of(conteo));
@@ -231,7 +234,7 @@ class DisponibilidadServiceTest {
 
   @Test
   void listarLimpiaElTextoYLimitaLaPagina() {
-    Page<Disponibilidad> vacia = new PageImpl<>(List.of());
+    Page<DisponibilidadEntity> vacia = new PageImpl<>(List.of());
     when(disponibilidadRepository.buscarPorFarmacia(eq(FARMACIA_ID), eq("dol"), any(Pageable.class)))
         .thenReturn(vacia);
 
@@ -248,8 +251,8 @@ class DisponibilidadServiceTest {
   private void prepararGuardado(int cantidad, String nombreEstado) {
     EstadoDisponibilidad estado = estado(nombreEstado);
     when(estadoDisponibilidadRepository.findByNombre(nombreEstado)).thenReturn(Optional.of(estado));
-    Disponibilidad fila = fila(cantidad, estado);
-    when(disponibilidadRepository.findByFarmaciaUsuarioIdAndMedicamentoId(FARMACIA_ID, MEDICAMENTO_ID))
+    DisponibilidadEntity fila = fila(cantidad, estado);
+    when(disponibilidadRepository.findByFarmaciaUsuarioIdAndMedicamentoId(FARMACIA_ID, ID_BD))
         .thenReturn(Optional.of(fila));
   }
 
@@ -260,10 +263,10 @@ class DisponibilidadServiceTest {
         .stockBajo();
   }
 
-  private Farmacia farmacia(String nombreEstado) {
-    EstadoFarmacia estado = new EstadoFarmacia();
+  private FarmaciasEntity farmacia(String nombreEstado) {
+    EstadosFarmaciaEntity estado = new EstadosFarmaciaEntity();
     estado.setNombre(nombreEstado);
-    Farmacia farmacia = new Farmacia();
+    FarmaciasEntity farmacia = new FarmaciasEntity();
     farmacia.setUsuarioId(FARMACIA_ID);
     farmacia.setEstadoAprobacion(estado);
     return farmacia;
@@ -276,14 +279,14 @@ class DisponibilidadServiceTest {
     return estado;
   }
 
-  private Disponibilidad fila(int cantidad, EstadoDisponibilidad estado) {
-    Medicamento medicamento = new Medicamento();
-    medicamento.setId(MEDICAMENTO_ID);
+  private DisponibilidadEntity fila(int cantidad, EstadoDisponibilidad estado) {
+    MedicamentosEntity medicamento = new MedicamentosEntity();
+    medicamento.setId(ID_BD);
     medicamento.setNombreComercial("Dolex");
     medicamento.setPrincipioActivo("Acetaminofen");
     medicamento.setPresentacion("500 mg x 10");
 
-    Disponibilidad fila = mock(Disponibilidad.class);
+    DisponibilidadEntity fila = mock(DisponibilidadEntity.class);
     when(fila.getMedicamento()).thenReturn(medicamento);
     when(fila.getCantidadDisponible()).thenReturn(cantidad);
     when(fila.getPrecio()).thenReturn(PRECIO);

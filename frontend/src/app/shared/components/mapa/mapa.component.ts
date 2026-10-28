@@ -9,6 +9,7 @@ import {
   Signal,
   WritableSignal,
   effect,
+  inject,
   input,
   output,
   signal,
@@ -17,6 +18,8 @@ import {
 } from "@angular/core";
 import {
   CircleMarkerOptions,
+  Control,
+  DomEvent,
   LatLngBoundsExpression,
   LatLngExpression,
   LatLngTuple,
@@ -25,6 +28,7 @@ import {
   Polyline,
   PolylineOptions,
   circleMarker,
+  control,
   latLngBounds,
   layerGroup,
   map,
@@ -33,6 +37,7 @@ import {
 } from "leaflet";
 
 import { FarmaciaMapa } from "../../../core/services/farmacia.service";
+import { Tema, TemaService } from "../../../core/services/tema.service";
 import { Coordenadas } from "../../../core/services/ubicacion.service";
 
 /**
@@ -97,10 +102,9 @@ const CAPA_BASE: Readonly<{ url: string; atribucion: string }> = {
  *
  */
 const ESTILO_MARCADOR: CircleMarkerOptions = {
+  className: "marcador",
   radius: 8,
-  color: "#ffffff",
   weight: 2,
-  fillColor: "#159a63",
   fillOpacity: 1,
 };
 
@@ -112,9 +116,9 @@ const ESTILO_MARCADOR: CircleMarkerOptions = {
  */
 const ESTILO_MARCADOR_SELECCIONADO: CircleMarkerOptions = {
   ...ESTILO_MARCADOR,
+  className: "marcador marcador-seleccionado",
   radius: 12,
   weight: 3,
-  fillColor: "#107a4e",
 };
 
 /**
@@ -124,10 +128,9 @@ const ESTILO_MARCADOR_SELECCIONADO: CircleMarkerOptions = {
  *
  */
 const ESTILO_UBICACION: CircleMarkerOptions = {
+  className: "marcador marcador-ubicacion",
   radius: 9,
-  color: "#ffffff",
   weight: 3,
-  fillColor: "#f2a93b",
   fillOpacity: 1,
 };
 
@@ -138,7 +141,7 @@ const ESTILO_UBICACION: CircleMarkerOptions = {
  *
  */
 const ESTILO_RUTA: PolylineOptions = {
-  color: "#107a4e",
+  className: "ruta",
   weight: 5,
   opacity: 0.85,
 };
@@ -174,6 +177,7 @@ const MARGEN_AJUSTE_PX: number = 32;
   templateUrl: "./mapa.component.html",
   styleUrl: "./mapa.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { "[attr.data-tema]": "temaMapa()" },
 })
 export class MapaComponent implements AfterViewInit, OnDestroy {
   /**
@@ -229,6 +233,13 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
    */
   private readonly contenedor: Signal<ElementRef<HTMLDivElement>> =
     viewChild.required<ElementRef<HTMLDivElement>>("contenedorMapa");
+
+  private readonly controlTema: Signal<ElementRef<HTMLDivElement>> =
+    viewChild.required<ElementRef<HTMLDivElement>>("controlTema");
+
+  private readonly temaService: TemaService = inject(TemaService);
+
+  protected readonly temaMapa: Signal<Tema> = this.temaService.temaMapa;
 
   /**
    *
@@ -372,7 +383,16 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
       maxZoom: ZOOM_MAXIMO,
       maxBounds: LIMITES_MUNDO,
       maxBoundsViscosity: 1,
+      zoomControl: false,
     });
+
+    control.zoom({ position: "bottomright" }).addTo(mapa);
+
+    const elementoTema: HTMLDivElement = this.controlTema().nativeElement;
+    DomEvent.disableClickPropagation(elementoTema);
+    const botonTema: Control = new Control({ position: "bottomright" });
+    botonTema.onAdd = (): HTMLElement => elementoTema;
+    botonTema.addTo(mapa);
 
     tileLayer(CAPA_BASE.url, {
       attribution: CAPA_BASE.atribucion,
@@ -390,6 +410,10 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
    * borra el mapa cuando el componente sale de la pantalla, para liberar memoria
    *
    */
+  protected alternarTema(): void {
+    this.temaService.alternarMapa();
+  }
+
   ngOnDestroy(): void {
     this.mapa()?.remove();
   }

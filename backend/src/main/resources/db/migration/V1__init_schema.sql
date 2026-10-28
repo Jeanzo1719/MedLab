@@ -134,7 +134,7 @@ CREATE TABLE auditoria_estados_farmacia (
 );
 
 CREATE TABLE categorias (
-    id              INT             AUTO_INCREMENT PRIMARY KEY,
+    id              BIGINT          AUTO_INCREMENT PRIMARY KEY,
     nombre          VARCHAR(100)    NOT NULL UNIQUE
 );
 
@@ -151,7 +151,7 @@ INSERT INTO categorias (nombre) VALUES
     ('Vitaminas y suplementos');
 
 CREATE TABLE formas_farmaceuticas (
-    id              INT             AUTO_INCREMENT PRIMARY KEY,
+    id              BIGINT          AUTO_INCREMENT PRIMARY KEY,
     nombre          VARCHAR(30)     NOT NULL UNIQUE
 );
 
@@ -174,12 +174,12 @@ INSERT INTO formas_farmaceuticas (nombre) VALUES
     ('gas');
 
 CREATE TABLE medicamentos (
-    id                      INT             AUTO_INCREMENT PRIMARY KEY,
+    id                      BIGINT          AUTO_INCREMENT PRIMARY KEY,
     nombre_comercial        VARCHAR(100)    NOT NULL,
     principio_activo        VARCHAR(150)    NOT NULL,
-    categoria_id            INT             NOT NULL,
+    categoria_id            BIGINT          NOT NULL,
     presentacion            VARCHAR(100)    NOT NULL,
-    forma_farmaceutica_id   INT             NOT NULL,
+    forma_farmaceutica_id   BIGINT          NOT NULL,
 
     FOREIGN KEY (categoria_id) REFERENCES categorias(id)
         ON DELETE RESTRICT
@@ -209,7 +209,7 @@ INSERT INTO estados_disponibilidad (nombre) VALUES
 CREATE TABLE disponibilidad (
     id                          INT             AUTO_INCREMENT PRIMARY KEY,
     farmacia_id                 INT             NOT NULL,
-    medicamento_id              INT             NOT NULL,
+    medicamento_id              BIGINT          NOT NULL,
     cantidad_disponible         INT             NOT NULL,
     precio                      DECIMAL(10, 2)  NOT NULL,
     estado_disponibilidad_id    INT             NOT NULL,

@@ -42,7 +42,7 @@
 
       <ul class="tarjetas">
         @for (servicio of servicios; track servicio.titulo) {
-          <li class="tarjeta">
+          <li class="tarjeta al-desplazar">
             <span class="icono" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="28" height="28">
                 <path [attr.d]="servicio.icono" />
@@ -71,7 +71,7 @@
       <address>
         <ul class="medios">
           @for (medio of mediosContacto; track medio.titulo) {
-            <li class="medio">
+            <li class="medio al-desplazar">
               <span class="icono" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="24" height="24">
                   <path [attr.d]="medio.icono" />

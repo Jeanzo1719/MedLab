@@ -2,6 +2,7 @@ package com.medlab.main.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,9 +10,9 @@ import com.medlab.main.dto.CatalogosDto;
 import com.medlab.main.dto.GuardarDisponibilidadManualDto;
 import com.medlab.main.entity.EstadoDisponibilidad;
 import com.medlab.main.exception.DatosInvalidosException;
-import com.medlab.main.repository.CategoriaRepository;
-import com.medlab.main.repository.FormaFarmaceuticaRepository;
-import com.medlab.main.repository.MedicamentoRepository;
+import com.medlab.main.repository.CategoriasRepository;
+import com.medlab.main.repository.FormasFarmaceuticasRepository;
+import com.medlab.main.repository.MedicamentosJpaRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,16 +24,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MedicamentoCatalogoService {
 
-  private final MedicamentoRepository medicamentoRepository;
-  private final CategoriaRepository categoriaRepository;
-  private final FormaFarmaceuticaRepository formaFarmaceuticaRepository;
+  private final MedicamentosJpaRepository medicamentoRepository;
+  private final CategoriasRepository categoriaRepository;
+  private final FormasFarmaceuticasRepository formaFarmaceuticaRepository;
 
   @Transactional(readOnly = true)
   public CatalogosDto listar() {
-    List<CatalogosDto.Opcion> categorias = categoriaRepository.findAllByOrderByNombreAsc().stream()
-        .map(c -> new CatalogosDto.Opcion(c.getId(), c.getNombre())).toList();
-    List<CatalogosDto.Opcion> formas = formaFarmaceuticaRepository.findAllByOrderByNombreAsc().stream()
-        .map(f -> new CatalogosDto.Opcion(f.getId(), f.getNombre())).toList();
+    Sort porNombre = Sort.by("nombre");
+    List<CatalogosDto.Opcion> categorias = categoriaRepository.findAll(porNombre).stream()
+        .map(c -> new CatalogosDto.Opcion(Math.toIntExact(c.getId()), c.getNombre())).toList();
+    List<CatalogosDto.Opcion> formas = formaFarmaceuticaRepository.findAll(porNombre).stream()
+        .map(f -> new CatalogosDto.Opcion(Math.toIntExact(f.getId()), f.getNombre())).toList();
     List<String> estados = List.of(EstadoDisponibilidad.DISPONIBLE, EstadoDisponibilidad.AGOTADO,
         EstadoDisponibilidad.BAJO_PEDIDO);
     return new CatalogosDto(categorias, formas, estados);
@@ -54,10 +56,10 @@ public class MedicamentoCatalogoService {
     validarLargo("El principio activo", principio, 2, 150);
     validarLargo("La presentación", presentacion, 1, 100);
 
-    if (!categoriaRepository.existsById(datos.categoriaId())) {
+    if (!categoriaRepository.existsById(Long.valueOf(datos.categoriaId()))) {
       throw new DatosInvalidosException("La categoría " + datos.categoriaId() + " no existe");
     }
-    if (!formaFarmaceuticaRepository.existsById(datos.formaFarmaceuticaId())) {
+    if (!formaFarmaceuticaRepository.existsById(Long.valueOf(datos.formaFarmaceuticaId()))) {
       throw new DatosInvalidosException(
           "La forma farmacéutica " + datos.formaFarmaceuticaId() + " no existe");
     }
@@ -66,6 +68,7 @@ public class MedicamentoCatalogoService {
         datos.formaFarmaceuticaId());
     return medicamentoRepository
         .buscarIdPorCombinacion(nombre, principio, presentacion, datos.formaFarmaceuticaId())
+        .map(id -> Math.toIntExact(id))
         .orElseThrow(() -> new IllegalStateException("El medicamento no aparece después de crearlo"));
   }
 
