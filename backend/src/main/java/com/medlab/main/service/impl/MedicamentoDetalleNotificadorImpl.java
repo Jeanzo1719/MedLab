@@ -21,7 +21,8 @@ import org.springframework.stereotype.Service;
  * /app/medicamentos/detalle (con el header medicamentoId) y los cambios suscribiéndose a
  * /topic/medicamentos/{medicamentoId}; ambos entregan el mismo MedicamentoDetalleDto. Lo
  * debe llamar el código que modifica una disponibilidad (cambia fecha_hora_reporte), después
- * de guardar el cambio. Si el medicamento no existe, MedicamentoDetalleService lanza
+ * de guardar el cambio; CalificacionServiceImpl lo llama cada vez que guarda una
+ * calificación. Si el medicamento no existe, MedicamentoDetalleService lanza
  * MedicamentoNotFoundException y no se envía nada. No modifica la base de datos.
  */
 @Service

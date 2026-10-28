@@ -22,7 +22,8 @@ public interface FarmaciasJpaRepository extends JpaRepository<FarmaciasEntity, I
      * derivada. Primero descarta las farmacias fuera de un cuadro alrededor del usuario (un
      * grado de latitud mide unos 111 km) para usar el indice idx_farmacias_ubicacion; luego
      * calcula la distancia, quita las que pasan del radio, las ordena y se queda con las
-     * primeras segun el limite.
+     * primeras segun el limite. De cada farmacia devuelve tambien el id de su reporte de
+     * disponibilidad (d.id), para que el frontend le encuentre su mensaje de disponibilidad.
      */
     @Query(value = """
             SELECT f.usuario_id AS id, f.nombre_farmacia AS nombre, f.latitud AS latitud, f.longitud AS longitud,

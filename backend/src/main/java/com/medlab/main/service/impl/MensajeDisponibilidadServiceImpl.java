@@ -17,7 +17,10 @@ import org.springframework.stereotype.Service;
  * Detalles técnicos: cuenta cuántas calificaciones recientes son "Si hay", "Bajo pedido" y
  * "No hay" (escritos igual que en la tabla tipos_calificacion). Gana el tipo con más votos;
  * si dos o más empatan en el primer lugar, devuelve SIN_CONSENSO. Los nombres que no son
- * estos tres se ignoran. Si no queda ningún voto válido, devuelve SIN_CALIFICACIONES.
+ * estos tres se ignoran. Si no queda ningún voto válido, devuelve SIN_CALIFICACIONES. Al
+ * armar el mensaje, compara la fecha del reporte con "ahora" y, si pasaron más de
+ * DIAS_REPORTE_VIGENTE días (contados exactos, no por días completos), agrega el aviso de
+ * reporte desactualizado después del texto de la tendencia.
  * MedicamentoDetalleServiceImpl lo usa una vez por reporte, con las calificaciones que le
  * entrega CalificacionesRepository. No consulta la base de datos.
  */

@@ -14,5 +14,7 @@ public interface DisponibilidadRepository {
 
   List<DisponibilidadEntity> findByMedicamentoIdOrderByFechaHoraReporteDesc(Long medicamentoId);
 
+  /** Busca un reporte de disponibilidad por su id. CalificacionServiceImpl lo usa para
+   * saber de qué medicamento es el reporte que se califica. */
   Optional<DisponibilidadEntity> findById(Integer disponibilidadId);
 }

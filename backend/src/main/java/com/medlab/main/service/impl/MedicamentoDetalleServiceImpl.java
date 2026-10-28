@@ -33,8 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
  * Detalles técnicos: obtiene el medicamento de MedicamentosRepository, sus reportes de
  * DisponibilidadRepository y las calificaciones recientes de todos los reportes con una sola
  * consulta a CalificacionesRepository. Calcula el texto relativo con TiempoRelativoService y
- * la tendencia de disponibilidad con MensajeDisponibilidadService, usando la hora del
- * servidor como "ahora". Entrega un MedicamentoDetalleDto a MedicamentoDetalleController.
+ * la tendencia de disponibilidad y su mensaje con MensajeDisponibilidadService, usando la hora
+ * del servidor como "ahora". Entrega un MedicamentoDetalleDto a MedicamentoDetalleController.
  * Solo lee la base de datos: no guarda ni modifica nada.
  */
 @Service
@@ -97,7 +97,8 @@ public class MedicamentoDetalleServiceImpl implements MedicamentoDetalleService 
 
   /**
    * Convierte un reporte en el dato que se envía al frontend. Si tiposRecientes está vacía,
-   * el reporte no tiene calificaciones y su mensaje es "sin calificaciones aún".
+   * el reporte no tiene calificaciones y su mensaje es "sin calificaciones aún". Si el reporte
+   * tiene más de 15 días, el mensaje lleva además el aviso de que puede estar desactualizado.
    */
   private DisponibilidadReporteDto toDisponibilidadReporteDto(DisponibilidadEntity disponibilidad,
       List<String> tiposRecientes, LocalDateTime ahora) {

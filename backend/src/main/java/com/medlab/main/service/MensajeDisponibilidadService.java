@@ -10,7 +10,8 @@ import java.util.List;
  *
  * Cómo entenderlo: es como contar los votos de los últimos clientes: si la mayoría dice "sí
  * hay", el letrero dice que está disponible; si dos opciones empatan, el letrero dice que no
- * se ponen de acuerdo.
+ * se ponen de acuerdo. Si el reporte de la farmacia es viejo, el letrero lleva además una nota
+ * que avisa que puede estar desactualizado.
  */
 public interface MensajeDisponibilidadService {
 
@@ -22,6 +23,10 @@ public interface MensajeDisponibilidadService {
   String TIPO_BAJO_PEDIDO = "Bajo pedido";
   String TIPO_NO_HAY = "No hay";
 
+  /**
+   * Cuántos días puede tener un reporte de disponibilidad antes de que su mensaje lleve el
+   * aviso de que puede estar desactualizado.
+   */
   int DIAS_REPORTE_VIGENTE = 15;
 
   /**
@@ -32,6 +37,17 @@ public interface MensajeDisponibilidadService {
    */
   TendenciaDisponibilidad calculateTendenciaDisponibilidad(List<String> tiposRecientes);
 
+  /**
+   * Arma el mensaje que se muestra para un reporte.
+   *
+   * tendencia: lo que dicen sus calificaciones recientes.
+   * fechaHoraReporte: cuándo la farmacia actualizó el reporte por última vez.
+   * ahora: momento con el que se compara.
+   *
+   * Devuelve el mensaje de la tendencia. Si el reporte tiene más de DIAS_REPORTE_VIGENTE
+   * días, le agrega "El reporte de la farmacia tiene más de 15 días y puede estar
+   * desactualizado".
+   */
   String buildMensajeDisponibilidad(TendenciaDisponibilidad tendencia,
       LocalDateTime fechaHoraReporte, LocalDateTime ahora);
 }
