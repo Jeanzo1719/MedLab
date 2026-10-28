@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { Observable } from "rxjs";
+import { EMPTY, Observable, catchError, merge } from "rxjs";
 
 import { StompService } from "./stomp.service";
 
@@ -50,6 +50,52 @@ export interface MedicamentoBusqueda {
 
 /**
  * 
+ * un reporte de disponibilidad de una farmacia, con lo que dicen las
+ * calificaciones de los usuarios. Trae solo los campos de
+ * DisponibilidadReporteDto que se usan
+ * 
+ */
+export interface ReporteDisponibilidad {
+  /**
+   * 
+   * el número que identifica al reporte
+   * 
+   */
+  disponibilidadId: number;
+
+  /**
+   * 
+   * el mensaje que se muestra, por ejemplo "Según los últimos reportes, el
+   * medicamento está disponible"
+   * 
+   */
+  mensajeDisponibilidad: string;
+}
+
+/**
+ * 
+ * el detalle de un medicamento con los reportes de cada farmacia. Trae solo los
+ * campos de MedicamentoDetalleDto que se usan
+ * 
+ */
+export interface MedicamentoDetalle {
+  /**
+   * 
+   * el número que identifica al medicamento
+   * 
+   */
+  id: number;
+
+  /**
+   * 
+   * un reporte por cada farmacia que tiene el medicamento
+   * 
+   */
+  reportes: ReporteDisponibilidad[];
+}
+
+/**
+ * 
  * el service de los medicamentos en el frontend. Le pide al backend los
  * resultados del buscador
  * 
@@ -74,5 +120,23 @@ export class MedicamentoService {
    */
   buscar(texto: string): Observable<MedicamentoBusqueda[]> {
     return this.stomp.consultar<MedicamentoBusqueda[]>("/app/medicamentos/buscar", { q: texto });
+  }
+
+  /**
+   * 
+   * devuelve el detalle del medicamento y cada actualización que llegue
+   * 
+   * primero lo pide al backend en /app/medicamentos/detalle (si esa respuesta
+   * falla, solo se ignora) y a la vez escucha /topic/medicamentos/{id}, donde el
+   * backend lo vuelve a enviar cada vez que alguien califica un reporte
+   * 
+   */
+  seguirDetalle(id: number): Observable<MedicamentoDetalle> {
+    return merge(
+      this.stomp
+        .consultar<MedicamentoDetalle>("/app/medicamentos/detalle", { medicamentoId: String(id) })
+        .pipe(catchError(() => EMPTY)),
+      this.stomp.escuchar<MedicamentoDetalle>(`/topic/medicamentos/${id}`),
+    );
   }
 }

@@ -9,11 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.medlab.main.dto.DatosFarmaciaDto;
 import com.medlab.main.dto.GuardarDatosFarmaciaDto;
-import com.medlab.main.entity.EstadoFarmacia;
-import com.medlab.main.entity.Farmacia;
+import com.medlab.main.entity.EstadosFarmaciaEntity;
+import com.medlab.main.entity.FarmaciasEntity;
 import com.medlab.main.exception.AccesoPanelDenegadoException;
 import com.medlab.main.exception.DatosInvalidosException;
-import com.medlab.main.repository.FarmaciaRepository;
+import com.medlab.main.repository.FarmaciasJpaRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +27,7 @@ public class FarmaciaPanelService {
 
   private static final String ESTADO_FARMACIA_APROBADA = "aprobada";
 
-  private final FarmaciaRepository farmaciaRepository;
+  private final FarmaciasJpaRepository farmaciaRepository;
 
   @Transactional(readOnly = true)
   public DatosFarmaciaDto obtener(Integer farmaciaId) {
@@ -41,7 +41,7 @@ public class FarmaciaPanelService {
       throw new DatosInvalidosException("La latitud y la longitud van juntas: envía las dos o ninguna");
     }
 
-    Farmacia farmacia = buscarAprobada(farmaciaId);
+    FarmaciasEntity farmacia = buscarAprobada(farmaciaId);
     farmacia.setNombreFarmacia(datos.nombreFarmacia().trim());
     farmacia.setTipoViaPrincipal(datos.tipoViaPrincipal().trim());
     farmacia.setNumeroViaPrincipal(datos.numeroViaPrincipal().trim());
@@ -64,10 +64,10 @@ public class FarmaciaPanelService {
   }
 
   /** Mismo criterio que el inventario: una farmacia pendiente o suspendida no usa el panel. */
-  private Farmacia buscarAprobada(Integer farmaciaId) {
-    Farmacia farmacia = farmaciaRepository.findById(farmaciaId)
+  private FarmaciasEntity buscarAprobada(Integer farmaciaId) {
+    FarmaciasEntity farmacia = farmaciaRepository.findById(farmaciaId)
         .orElseThrow(() -> new AccesoPanelDenegadoException("La farmacia no existe"));
-    EstadoFarmacia estado = farmacia.getEstadoAprobacion();
+    EstadosFarmaciaEntity estado = farmacia.getEstadoAprobacion();
     if (estado == null || !ESTADO_FARMACIA_APROBADA.equals(estado.getNombre())) {
       throw new AccesoPanelDenegadoException("La farmacia no está aprobada");
     }
@@ -88,7 +88,7 @@ public class FarmaciaPanelService {
     return valor.trim();
   }
 
-  private String armarDireccion(Farmacia f) {
+  private String armarDireccion(FarmaciasEntity f) {
     StringBuilder direccion = new StringBuilder()
         .append(f.getTipoViaPrincipal()).append(' ').append(f.getNumeroViaPrincipal())
         .append(f.getLetraViaPrincipal() == null ? "" : f.getLetraViaPrincipal())
@@ -101,7 +101,7 @@ public class FarmaciaPanelService {
     return direccion.toString();
   }
 
-  private DatosFarmaciaDto aDto(Farmacia f) {
+  private DatosFarmaciaDto aDto(FarmaciasEntity f) {
     return new DatosFarmaciaDto(f.getUsuarioId(), f.getNombreFarmacia(), f.getTipoViaPrincipal(),
         f.getNumeroViaPrincipal(), f.getLetraViaPrincipal(), f.getNumeroViaGeneradora(),
         f.getLetraViaGeneradora(), f.getNumeroPredio(), f.getComplemento(), armarDireccion(f),

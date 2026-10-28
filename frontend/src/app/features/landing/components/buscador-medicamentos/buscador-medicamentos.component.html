@@ -85,8 +85,8 @@
 
       -->
       <ul class="lista">
-        @for (medicamento of estadoActual.medicamentos; track medicamento.id) {
-          <li>
+        @for (medicamento of estadoActual.medicamentos; track medicamento.id; let i = $index) {
+          <li class="aparecer" [style.--retraso.s]="i * 0.05">
             <a
               class="medicamento"
               routerLink="/farmacias-cercanas"

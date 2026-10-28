@@ -17,7 +17,7 @@ import jakarta.validation.constraints.Size;
  * el nombre.
  * 
  */
-public record MedicamentoBusquedaDto(@NotNull Integer id, @NotBlank @Size(min = 2, max = 100) String nombreComercial,
+public record MedicamentoBusquedaDto(@NotNull Long id, @NotBlank @Size(min = 2, max = 100) String nombreComercial,
 		@NotBlank @Size(min = 2, max = 150) String principioActivo, @NotBlank @Size(max = 100) String presentacion,
 		@NotBlank @Size(max = 30) String formaFarmaceutica) {
 }

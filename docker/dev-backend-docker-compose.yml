@@ -37,6 +37,9 @@ services:
       # Spring Boot environment variables
       ## password and user should be exported from environment (.env file)
       SPRING_PROFILES_ACTIVE: dev ## spring boot development profile
+      # WebSocket allowed origins (Angular dev server, Tauri on Linux/macOS, Tauri on Windows/Android)
+      SPRING_CORS_ALLOWED_ORIGINS: ${SPRING_CORS_ALLOWED_ORIGINS:-http://localhost:1420,tauri://localhost,http://tauri.localhost}
+
       SERVER_ADDRESS: 0.0.0.0
 
       # Database environment variables
@@ -46,8 +49,6 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
 
-      # WebSocket allowed origins (Angular dev server, Tauri on Linux/macOS, Tauri on Windows/Android)
-      SPRING_CORS_ALLOWED_ORIGINS: ${SPRING_CORS_ALLOWED_ORIGINS:-http://localhost:1420,tauri://localhost,http://tauri.localhost}
 
 volumes:
   mariadb_data:

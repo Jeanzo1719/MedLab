@@ -10,18 +10,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** Tabla categorias: grupo terapéutico del medicamento (ej. "Analgésicos"). */
-@Entity
-@Table(name = "categorias")
+/**
+ * EstadosFarmaciaEntity
+ */
 @Getter
 @Setter
 @NoArgsConstructor
-public class Categoria {
+@Entity
+@Table(name = "estados_farmacia")
+public class EstadosFarmaciaEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
   private Integer id;
 
-  @Column(name = "nombre", nullable = false, length = 100)
+  @Column(name = "nombre", nullable = false, length = 30, unique = true)
   private String nombre;
 }

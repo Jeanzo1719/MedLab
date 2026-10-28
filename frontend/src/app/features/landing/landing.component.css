@@ -139,7 +139,7 @@ h1 {
   width: 48px;
   height: 48px;
   margin-bottom: 1rem;
-  color: #ffffff;
+  color: var(--color-sobre-primario);
   background-color: var(--color-marca);
   border-radius: 0.75rem;
 }
@@ -222,7 +222,7 @@ address {
 
 /* Pie de página: verde oscuro, el mismo de la sección de farmacias */
 .pie {
-  color: var(--color-fondo);
+  color: var(--color-texto-invertido);
   background-color: var(--color-primario-oscuro);
 }
 
