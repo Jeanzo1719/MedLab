@@ -73,13 +73,15 @@ class DisponibilidadServiceTest {
   private MedicamentoRepository medicamentoRepository;
   @Mock
   private MedicamentoDetalleNotificador notificador;
+  @Mock
+  private ActividadFarmaciaService actividadFarmacia;
 
   private DisponibilidadService servicio;
 
   @BeforeEach
   void preparar() {
-    servicio = new DisponibilidadService(disponibilidadRepository, estadoDisponibilidadRepository,
-        farmaciaRepository, medicamentoRepository, notificador);
+      servicio = new DisponibilidadService(disponibilidadRepository, estadoDisponibilidadRepository,
+        farmaciaRepository, medicamentoRepository, notificador, actividadFarmacia);
     // Caso normal por defecto: farmacia aprobada y medicamento existente.
     when(farmaciaRepository.findById(FARMACIA_ID)).thenReturn(Optional.of(farmacia("aprobada")));
     when(medicamentoRepository.existsById(MEDICAMENTO_ID)).thenReturn(true);
@@ -242,6 +244,56 @@ class DisponibilidadServiceTest {
     assertEquals(0, paginacion.getValue().getPageNumber());
     assertEquals(50, paginacion.getValue().getPageSize());
     assertNotNull(paginacion.getValue().getSort().getOrderFor("medicamento.nombreComercial"));
+  }
+
+    @Test
+  void guardarRegistraLaActividadDeLaFarmacia() {
+    prepararGuardado(10, EstadoDisponibilidad.DISPONIBLE);
+
+    servicio.guardar(FARMACIA_ID, new GuardarDisponibilidadDto(MEDICAMENTO_ID, 10, PRECIO, null));
+
+    verify(actividadFarmacia).registrarActividad(FARMACIA_ID);
+  }
+
+  @Test
+  void unGuardadoRechazadoNoCuentaComoActividad() {
+    // Si no se guardó nada, la farmacia no debe zafarse de la alerta de inactividad.
+    assertThrows(DatosInvalidosException.class, () -> servicio.guardar(FARMACIA_ID,
+        new GuardarDisponibilidadDto(MEDICAMENTO_ID, 0, PRECIO, "disponible")));
+
+    verify(actividadFarmacia, never()).registrarActividad(any());
+  }
+
+  @Test
+  void unaFarmaciaPendienteNoRegistraActividad() {
+    when(farmaciaRepository.findById(FARMACIA_ID)).thenReturn(Optional.of(farmacia("pendiente")));
+
+    assertThrows(AccesoPanelDenegadoException.class, () -> servicio.guardar(FARMACIA_ID,
+        new GuardarDisponibilidadDto(MEDICAMENTO_ID, 5, PRECIO, null)));
+
+    verify(actividadFarmacia, never()).registrarActividad(any());
+  }
+
+  @Test
+  void siFallaElAvisoEnVivoLaActividadQuedaRegistrada() {
+    prepararGuardado(10, EstadoDisponibilidad.DISPONIBLE);
+    doThrow(new RuntimeException("sin conexión")).when(notificador).publicar(MEDICAMENTO_ID);
+
+    servicio.guardar(FARMACIA_ID, new GuardarDisponibilidadDto(MEDICAMENTO_ID, 10, PRECIO, null));
+
+    verify(actividadFarmacia).registrarActividad(FARMACIA_ID);
+  }
+
+  @Test
+  void marcarAgotadoRegistraLaActividadDeLaFarmacia() {
+    EstadoDisponibilidad agotado = estado(EstadoDisponibilidad.AGOTADO);
+    when(estadoDisponibilidadRepository.findByNombre(EstadoDisponibilidad.AGOTADO))
+        .thenReturn(Optional.of(agotado));
+    when(disponibilidadRepository.marcarAgotado(FARMACIA_ID, MEDICAMENTO_ID, ID_ESTADO)).thenReturn(1);
+
+    servicio.marcarAgotado(FARMACIA_ID, MEDICAMENTO_ID);
+
+    verify(actividadFarmacia).registrarActividad(FARMACIA_ID);
   }
 
   /** Deja listo todo lo que guardar() necesita para devolver el producto ya guardado. */

@@ -29,6 +29,8 @@ public class FarmaciaPanelService {
 
   private final FarmaciaRepository farmaciaRepository;
 
+  private final ActividadFarmaciaService actividadFarmacia;
+
   @Transactional(readOnly = true)
   public DatosFarmaciaDto obtener(Integer farmaciaId) {
     return aDto(buscarAprobada(farmaciaId));
@@ -60,6 +62,9 @@ public class FarmaciaPanelService {
     // Hora del servidor, en segundos: la columna no guarda fracciones y así la respuesta
     // coincide con lo que queda en la BD.
     farmacia.setFechaUltimaActualizacion(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+    
+    // Editar datos cuenta como actividad: las alertas de inactividad pendientes quedan atendidas.
+    actividadFarmacia.atenderAlertas(farmaciaId);
     return aDto(farmacia);
   }
 
