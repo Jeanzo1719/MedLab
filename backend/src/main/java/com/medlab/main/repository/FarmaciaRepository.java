@@ -39,6 +39,7 @@ public interface FarmaciaRepository extends JpaRepository<Farmacia, Integer> {
 	 */
 	@Query(value = """
 			SELECT f.usuario_id AS id, f.nombre_farmacia AS nombre, f.latitud AS latitud, f.longitud AS longitud,
+			       d.id AS disponibilidadId,
 			       6371 * 2 * ASIN(SQRT(
 			           POWER(SIN(RADIANS(f.latitud - :latitud) / 2), 2)
 			           + COS(RADIANS(:latitud)) * COS(RADIANS(f.latitud))
@@ -81,5 +82,7 @@ public interface FarmaciaRepository extends JpaRepository<Farmacia, Integer> {
 		BigDecimal getLongitud();
 
 		Double getDistanciaKm();
+
+		Integer getDisponibilidadId();
 	}
 }

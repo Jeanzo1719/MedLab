@@ -91,6 +91,6 @@ public class FarmaciaService {
 	 */
 	private FarmaciaCercanaDto aCercanaDto(FarmaciaCercana farmacia) {
 		return new FarmaciaCercanaDto(farmacia.getId(), farmacia.getNombre(), farmacia.getLatitud().doubleValue(),
-				farmacia.getLongitud().doubleValue(), farmacia.getDistanciaKm());
+				farmacia.getLongitud().doubleValue(), farmacia.getDistanciaKm(), farmacia.getDisponibilidadId());
 	}
 }

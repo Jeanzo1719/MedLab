@@ -22,5 +22,6 @@ import jakarta.validation.constraints.Size;
  */
 public record FarmaciaCercanaDto(@NotNull Integer id, @NotBlank @Size(max = 150) String nombre,
 		@DecimalMin("-90.0") @DecimalMax("90.0") double latitud,
-		@DecimalMin("-180.0") @DecimalMax("180.0") double longitud, @PositiveOrZero double distanciaKm) {
+		@DecimalMin("-180.0") @DecimalMax("180.0") double longitud, @PositiveOrZero double distanciaKm,
+		@NotNull Integer disponibilidadId) {
 }
