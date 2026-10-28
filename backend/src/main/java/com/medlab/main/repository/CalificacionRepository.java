@@ -4,8 +4,10 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.medlab.main.entity.Calificacion;
 
@@ -68,4 +70,16 @@ public interface CalificacionRepository extends JpaRepository<Calificacion, Long
   List<CalificacionReciente> buscarRecientesPorDisponibilidad(
       @Param("ids") Collection<Integer> ids,
       @Param("limite") int limite);
+
+  @Transactional
+  @Modifying
+  @Query(value = """
+      insert into calificaciones (disponibilidad_id, usuario_id, tipo_calificacion_id)
+      values (:disponibilidadId, :usuarioId, :tipoCalificacionId)
+      on duplicate key update tipo_calificacion_id = values(tipo_calificacion_id),
+                              fecha_hora = current_timestamp
+      """, nativeQuery = true)
+  int registrar(@Param("disponibilidadId") Integer disponibilidadId,
+      @Param("usuarioId") Integer usuarioId,
+      @Param("tipoCalificacionId") Integer tipoCalificacionId);
 }
