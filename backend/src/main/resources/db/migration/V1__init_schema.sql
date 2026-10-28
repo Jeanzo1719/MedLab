@@ -208,6 +208,11 @@ CREATE TABLE tipos_calificacion (
     nombre          VARCHAR(30)     NOT NULL UNIQUE
 );
 
+INSERT INTO tipos_calificacion (nombre) VALUES
+    ('Si hay'),
+    ('Bajo pedido'),
+    ('No hay');
+
 CREATE TABLE calificaciones (
     id                      BIGINT          AUTO_INCREMENT PRIMARY KEY,
     disponibilidad_id       INT             NOT NULL,
