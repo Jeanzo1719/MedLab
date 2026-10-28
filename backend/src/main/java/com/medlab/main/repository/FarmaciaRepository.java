@@ -34,7 +34,8 @@ public interface FarmaciaRepository extends JpaRepository<Farmacia, Integer> {
 	 * idx_farmacias_ubicacion y no revisa todas las farmacias. Después calcula la
 	 * distancia real con la fórmula de Haversine (6371 es el radio de la Tierra en
 	 * km), quita las que pasan del radio, las ordena por distancia y se queda con
-	 * las primeras según el límite
+	 * las primeras según el límite. De cada farmacia devuelve también el id de su
+	 * reporte de disponibilidad del medicamento
 	 * 
 	 */
 	@Query(value = """
@@ -68,7 +69,8 @@ public interface FarmaciaRepository extends JpaRepository<Farmacia, Integer> {
 	 * la forma de cada fila que devuelve la búsqueda de farmacias cercanas
 	 * 
 	 * no es una tabla. Spring llena cada método con la columna de la consulta que
-	 * tiene el mismo nombre: id, nombre, latitud, longitud y distanciaKm
+	 * tiene el mismo nombre: id, nombre, latitud, longitud, distanciaKm y
+	 * disponibilidadId
 	 * 
 	 */
 	interface FarmaciaCercana {

@@ -203,10 +203,10 @@ input:focus {
 
 /*
 
-  cada farmacia es un botón con forma de tarjeta, con el nombre en negrilla y
-  la distancia en gris. scroll-margin deja espacio arriba (por el encabezado
-  fijo) y abajo cuando la lista se mueve hasta ella. La elegida tiene el borde
-  verde y una franja verde a la izquierda
+  cada farmacia es un botón con forma de tarjeta, con el nombre en negrilla, la
+  distancia en gris y debajo el mensaje de disponibilidad. scroll-margin deja
+  espacio arriba (por el encabezado fijo) y abajo cuando la lista se mueve
+  hasta ella. La elegida tiene el borde verde y una franja verde a la izquierda
 
 */
 .farmacia {
@@ -238,6 +238,11 @@ input:focus {
   font-weight: 700;
 }
 
+/*
+
+  el mensaje de disponibilidad de cada farmacia, en letra un poco más pequeña
+
+*/
 .veracidad {
   font-size: 0.875rem;
 }

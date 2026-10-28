@@ -15,7 +15,7 @@ import com.medlab.main.entity.Calificacion;
  * Qué hace: da acceso a la tabla calificaciones y trae las calificaciones más recientes de
  * cada reporte de disponibilidad.
  *
- * Cómo entenderlo: es como pedirle a un encuestador "dame solo las últimas 5 reseñas de cada
+ * Cómo entenderlo: es como pedirle a un encuestador "dame solo las últimas 20 reseñas de cada
  * tienda", en lugar de todas las reseñas de siempre.
  *
  * Detalles técnicos: JpaRepository ya incluye, sin escribir código, estos métodos básicos:
@@ -24,7 +24,8 @@ import com.medlab.main.entity.Calificacion;
  * - count(): cuántas calificaciones hay en total.
  * - existsById(id): true si existe una calificación con ese id.
  * Además define buscarRecientesPorDisponibilidad, que MedicamentoDetalleService llama una
- * sola vez para todas las farmacias de un medicamento.
+ * sola vez para todas las farmacias de un medicamento, y registrar, que CalificacionService
+ * usa para guardar la calificación de un usuario.
  */
 public interface CalificacionRepository extends JpaRepository<Calificacion, Long> {
 
@@ -71,6 +72,20 @@ public interface CalificacionRepository extends JpaRepository<Calificacion, Long
       @Param("ids") Collection<Integer> ids,
       @Param("limite") int limite);
 
+  /**
+   * Guarda la calificación de un usuario sobre un reporte de disponibilidad.
+   *
+   * disponibilidadId: id del reporte que se califica.
+   * usuarioId: id del usuario que califica.
+   * tipoCalificacionId: id del tipo elegido (1 "Si hay", 2 "Bajo pedido", 3 "No hay").
+   *
+   * Si el usuario todavía no había calificado ese reporte, crea la calificación. Si ya lo
+   * había hecho, no crea otra: cambia el tipo y pone la fecha_hora de ahora, así su opinión
+   * nueva cuenta entre las más recientes. Lo sabe por la restricción UNIQUE
+   * (disponibilidad_id, usuario_id) de la tabla. Devuelve cuántas filas cambió la base de
+   * datos. Es una consulta nativa porque JPQL no tiene "on duplicate key update"; por eso
+   * lleva {@code @Modifying} y {@code @Transactional}.
+   */
   @Transactional
   @Modifying
   @Query(value = """

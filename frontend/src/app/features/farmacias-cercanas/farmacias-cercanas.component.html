@@ -230,7 +230,8 @@
               <!--
 
                 la lista numerada de farmacias, de la más cercana a la más lejana. Cada una
-                es un botón con su nombre y su distancia; la primera lleva la etiqueta "Más
+                es un botón con su nombre, su distancia y el mensaje de disponibilidad según
+                las calificaciones de los usuarios; la primera lleva la etiqueta "Más
                 cercana". Al tocarla, se elige y se resalta en la lista y en el mapa
 
               -->
@@ -252,6 +253,13 @@
                           <span class="etiqueta-cercana">Más cercana</span>
                         }
                       </span>
+                      <!--
+
+                        el mensaje de disponibilidad de la farmacia, por ejemplo "Según los
+                        últimos reportes, el medicamento está disponible". Solo se muestra
+                        cuando ya llegó, y cambia solo cuando alguien califica
+
+                      -->
                       @if (mensajesDisponibilidad().get(farmacia.disponibilidadId); as mensaje) {
                         <span class="veracidad">{{ mensaje }}</span>
                       }

@@ -46,8 +46,9 @@ export interface FarmaciaMapa {
  * la forma de una farmacia cercana tal como llega del backend. Es el espejo de
  * FarmaciaCercanaDto
  * 
- * tiene todo lo de FarmaciaMapa (por eso extends) más la distancia, así el mapa
- * la puede dibujar igual que a las demás farmacias
+ * tiene todo lo de FarmaciaMapa (por eso extends) más la distancia y el número
+ * de su reporte de disponibilidad, así el mapa la puede dibujar igual que a las
+ * demás farmacias
  * 
  */
 export interface FarmaciaCercana extends FarmaciaMapa {
@@ -58,6 +59,12 @@ export interface FarmaciaCercana extends FarmaciaMapa {
    */
   distanciaKm: number;
 
+  /**
+   * 
+   * el número del reporte de disponibilidad de la farmacia para el medicamento
+   * buscado. Con él se encuentra su mensaje de disponibilidad
+   * 
+   */
   disponibilidadId: number;
 }
 

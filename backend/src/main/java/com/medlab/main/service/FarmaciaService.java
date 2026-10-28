@@ -85,8 +85,9 @@ public class FarmaciaService {
 	 * convierte una fila de la búsqueda de farmacias cercanas en los datos que
 	 * se envían al frontend
 	 * 
-	 * copia el id, el nombre y la distancia, y pasa la latitud y la longitud de
-	 * BigDecimal a números normales (double), que es como las usa el mapa
+	 * copia el id, el nombre, la distancia y el id del reporte de disponibilidad,
+	 * y pasa la latitud y la longitud de BigDecimal a números normales (double),
+	 * que es como las usa el mapa
 	 * 
 	 */
 	private FarmaciaCercanaDto aCercanaDto(FarmaciaCercana farmacia) {

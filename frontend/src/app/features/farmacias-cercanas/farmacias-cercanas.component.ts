@@ -130,6 +130,11 @@ export class FarmaciasCercanasComponent {
    */
   private readonly farmaciaService: FarmaciaService = inject(FarmaciaService);
 
+  /**
+   *
+   * el service que trae el mensaje de disponibilidad de cada farmacia
+   *
+   */
   private readonly medicamentoService: MedicamentoService = inject(MedicamentoService);
 
   /**
@@ -237,6 +242,16 @@ export class FarmaciasCercanasComponent {
     { initialValue: { tipo: "inactivo" } as EstadoFarmacias },
   );
 
+  /**
+   *
+   * el mensaje de disponibilidad de cada farmacia, guardado por el número de su
+   * reporte (disponibilidadId), para buscarlo rápido desde la lista
+   *
+   * cada vez que cambia el medicamento, deja de escuchar el anterior y empieza a
+   * escuchar el nuevo (eso hace switchMap). Se actualiza solo cada vez que alguien
+   * califica un reporte del medicamento. Empieza vacío
+   *
+   */
   protected readonly mensajesDisponibilidad: Signal<Map<number, string>> = toSignal(
     toObservable(this.medicamentoId).pipe(
       switchMap((medicamentoId) =>
@@ -461,6 +476,15 @@ export class FarmaciasCercanasComponent {
     );
   }
 
+  /**
+   *
+   * escucha el detalle del medicamento y lo convierte en los mensajes de cada
+   * farmacia
+   *
+   * cada vez que llega el detalle (el primero y cada actualización), arma una
+   * lista nueva que une el número de cada reporte con su mensaje
+   *
+   */
   private seguirMensajes(medicamentoId: number): Observable<Map<number, string>> {
     return this.medicamentoService.seguirDetalle(medicamentoId).pipe(
       map(

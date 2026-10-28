@@ -18,6 +18,9 @@ import jakarta.validation.constraints.Size;
  * latitud: la posición norte-sur. Va de -90 a 90
  * longitud: la posición este-oeste. Va de -180 a 180
  * distanciaKm: qué tan lejos está del usuario, en kilómetros. Nunca es negativa
+ * disponibilidadId: el número del reporte de disponibilidad de la farmacia para
+ * ese medicamento. Con él, el frontend sabe qué mensaje de disponibilidad le toca
+ * a cada farmacia. Es obligatorio
  * 
  */
 public record FarmaciaCercanaDto(@NotNull Integer id, @NotBlank @Size(max = 150) String nombre,
