@@ -2,6 +2,7 @@ package com.medlab.main.service.impl;
 
 import com.medlab.main.dto.FarmaciaCercanaDto;
 import com.medlab.main.dto.FarmaciaMapaDto;
+import com.medlab.main.dto.FarmaciaPendienteDto;
 import com.medlab.main.entity.FarmaciasEntity;
 import com.medlab.main.repository.FarmaciasRepository;
 import com.medlab.main.repository.FarmaciasRepository.FarmaciaCercana;
@@ -29,6 +30,8 @@ public class FarmaciasServiceImpl implements FarmaciasService {
 
   private static final String ESTADO_APROBADA = "aprobada";
 
+  private static final String ESTADO_PENDIENTE = "pendiente";
+
   /** Estado de disponibilidad que no cuenta en la búsqueda de farmacias cercanas: si el
    * medicamento está agotado, la farmacia no se muestra. */
   private static final String ESTADO_AGOTADO = "agotado";
@@ -49,6 +52,13 @@ public class FarmaciasServiceImpl implements FarmaciasService {
   }
 
   @Override
+  public List<FarmaciaPendienteDto> getAllFarmaciasPendientes() {
+    return farmaciasRepository.findByEstadoAprobacionNombre(ESTADO_PENDIENTE).stream()
+        .map(this::toFarmaciaPendienteDto)
+        .toList();
+  }
+
+  @Override
   public List<FarmaciaCercanaDto> getFarmaciasCercanasConDisponibilidad(Long medicamentoId,
       double latitud, double longitud) {
     return farmaciasRepository
@@ -57,6 +67,12 @@ public class FarmaciasServiceImpl implements FarmaciasService {
         .stream()
         .map(this::toFarmaciaCercanaDto)
         .toList();
+  }
+
+  private FarmaciaPendienteDto toFarmaciaPendienteDto(FarmaciasEntity farmacia) {
+    return new FarmaciaPendienteDto(farmacia.getUsuarioId(), farmacia.getNombreFarmacia(),
+        farmacia.getNit(), farmacia.getRut(), farmacia.getMatriculaMercantil(),
+        farmacia.getIdentificacionDirectorTecnico(), farmacia.getLicenciaSanitaria());
   }
 
   private FarmaciaMapaDto toFarmaciaMapaDto(FarmaciasEntity farmacia) {

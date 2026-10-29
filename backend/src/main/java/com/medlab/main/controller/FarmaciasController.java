@@ -2,6 +2,7 @@ package com.medlab.main.controller;
 
 import com.medlab.main.dto.FarmaciaCercanaDto;
 import com.medlab.main.dto.FarmaciaMapaDto;
+import com.medlab.main.dto.FarmaciaPendienteDto;
 import com.medlab.main.service.FarmaciasService;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -50,5 +51,10 @@ public class FarmaciasController {
       @Header("latitud") @NotNull @DecimalMin("-90.0") @DecimalMax("90.0") Double latitud,
       @Header("longitud") @NotNull @DecimalMin("-180.0") @DecimalMax("180.0") Double longitud) {
     return farmaciasService.getFarmaciasCercanasConDisponibilidad(medicamentoId, latitud, longitud);
+  }
+
+  @SubscribeMapping("/farmacias/pendientes")
+  public List<FarmaciaPendienteDto> getFarmaciasPendientes() {
+    return farmaciasService.getAllFarmaciasPendientes();
   }
 }

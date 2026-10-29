@@ -2,6 +2,7 @@ package com.medlab.main.service;
 
 import com.medlab.main.dto.FarmaciaCercanaDto;
 import com.medlab.main.dto.FarmaciaMapaDto;
+import com.medlab.main.dto.FarmaciaPendienteDto;
 import java.util.List;
 
 /**
@@ -10,6 +11,8 @@ import java.util.List;
 public interface FarmaciasService {
 
   List<FarmaciaMapaDto> getAllFarmaciasAprobadas();
+
+  List<FarmaciaPendienteDto> getAllFarmaciasPendientes();
 
   List<FarmaciaCercanaDto> getFarmaciasCercanasConDisponibilidad(Long medicamentoId,
       double latitud, double longitud);
