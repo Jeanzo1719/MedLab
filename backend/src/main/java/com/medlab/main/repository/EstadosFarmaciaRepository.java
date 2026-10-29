@@ -5,5 +5,6 @@ import java.util.Optional;
 
 public interface EstadosFarmaciaRepository {
 
+  /** Busca un estado de farmacia por su nombre, por ejemplo "aprobada". */
   Optional<EstadosFarmaciaEntity> findByNombre(String nombre);
 }

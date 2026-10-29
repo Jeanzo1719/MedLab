@@ -32,6 +32,8 @@ import org.springframework.validation.annotation.Validated;
 @AllArgsConstructor
 public class FarmaciasController {
 
+  /** Destino donde se publica la lista de pendientes cada vez que una farmacia se aprueba o se
+   * rechaza. */
   private static final String DESTINO_FARMACIAS_PENDIENTES = "/topic/farmacias/pendientes";
 
   private final FarmaciasService farmaciasService;
@@ -65,29 +67,48 @@ public class FarmaciasController {
     return farmaciasService.getFarmaciasCercanasConDisponibilidad(medicamentoId, latitud, longitud);
   }
 
+  /**
+   * Responde con las farmacias que esperan aprobación, con sus datos de validación, cuando el
+   * frontend se suscribe a /app/farmacias/pendientes. Para recibir los cambios después, el
+   * frontend también se suscribe a /topic/farmacias/pendientes.
+   */
   @SubscribeMapping("/farmacias/pendientes")
   public List<FarmaciaPendienteDto> getFarmaciasPendientes() {
     return farmaciasService.getAllFarmaciasPendientes();
   }
 
+  /**
+   * Aprueba una farmacia pendiente cuando el frontend envía un mensaje a
+   * /app/farmacias/aprobar con el header farmaciaId (un número mayor que 0). Después publica
+   * la lista de pendientes actualizada en /topic/farmacias/pendientes. El administrador va en
+   * null hasta que exista el inicio de sesión.
+   */
   @MessageMapping("/farmacias/aprobar")
   public void approveFarmacia(@Header("farmaciaId") @NotNull @Positive Integer farmaciaId) {
     aprobacionFarmaciasService.approveFarmacia(farmaciaId, null);
     publishFarmaciasPendientes();
   }
 
+  /**
+   * Rechaza una farmacia pendiente cuando el frontend envía un mensaje a
+   * /app/farmacias/rechazar con el header farmaciaId. Funciona igual que approveFarmacia.
+   */
   @MessageMapping("/farmacias/rechazar")
   public void rejectFarmacia(@Header("farmaciaId") @NotNull @Positive Integer farmaciaId) {
     aprobacionFarmaciasService.rejectFarmacia(farmaciaId, null);
     publishFarmaciasPendientes();
   }
 
+  /** Si la farmacia no existe o ya no está pendiente, deja solo un aviso corto en el log del
+   * backend. El cliente no recibe respuesta y la lista de pendientes no se vuelve a publicar. */
   @MessageExceptionHandler({FarmaciaNotFoundException.class,
       FarmaciaNotPendienteException.class})
   public void handleCambioEstadoFarmaciaException(RuntimeException ex) {
     log.warn(ex.getMessage());
   }
 
+  /** Envía la lista actual de farmacias pendientes a quienes escuchan
+   * /topic/farmacias/pendientes. */
   private void publishFarmaciasPendientes() {
     messagingTemplate.convertAndSend(DESTINO_FARMACIAS_PENDIENTES,
         farmaciasService.getAllFarmaciasPendientes());

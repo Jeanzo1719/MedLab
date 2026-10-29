@@ -14,6 +14,23 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Qué hace: aprueba o rechaza las farmacias que esperan la decisión del administrador y deja
+ * registrado cada cambio.
+ *
+ * Cómo entenderlo: es como la ventanilla que revisa las solicitudes: firma "aprobada" o
+ * "rechazada" y anota en la bitácora quién lo hizo y cuándo. Si la anotación falla, la firma
+ * tampoco cuenta.
+ *
+ * Detalles técnicos: busca la farmacia en FarmaciasRepository y revisa que su estado sea
+ * "pendiente". Busca el estado nuevo por su nombre en EstadosFarmaciaRepository y cambia el
+ * estado_aprobacion_id de la farmacia (el id, nunca el nombre como texto), pone
+ * fecha_ultima_actualizacion en la hora actual y guarda una fila en
+ * auditoria_estados_farmacia con el estado anterior y el nuevo. Todo va en una sola
+ * transacción (@Transactional): si algo falla, por ejemplo la auditoría, no se guarda nada.
+ * Lo llama FarmaciasController con el administrador en null hasta que exista el inicio de
+ * sesión.
+ */
 @Service
 @AllArgsConstructor
 public class AprobacionFarmaciasServiceImpl implements AprobacionFarmaciasService {
@@ -34,6 +51,11 @@ public class AprobacionFarmaciasServiceImpl implements AprobacionFarmaciasServic
     changeEstadoFarmacia(farmaciaId, usuarioAdminId, ESTADO_RECHAZADA);
   }
 
+  /**
+   * Hace el cambio de estado que comparten aprobar y rechazar.
+   *
+   * nombreEstadoNuevo: "aprobada" o "rechazada".
+   */
   private void changeEstadoFarmacia(Integer farmaciaId, Integer usuarioAdminId,
       String nombreEstadoNuevo) {
     FarmaciasEntity farmacia = farmaciasRepository.findById(farmaciaId)
@@ -56,6 +78,8 @@ public class AprobacionFarmaciasServiceImpl implements AprobacionFarmaciasServic
     auditoriaEstadosFarmaciaRepository.save(auditoria);
   }
 
+  /** Busca un estado de farmacia por su nombre. Si no existe, la V1 está incompleta y lanza
+   * IllegalStateException. */
   private EstadosFarmaciaEntity findEstadoFarmacia(String nombreEstado) {
     return estadosFarmaciaRepository.findByNombre(nombreEstado)
         .orElseThrow(() -> new IllegalStateException(

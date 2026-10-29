@@ -14,8 +14,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * FarmaciasEntity - mapea la tabla farmacias. La fecha_ultima_actualizacion
- * no se mapea porque la gestiona la base de datos (DEFAULT/ON UPDATE).
+ * FarmaciasEntity - mapea la tabla farmacias. La fecha_ultima_actualizacion la
+ * pone la base de datos al crear la farmacia (DEFAULT), pero no se actualiza sola
+ * (no tiene ON UPDATE): quien cambie el estado de la farmacia debe ponerla.
  */
 @Getter
 @Setter
@@ -80,6 +81,8 @@ public class FarmaciasEntity {
   @JoinColumn(name = "estado_aprobacion_id", nullable = false)
   private EstadosFarmaciaEntity estadoAprobacion;
 
+  /** Cuándo cambió por última vez el estado de la farmacia. AprobacionFarmaciasServiceImpl la
+   * pone al aprobarla o rechazarla. */
   @Column(name = "fecha_ultima_actualizacion", nullable = false, insertable = false)
   private LocalDateTime fechaUltimaActualizacion;
 }

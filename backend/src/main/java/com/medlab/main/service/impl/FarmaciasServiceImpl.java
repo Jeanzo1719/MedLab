@@ -14,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Qué hace: prepara los datos de las farmacias que se muestran en el mapa: las aprobadas del
- * mapa base y las aprobadas más cercanas que tienen un medicamento disponible.
+ * mapa base y las aprobadas más cercanas que tienen un medicamento disponible. También arma la
+ * lista de farmacias pendientes, con sus datos de validación, para el administrador.
  *
  * Cómo entenderlo: es como el empleado que filtra el directorio: primero las farmacias
  * aprobadas y después, de ellas, las que tienen el medicamento a menos de 20 km, de la más
@@ -69,6 +70,8 @@ public class FarmaciasServiceImpl implements FarmaciasService {
         .toList();
   }
 
+  /** Convierte una farmacia pendiente en el dato que ve el administrador: su id, su nombre y
+   * sus cinco datos de validación. */
   private FarmaciaPendienteDto toFarmaciaPendienteDto(FarmaciasEntity farmacia) {
     return new FarmaciaPendienteDto(farmacia.getUsuarioId(), farmacia.getNombreFarmacia(),
         farmacia.getNit(), farmacia.getRut(), farmacia.getMatriculaMercantil(),

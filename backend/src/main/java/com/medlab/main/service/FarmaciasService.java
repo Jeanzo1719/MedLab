@@ -6,7 +6,8 @@ import com.medlab.main.dto.FarmaciaPendienteDto;
 import java.util.List;
 
 /**
- * Prepara los datos de las farmacias que se muestran en el mapa de la landing.
+ * Prepara los datos de las farmacias que se muestran en el mapa de la landing y la lista de
+ * farmacias que esperan la aprobación del administrador.
  */
 public interface FarmaciasService {
 
