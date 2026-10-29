@@ -37,15 +37,27 @@ h2 {
   scroll-margin-top: var(--alto-encabezado);
 }
 
-/* Inicio: degradado menta → crema con un halo detrás del mapa */
+/* Inicio: degradado menta → crema (claro) o naranja tenue sobre oscuro (oscuro), con halos */
 .inicio {
+  /* El menta de --color-primario-suave no tiene versión oscura, por eso cada tema define su tono */
+  --hero-arriba: light-dark(
+    var(--color-primario-suave),
+    color-mix(in srgb, var(--color-acento) 9%, var(--color-fondo))
+  );
+  --hero-halo-derecha: light-dark(
+    color-mix(in srgb, var(--color-primario-suave) 80%, transparent),
+    color-mix(in srgb, var(--color-acento) 18%, transparent)
+  );
+  /* En claro es transparente: el halo izquierdo solo existe en oscuro */
+  --hero-halo-izquierda: light-dark(
+    transparent,
+    color-mix(in srgb, var(--color-acento) 14%, transparent)
+  );
+
   background:
-    radial-gradient(
-      40rem 24rem at 100% 0%,
-      color-mix(in srgb, var(--color-primario-suave) 80%, transparent),
-      transparent 70%
-    ),
-    linear-gradient(180deg, var(--color-primario-suave), var(--color-fondo) 85%);
+    radial-gradient(40rem 24rem at 100% 0%, var(--hero-halo-derecha), transparent 70%),
+    radial-gradient(34rem 22rem at 0% 10%, var(--hero-halo-izquierda), transparent 70%),
+    linear-gradient(180deg, var(--hero-arriba), var(--color-fondo) 85%);
 }
 
 .inicio .contenido {
