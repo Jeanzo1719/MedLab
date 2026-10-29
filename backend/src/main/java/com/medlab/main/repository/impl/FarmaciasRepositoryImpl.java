@@ -4,6 +4,7 @@ import com.medlab.main.entity.FarmaciasEntity;
 import com.medlab.main.repository.FarmaciasJpaRepository;
 import com.medlab.main.repository.FarmaciasRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +17,16 @@ public class FarmaciasRepositoryImpl implements FarmaciasRepository {
   @Override
   public List<FarmaciasEntity> findByEstadoAprobacionNombre(String nombreEstado) {
     return jpaRepository.findByEstadoAprobacionNombre(nombreEstado);
+  }
+
+  @Override
+  public Optional<FarmaciasEntity> findById(Integer farmaciaId) {
+    return jpaRepository.findById(farmaciaId);
+  }
+
+  @Override
+  public FarmaciasEntity save(FarmaciasEntity farmaciasEntity) {
+    return jpaRepository.save(farmaciasEntity);
   }
 
   @Override

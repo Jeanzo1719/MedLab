@@ -16,7 +16,8 @@ import lombok.Setter;
 /**
  * FarmaciasEntity - mapea la tabla farmacias.
  * La fecha_ultima_actualizacion solo tiene DEFAULT en la base (sin ON UPDATE): al crear la
- * fila la pone la base, y al editar los datos la fija el panel de la farmacia (HU-11).
+ * fila la pone la base, al editar los datos la fija el panel de la farmacia (HU-11) y al
+ * aprobarla o rechazarla la fija AprobacionFarmaciasServiceImpl (HU-06).
  */
 @Getter
 @Setter
@@ -81,7 +82,8 @@ public class FarmaciasEntity {
   @JoinColumn(name = "estado_aprobacion_id", nullable = false)
   private EstadosFarmaciaEntity estadoAprobacion;
 
-  /** Última vez que la farmacia editó sus datos; al crear la fila la pone la base (DEFAULT). */
+  /** Última vez que la farmacia editó sus datos o cambió de estado; al crear la fila la pone la
+   * base (DEFAULT). */
   @Column(name = "fecha_ultima_actualizacion", nullable = false, insertable = false)
   private LocalDateTime fechaUltimaActualizacion;
 }

@@ -2,6 +2,7 @@ package com.medlab.main.service.impl;
 
 import com.medlab.main.dto.FarmaciaCercanaDto;
 import com.medlab.main.dto.FarmaciaMapaDto;
+import com.medlab.main.dto.FarmaciaPendienteDto;
 import com.medlab.main.entity.FarmaciasEntity;
 import com.medlab.main.repository.FarmaciasRepository;
 import com.medlab.main.repository.FarmaciasRepository.FarmaciaCercana;
@@ -13,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Qué hace: prepara los datos de las farmacias que se muestran en el mapa: las aprobadas del
- * mapa base y las aprobadas más cercanas que tienen un medicamento disponible.
+ * mapa base y las aprobadas más cercanas que tienen un medicamento disponible. También arma la
+ * lista de farmacias pendientes, con sus datos de validación, para el administrador.
  *
  * Cómo entenderlo: es como el empleado que filtra el directorio: primero las farmacias
  * aprobadas y después, de ellas, las que tienen el medicamento a menos de 20 km, de la más
@@ -28,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class FarmaciasServiceImpl implements FarmaciasService {
 
   private static final String ESTADO_APROBADA = "aprobada";
+
+  private static final String ESTADO_PENDIENTE = "pendiente";
 
   /** Estado de disponibilidad que no cuenta en la búsqueda de farmacias cercanas: si el
    * medicamento está agotado, la farmacia no se muestra. */
@@ -49,6 +53,13 @@ public class FarmaciasServiceImpl implements FarmaciasService {
   }
 
   @Override
+  public List<FarmaciaPendienteDto> getAllFarmaciasPendientes() {
+    return farmaciasRepository.findByEstadoAprobacionNombre(ESTADO_PENDIENTE).stream()
+        .map(this::toFarmaciaPendienteDto)
+        .toList();
+  }
+
+  @Override
   public List<FarmaciaCercanaDto> getFarmaciasCercanasConDisponibilidad(Long medicamentoId,
       double latitud, double longitud) {
     return farmaciasRepository
@@ -57,6 +68,14 @@ public class FarmaciasServiceImpl implements FarmaciasService {
         .stream()
         .map(this::toFarmaciaCercanaDto)
         .toList();
+  }
+
+  /** Convierte una farmacia pendiente en el dato que ve el administrador: su id, su nombre y
+   * sus cinco datos de validación. */
+  private FarmaciaPendienteDto toFarmaciaPendienteDto(FarmaciasEntity farmacia) {
+    return new FarmaciaPendienteDto(farmacia.getUsuarioId(), farmacia.getNombreFarmacia(),
+        farmacia.getNit(), farmacia.getRut(), farmacia.getMatriculaMercantil(),
+        farmacia.getIdentificacionDirectorTecnico(), farmacia.getLicenciaSanitaria());
   }
 
   private FarmaciaMapaDto toFarmaciaMapaDto(FarmaciasEntity farmacia) {

@@ -11,7 +11,8 @@ CREATE TABLE estados_farmacia (
 INSERT INTO estados_farmacia (nombre) VALUES
     ('pendiente'),
     ('aprobada'),
-    ('suspendida');
+    ('suspendida'),
+    ('rechazada');
 
 CREATE TABLE usuarios (
     id                  INT             AUTO_INCREMENT PRIMARY KEY,
@@ -237,6 +238,11 @@ CREATE TABLE tipos_calificacion (
     id              INT             AUTO_INCREMENT PRIMARY KEY,
     nombre          VARCHAR(30)     NOT NULL UNIQUE
 );
+
+INSERT INTO tipos_calificacion (nombre) VALUES
+    ('Si hay'),
+    ('Bajo pedido'),
+    ('No hay');
 
 CREATE TABLE calificaciones (
     id                      BIGINT          AUTO_INCREMENT PRIMARY KEY,
