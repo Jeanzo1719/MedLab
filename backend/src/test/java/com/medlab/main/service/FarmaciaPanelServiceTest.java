@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,11 +25,11 @@ import org.mockito.quality.Strictness;
 
 import com.medlab.main.dto.DatosFarmaciaDto;
 import com.medlab.main.dto.GuardarDatosFarmaciaDto;
-import com.medlab.main.entity.EstadoFarmacia;
-import com.medlab.main.entity.Farmacia;
+import com.medlab.main.entity.EstadosFarmaciaEntity;
+import com.medlab.main.entity.FarmaciasEntity;
 import com.medlab.main.exception.AccesoPanelDenegadoException;
 import com.medlab.main.exception.DatosInvalidosException;
-import com.medlab.main.repository.FarmaciaRepository;
+import com.medlab.main.repository.FarmaciasJpaRepository;
 
 /**
  * Pruebas de FarmaciaPanelService sin base de datos. Cubren lo que no se ve leyendo el código:
@@ -51,16 +50,16 @@ class FarmaciaPanelServiceTest {
   private static final BigDecimal LONGITUD_NUEVA = new BigDecimal("-74.0721");
 
   @Mock
-  private FarmaciaRepository farmaciaRepository;
+  private FarmaciasJpaRepository farmaciaRepository;
   @Mock
   private ActividadFarmaciaService actividadFarmacia;
 
   private FarmaciaPanelService servicio;
-  private Farmacia farmacia;
+  private FarmaciasEntity farmacia;
 
   @BeforeEach
   void preparar() {
-      servicio = new FarmaciaPanelService(farmaciaRepository, actividadFarmacia);
+    servicio = new FarmaciaPanelService(farmaciaRepository, actividadFarmacia);
     farmacia = farmacia("aprobada");
     when(farmaciaRepository.findById(FARMACIA_ID)).thenReturn(Optional.of(farmacia));
   }
@@ -181,7 +180,7 @@ class FarmaciaPanelServiceTest {
     assertThrows(AccesoPanelDenegadoException.class, () -> servicio.obtener(FARMACIA_ID));
   }
 
-    @Test
+  @Test
   void actualizarAtiendeLasAlertasDeInactividad() {
     GuardarDatosFarmaciaDto datos = new GuardarDatosFarmaciaDto("Farmacia Central", "Calle", "10",
         null, "5", null, "20", null, null, null, null);
@@ -214,11 +213,11 @@ class FarmaciaPanelServiceTest {
     verify(actividadFarmacia, never()).atenderAlertas(any());
   }
 
-  private Farmacia farmacia(String nombreEstado) {
-    EstadoFarmacia estado = new EstadoFarmacia();
+  private FarmaciasEntity farmacia(String nombreEstado) {
+    EstadosFarmaciaEntity estado = new EstadosFarmaciaEntity();
     estado.setNombre(nombreEstado);
 
-    Farmacia nueva = new Farmacia();
+    FarmaciasEntity nueva = new FarmaciasEntity();
     nueva.setUsuarioId(FARMACIA_ID);
     nueva.setNombreFarmacia("Farmacia vieja");
     nueva.setTipoViaPrincipal("Calle");

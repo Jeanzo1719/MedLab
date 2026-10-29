@@ -1,15 +1,15 @@
 package com.medlab.main.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
-import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
-import com.medlab.main.entity.Farmacia;
+import com.medlab.main.entity.FarmaciasEntity;
 
 /**
  * Consultas de solo lectura del panel administrador (HU-9). Son nativas porque cruzan tablas
@@ -17,7 +17,7 @@ import com.medlab.main.entity.Farmacia;
  * ellas. Los filtros opcionales llegan como texto vacío (''), no como null, para no depender
  * de cómo cada driver tipa un parámetro nulo.
  */
-public interface HistorialAdminRepository extends Repository<Farmacia, Integer> {
+public interface HistorialAdminRepository extends Repository<FarmaciasEntity, Integer> {
 
   interface UsuarioHistorial {
     Integer getId();
@@ -174,7 +174,7 @@ public interface HistorialAdminRepository extends Repository<Farmacia, Integer> 
       """, nativeQuery = true)
   long contarConRol(@Param("usuarioId") Integer usuarioId, @Param("rol") String rol);
 
-    interface DisponibilidadSospechosa {
+  interface DisponibilidadSospechosa {
     Integer getId();
 
     Integer getFarmaciaId();

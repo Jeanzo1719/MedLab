@@ -35,7 +35,7 @@ public class AlertaInactividadFarmacia {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "farmacia_id", nullable = false)
-  private Farmacia farmacia;
+  private FarmaciasEntity farmacia;
 
   @Column(name = "fecha_generada", nullable = false)
   private LocalDateTime fechaGenerada;
@@ -43,7 +43,7 @@ public class AlertaInactividadFarmacia {
   @Column(nullable = false)
   private boolean atendida;
 
-  public AlertaInactividadFarmacia(Farmacia farmacia, LocalDateTime fechaGenerada) {
+  public AlertaInactividadFarmacia(FarmaciasEntity farmacia, LocalDateTime fechaGenerada) {
     this.farmacia = farmacia;
     this.fechaGenerada = fechaGenerada;
     this.atendida = false;

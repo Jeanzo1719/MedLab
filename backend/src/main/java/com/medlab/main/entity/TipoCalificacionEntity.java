@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
  * Cómo entenderlo: es como las opciones de una encuesta: el usuario no escribe lo que
  * quiera, escoge una de las opciones ya definidas.
  *
- * Detalles técnicos: cada Calificacion apunta a un TipoCalificacion por su id. El nombre es
+ * Detalles técnicos: cada CalificacionEntity apunta a un TipoCalificacionEntity por su id. El nombre es
  * único en la tabla. MensajeDisponibilidadService cuenta las calificaciones recientes según
  * este nombre: "Si hay", "Bajo pedido" o "No hay", escritos igual que en la base de datos.
  * En HU-4 el backend solo lee esta tabla: no inserta ni modifica tipos.
@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "tipos_calificacion")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TipoCalificacion {
+public class TipoCalificacionEntity {
 
   /** Número que identifica al tipo. Lo asigna la base de datos (1, 2, 3...). */
   @Id

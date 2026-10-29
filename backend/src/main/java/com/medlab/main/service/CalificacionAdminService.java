@@ -5,9 +5,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import com.medlab.main.entity.Calificacion;
+import com.medlab.main.entity.CalificacionEntity;
 import com.medlab.main.exception.RecursoNoEncontradoException;
-import com.medlab.main.repository.CalificacionRepository;
+import com.medlab.main.repository.CalificacionesJpaRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,15 +22,15 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CalificacionAdminService {
 
-  private final CalificacionRepository calificacionRepository;
+  private final CalificacionesJpaRepository calificacionRepository;
   private final MedicamentoDetalleNotificador notificador;
 
   @Transactional
   public void eliminar(Long calificacionId, Integer administradorId) {
-    Calificacion calificacion = calificacionRepository.findById(calificacionId)
+    CalificacionEntity calificacion = calificacionRepository.findById(calificacionId)
         .orElseThrow(() -> new RecursoNoEncontradoException(
             "La calificación " + calificacionId + " no existe"));
-    Integer medicamentoId = calificacion.getDisponibilidad().getMedicamento().getId();
+    Long medicamentoId = calificacion.getDisponibilidad().getMedicamento().getId();
 
     calificacionRepository.delete(calificacion);
     log.info("Administrador {} eliminó la calificación {}", administradorId, calificacionId);
@@ -42,10 +42,10 @@ public class CalificacionAdminService {
    * una puede cambiar. El aviso sale al terminar la transacción para que quien lo reciba ya
    * vea el dato nuevo; si falla, el borrado no se revierte.
    */
-  private void publicarTrasCommit(Integer medicamentoId) {
+  private void publicarTrasCommit(Long medicamentoId) {
     Runnable aviso = () -> {
       try {
-        notificador.publicar(medicamentoId);
+        notificador.publishMedicamentoDetalleUpdate(medicamentoId);
       } catch (RuntimeException e) {
         log.warn("No se pudo avisar el cambio del medicamento {}", medicamentoId, e);
       }

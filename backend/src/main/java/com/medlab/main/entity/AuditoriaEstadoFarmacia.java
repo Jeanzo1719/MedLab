@@ -34,24 +34,24 @@ public class AuditoriaEstadoFarmacia {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "farmacia_id", nullable = false)
-  private Farmacia farmacia;
+  private FarmaciasEntity farmacia;
 
   @Column(name = "usuario_admin_id")
   private Integer usuarioAdminId;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "estado_anterior_id", nullable = false)
-  private EstadoFarmacia estadoAnterior;
+  private EstadosFarmaciaEntity estadoAnterior;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "estado_nuevo_id", nullable = false)
-  private EstadoFarmacia estadoNuevo;
+  private EstadosFarmaciaEntity estadoNuevo;
 
   @Column(nullable = false)
   private LocalDateTime fecha;
 
-  public AuditoriaEstadoFarmacia(Farmacia farmacia, Integer usuarioAdminId,
-      EstadoFarmacia estadoAnterior, EstadoFarmacia estadoNuevo, LocalDateTime fecha) {
+  public AuditoriaEstadoFarmacia(FarmaciasEntity farmacia, Integer usuarioAdminId,
+      EstadosFarmaciaEntity estadoAnterior, EstadosFarmaciaEntity estadoNuevo, LocalDateTime fecha) {
     this.farmacia = farmacia;
     this.usuarioAdminId = usuarioAdminId;
     this.estadoAnterior = estadoAnterior;

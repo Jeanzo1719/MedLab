@@ -16,18 +16,18 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import com.medlab.main.dto.DisponibilidadFarmaciaDto;
 import com.medlab.main.dto.GuardarDisponibilidadDto;
 import com.medlab.main.dto.ResumenInventarioDto;
-import com.medlab.main.entity.Disponibilidad;
+import com.medlab.main.entity.DisponibilidadEntity;
 import com.medlab.main.entity.EstadoDisponibilidad;
-import com.medlab.main.entity.EstadoFarmacia;
-import com.medlab.main.entity.Farmacia;
-import com.medlab.main.entity.Medicamento;
+import com.medlab.main.entity.EstadosFarmaciaEntity;
+import com.medlab.main.entity.FarmaciasEntity;
+import com.medlab.main.entity.MedicamentosEntity;
 import com.medlab.main.exception.AccesoPanelDenegadoException;
 import com.medlab.main.exception.DatosInvalidosException;
 import com.medlab.main.exception.RecursoNoEncontradoException;
-import com.medlab.main.repository.DisponibilidadRepository;
+import com.medlab.main.repository.DisponibilidadJpaRepository;
 import com.medlab.main.repository.EstadoDisponibilidadRepository;
-import com.medlab.main.repository.FarmaciaRepository;
-import com.medlab.main.repository.MedicamentoRepository;
+import com.medlab.main.repository.FarmaciasJpaRepository;
+import com.medlab.main.repository.MedicamentosJpaRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,10 +52,10 @@ public class DisponibilidadService {
   private static final Set<String> ESTADOS_VALIDOS = Set.of(EstadoDisponibilidad.DISPONIBLE,
       EstadoDisponibilidad.AGOTADO, EstadoDisponibilidad.BAJO_PEDIDO);
 
-  private final DisponibilidadRepository disponibilidadRepository;
+  private final DisponibilidadJpaRepository disponibilidadRepository;
   private final EstadoDisponibilidadRepository estadoDisponibilidadRepository;
-  private final FarmaciaRepository farmaciaRepository;
-  private final MedicamentoRepository medicamentoRepository;
+  private final FarmaciasJpaRepository farmaciaRepository;
+  private final MedicamentosJpaRepository medicamentoRepository;
   private final MedicamentoDetalleNotificador notificador;
   private final ActividadFarmaciaService actividadFarmacia;
 
@@ -65,19 +65,20 @@ public class DisponibilidadService {
     exigirFarmaciaAprobada(farmaciaId);
     String nombreEstado = resolverEstado(datos.estado(), datos.cantidad());
 
-    if (!medicamentoRepository.existsById(datos.medicamentoId())) {
-      throw new RecursoNoEncontradoException("El medicamento " + datos.medicamentoId() + " no existe");
+    Long medicamentoId = Long.valueOf(datos.medicamentoId());
+    if (!medicamentoRepository.existsById(medicamentoId)) {
+      throw new RecursoNoEncontradoException("El medicamento " + medicamentoId + " no existe");
     }
 
     EstadoDisponibilidad estado = buscarEstado(nombreEstado);
-    disponibilidadRepository.guardar(farmaciaId, datos.medicamentoId(), datos.cantidad(),
+    disponibilidadRepository.guardar(farmaciaId, medicamentoId, datos.cantidad(),
         datos.precio(), estado.getId());
-     // Mueve la fecha de la farmacia y atiende sus alertas de inactividad (HU-9).
+    // Mueve la fecha de la farmacia y atiende sus alertas de inactividad (HU-9).
     actividadFarmacia.registrarActividad(farmaciaId);
-    publicarTrasCommit(datos.medicamentoId());
+    publicarTrasCommit(medicamentoId);
 
     return disponibilidadRepository
-        .findByFarmaciaUsuarioIdAndMedicamentoId(farmaciaId, datos.medicamentoId())
+        .findByFarmaciaUsuarioIdAndMedicamentoId(farmaciaId, medicamentoId)
         .map(this::aDto)
         .orElseThrow(() -> new IllegalStateException("La fila no aparece después de guardarla"));
   }
@@ -102,13 +103,14 @@ public class DisponibilidadService {
   public void marcarAgotado(Integer farmaciaId, Integer medicamentoId) {
     exigirFarmaciaAprobada(farmaciaId);
     EstadoDisponibilidad agotado = buscarEstado(EstadoDisponibilidad.AGOTADO);
+    Long idMedicamento = Long.valueOf(medicamentoId);
 
-    int filas = disponibilidadRepository.marcarAgotado(farmaciaId, medicamentoId, agotado.getId());
+    int filas = disponibilidadRepository.marcarAgotado(farmaciaId, idMedicamento, agotado.getId());
     if (filas == 0) {
       throw new RecursoNoEncontradoException("La farmacia no maneja el medicamento " + medicamentoId);
     }
     actividadFarmacia.registrarActividad(farmaciaId);
-    publicarTrasCommit(medicamentoId);
+    publicarTrasCommit(idMedicamento);
   }
 
   /** Cuántos productos hay en cada estado, para el dashboard. */
@@ -127,9 +129,9 @@ public class DisponibilidadService {
 
   /** Solo farmacias aprobadas usan el panel; una pendiente o suspendida no debe tocar el inventario. */
   private void exigirFarmaciaAprobada(Integer farmaciaId) {
-    Farmacia farmacia = farmaciaRepository.findById(farmaciaId)
+    FarmaciasEntity farmacia = farmaciaRepository.findById(farmaciaId)
         .orElseThrow(() -> new AccesoPanelDenegadoException("La farmacia no existe"));
-    EstadoFarmacia estado = farmacia.getEstadoAprobacion();
+    EstadosFarmaciaEntity estado = farmacia.getEstadoAprobacion();
     if (estado == null || !ESTADO_FARMACIA_APROBADA.equals(estado.getNombre())) {
       throw new AccesoPanelDenegadoException("La farmacia no está aprobada");
     }
@@ -168,10 +170,10 @@ public class DisponibilidadService {
    * pedir el detalle y todavía ver el valor viejo. Si el aviso falla, el guardado ya ocurrió y
    * no debe devolverse como error a la farmacia.
    */
-  private void publicarTrasCommit(Integer medicamentoId) {
+  private void publicarTrasCommit(Long medicamentoId) {
     Runnable aviso = () -> {
       try {
-        notificador.publicar(medicamentoId);
+        notificador.publishMedicamentoDetalleUpdate(medicamentoId);
       } catch (RuntimeException e) {
         log.warn("No se pudo avisar el cambio del medicamento {}", medicamentoId, e);
       }
@@ -189,11 +191,12 @@ public class DisponibilidadService {
     }
   }
 
-  private DisponibilidadFarmaciaDto aDto(Disponibilidad d) {
-    Medicamento m = d.getMedicamento();
+  private DisponibilidadFarmaciaDto aDto(DisponibilidadEntity d) {
+    MedicamentosEntity m = d.getMedicamento();
     int cantidad = d.getCantidadDisponible();
-    return new DisponibilidadFarmaciaDto(m.getId(), m.getNombreComercial(), m.getPrincipioActivo(),
-        m.getPresentacion(), cantidad, d.getPrecio(), d.getEstadoDisponibilidad().getNombre(),
+    return new DisponibilidadFarmaciaDto(Math.toIntExact(m.getId()), m.getNombreComercial(),
+        m.getPrincipioActivo(), m.getPresentacion(), cantidad, d.getPrecio(),
+        d.getEstadoDisponibilidad().getNombre(),
         cantidad > 0 && cantidad < UMBRAL_STOCK_BAJO, d.getFechaHoraReporte());
   }
 }

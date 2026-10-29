@@ -10,18 +10,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** Tabla formas_farmaceuticas: cómo viene el medicamento (ej. tableta, jarabe). */
-@Entity
-@Table(name = "formas_farmaceuticas")
 @Getter
 @Setter
 @NoArgsConstructor
-public class FormaFarmaceutica {
+@Entity
+@Table(name = "categorias")
+public class CategoriasEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  @Column(name = "id")
+  private Long id;
 
-  @Column(name = "nombre", nullable = false, length = 30)
+  @Column(name = "nombre", nullable = false, length = 100, unique = true)
   private String nombre;
 }

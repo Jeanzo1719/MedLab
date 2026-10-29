@@ -10,6 +10,8 @@
 
 */
 :root {
+  color-scheme: light dark;
+
   /*
 
     los colores oficiales de MedLab: el verde de la marca (para el logo y
@@ -17,7 +19,7 @@
     negro del pie de página
 
   */
-  --color-marca: #159a63;
+  --color-marca: light-dark(#159a63, #f2a93b);
   --color-acento: #f2a93b;
   --color-negro: #131210;
 
@@ -27,8 +29,9 @@
     Es más oscuro que el de la marca para que el texto blanco encima se lea bien
 
   */
-  --color-primario: #107a4e;
-  --color-primario-hover: #0d6b44;
+  --color-primario: light-dark(#107a4e, #f2a93b);
+  --color-primario-hover: light-dark(#0d6b44, #f5bc66);
+  --color-sobre-primario: light-dark(#ffffff, #131210);
 
     /*
 
@@ -44,14 +47,15 @@
     el color del texto principal (casi negro) y del texto secundario (gris)
 
   */
-  --color-texto: #101208;
-  --color-texto-secundario: #4a4d45;
+  --color-texto: light-dark(#101208, #f4f4ef);
+  --color-texto-secundario: light-dark(#4a4d45, #a7a9a1);
 
   /*
 
     el gris claro del texto secundario sobre fondo oscuro, como en el pie de página
 
   */
+  --color-texto-invertido: #fbfbf8;
   --color-texto-invertido-secundario: #a7a9a1;
 
   /*
@@ -59,7 +63,7 @@
     el rojo de los mensajes de error
 
   */
-  --color-error: #b42318;
+  --color-error: light-dark(#b42318, #ff6b5e);
 
   /*
 
@@ -67,9 +71,9 @@
     encabezado (blanco), y de las líneas de los bordes (gris claro)
 
   */
-  --color-fondo: #fbfbf8;
-  --color-superficie: #ffffff;
-  --color-borde: #e3e4de;
+  --color-fondo: light-dark(#fbfbf8, #131210);
+  --color-superficie: light-dark(#ffffff, #1c1b18);
+  --color-borde: light-dark(#e3e4de, #34332e);
 
   /*
 
@@ -85,6 +89,21 @@
 
   */
   --alto-encabezado: 4rem;
+
+  --vidrio-fondo: light-dark(rgb(255 255 255 / 0.7), rgb(28 27 24 / 0.7));
+  --vidrio-borde: light-dark(rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.1));
+  --vidrio-sombra: 0 8px 32px rgb(0 0 0 / 0.12),
+    inset 0 1px 0 light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.08));
+  --vidrio-desenfoque: blur(16px) saturate(1.8);
+  --transicion: 0.25s ease;
+}
+
+:root[data-tema="claro"] {
+  color-scheme: light;
+}
+
+:root[data-tema="oscuro"] {
+  color-scheme: dark;
 }
 
 /*
@@ -141,4 +160,49 @@ body {
 :focus-visible {
   outline: 3px solid var(--color-acento);
   outline-offset: 2px;
+}
+
+.vidrio {
+  background-color: var(--vidrio-fondo);
+  border: 1px solid var(--vidrio-borde);
+  box-shadow: var(--vidrio-sombra);
+  -webkit-backdrop-filter: var(--vidrio-desenfoque);
+  backdrop-filter: var(--vidrio-desenfoque);
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a,
+  button,
+  input {
+    transition:
+      color var(--transicion),
+      background-color var(--transicion),
+      border-color var(--transicion),
+      box-shadow var(--transicion);
+  }
+
+  .aparecer {
+    animation: aparecer 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) var(--retraso, 0s) both;
+  }
+
+  @supports (animation-timeline: view()) {
+    .al-desplazar {
+      animation: aparecer linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.45s;
+    animation-timing-function: ease;
+  }
 }

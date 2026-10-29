@@ -8,14 +8,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
-import com.medlab.main.entity.Farmacia;
+import com.medlab.main.entity.FarmaciasEntity;
 
 /**
  * Consultas nativas de la inactividad de farmacias (HU-9). Son nativas para escribir alertas,
  * estado y auditoría sin tocar las entities compartidas, y para que cada paso del job sea una
  * sola sentencia SQL. Las fechas llegan siempre desde Java, no de la BD.
  */
-public interface InactividadRepository extends Repository<Farmacia, Integer> {
+public interface InactividadRepository extends Repository<FarmaciasEntity, Integer> {
 
   /**
    * Farmacias aprobadas sin actualizar desde antes del límite y sin ninguna alerta posterior a

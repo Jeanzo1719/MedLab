@@ -17,8 +17,8 @@ import com.medlab.main.dto.UsuarioHistorialDto;
 import com.medlab.main.exception.DatosInvalidosException;
 import com.medlab.main.exception.RecursoNoEncontradoException;
 import com.medlab.main.repository.AuditoriaEstadoFarmaciaRepository;
-import com.medlab.main.repository.DisponibilidadRepository;
-import com.medlab.main.repository.FarmaciaRepository;
+import com.medlab.main.repository.DisponibilidadJpaRepository;
+import com.medlab.main.repository.FarmaciasJpaRepository;
 import com.medlab.main.repository.HistorialAdminRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -38,8 +38,8 @@ public class GestionAdminService {
 
   private final HistorialAdminRepository historialRepository;
   private final AuditoriaEstadoFarmaciaRepository auditoriaRepository;
-  private final FarmaciaRepository farmaciaRepository;
-  private final DisponibilidadRepository disponibilidadRepository;
+  private final FarmaciasJpaRepository farmaciaRepository;
+  private final DisponibilidadJpaRepository disponibilidadRepository;
 
   public Page<UsuarioHistorialDto> usuarios(String rol, int pagina, int tamano) {
     String filtro = filtroValido(rol, ROLES, "Rol");

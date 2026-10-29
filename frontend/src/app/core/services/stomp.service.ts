@@ -64,16 +64,18 @@ export class StompService {
 
   /**
    * 
-   * se queda escuchando un topic del backend (por ejemplo /topic/admin/calificaciones) y
-   * emite cada aviso que llega, ya convertido de JSON a objeto
+   * escucha un destino del backend y devuelve cada mensaje que llegue
    * 
-   * a diferencia de consultar, no termina ni tiene límite de espera: los avisos llegan
-   * cuando pasa algo, no cuando se piden. Quien se suscribe debe cancelar al destruirse
+   * a diferencia de consultar, no termina con la primera respuesta: sigue
+   * recibiendo cada vez que el backend publica algo en ese destino (por ejemplo
+   * /topic/medicamentos/5), hasta que se deje de escuchar
+   * 
+   * T es el tipo del dato que se espera recibir, por ejemplo MedicamentoDetalle
    * 
    */
   escuchar<T>(destino: string): Observable<T> {
     return this.cliente
-      .watch(destino)
+      .watch({ destination: destino })
       .pipe(map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T));
   }
 }
