@@ -3,10 +3,15 @@ package com.medlab.main.repository;
 import com.medlab.main.entity.FarmaciasEntity;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface FarmaciasRepository {
 
   List<FarmaciasEntity> findByEstadoAprobacionNombre(String nombreEstado);
+
+  Optional<FarmaciasEntity> findById(Integer farmaciaId);
+
+  FarmaciasEntity save(FarmaciasEntity farmaciasEntity);
 
   List<FarmaciaCercana> findFarmaciasCercanasConDisponibilidad(String estadoFarmacia,
       String estadoExcluido, Long medicamentoId, double latitud, double longitud,
