@@ -1,0 +1,171 @@
+:host {
+  display: block;
+}
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.mensaje {
+  margin: 1rem 0;
+}
+
+.mensaje-error,
+.error-formulario {
+  color: #b42318;
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+  margin: 0 0 1rem;
+  padding: 1rem;
+  border: 1px solid #d0d5dd;
+  border-radius: 0.5rem;
+  background: #f9fafb;
+}
+
+.resumen dt {
+  font-size: 0.8rem;
+  color: #475467;
+}
+
+.resumen dd {
+  margin: 0.25rem 0 0;
+  font-weight: 600;
+}
+
+.estado {
+  text-transform: capitalize;
+}
+
+.aviso {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.5rem;
+  background: #ecfdf3;
+  color: #067647;
+}
+
+.formulario {
+  display: grid;
+  gap: 1rem;
+  max-width: 48rem;
+}
+
+fieldset {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.75rem 1rem 1rem;
+  border: 1px solid #d0d5dd;
+  border-radius: 0.5rem;
+}
+
+legend {
+  padding: 0 0.4rem;
+  font-weight: 600;
+}
+
+.fila-campos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.fila-campos .campo {
+  flex: 1 1 10rem;
+}
+
+.fila-campos .campo-corto {
+  flex: 0 1 9rem;
+}
+
+.campo {
+  display: grid;
+  gap: 0.25rem;
+}
+
+label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+input {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #98a2b3;
+  border-radius: 0.4rem;
+  font: inherit;
+}
+
+input:focus-visible,
+.boton:focus-visible {
+  outline: 2px solid var(--color-primario, #0f766e);
+  outline-offset: 2px;
+}
+
+input.ng-touched.ng-invalid {
+  border-color: #b42318;
+}
+
+.ayuda {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #475467;
+}
+
+.error-campo {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #b42318;
+}
+
+.error-formulario {
+  margin: 0;
+  font-weight: 600;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.boton {
+  padding: 0.5rem 1rem;
+  border: 1px solid #98a2b3;
+  border-radius: 0.4rem;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.boton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.boton-primario {
+  border-color: var(--color-primario, #0f766e);
+  background: var(--color-primario, #0f766e);
+  color: #fff;
+}
+
+.boton-texto {
+  border: 0;
+  background: none;
+  text-decoration: underline;
+}

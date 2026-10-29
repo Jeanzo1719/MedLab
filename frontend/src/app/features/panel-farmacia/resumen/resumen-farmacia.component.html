@@ -1,0 +1,39 @@
+<section aria-labelledby="titulo-resumen">
+  <h1 id="titulo-resumen">Resumen del inventario</h1>
+
+  @let estadoActual = estado();
+  @if (estadoActual.tipo === "cargando") {
+    <p class="mensaje">Cargando resumen…</p>
+  } @else if (estadoActual.tipo === "error") {
+    <p class="mensaje mensaje-error">{{ estadoActual.mensaje }}</p>
+  } @else if (estadoActual.tipo === "listo") {
+    @let resumen = estadoActual.resumen;
+
+    <!--
+
+      una tarjeta por estado. El total va primero y sin color de estado, porque
+      es la suma de las otras tres
+
+    -->
+    <ul class="tarjetas">
+      <li class="tarjeta" data-estado="total">
+        <span class="cifra">{{ resumen.total }}</span>
+        <span class="rotulo">Productos registrados</span>
+      </li>
+      <li class="tarjeta" data-estado="disponible">
+        <span class="cifra">{{ resumen.porEstado.disponible }}</span>
+        <span class="rotulo">Disponibles</span>
+      </li>
+      <li class="tarjeta" data-estado="bajo_pedido">
+        <span class="cifra">{{ resumen.porEstado.bajo_pedido }}</span>
+        <span class="rotulo">Bajo pedido</span>
+      </li>
+      <li class="tarjeta" data-estado="agotado">
+        <span class="cifra">{{ resumen.porEstado.agotado }}</span>
+        <span class="rotulo">Agotados</span>
+      </li>
+    </ul>
+
+    <a class="enlace" routerLink="/farmacia/inventario">Administrar inventario →</a>
+  }
+</section>

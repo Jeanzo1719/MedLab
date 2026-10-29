@@ -50,6 +50,14 @@ public class DisponibilidadEntity {
   @Column(name = "estado_disponibilidad_id", nullable = false)
   private Integer estadoDisponibilidadId;
 
+  /**
+   * El mismo estado, pero como objeto y solo de lectura: el panel de la farmacia lo usa para
+   * mostrar el nombre sin consultas extra. Escribir sigue pasando por estadoDisponibilidadId.
+   */
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "estado_disponibilidad_id", insertable = false, updatable = false)
+  private EstadoDisponibilidad estadoDisponibilidad;
+
   /** Fecha y hora del último reporte. La actualiza la base de datos sola. */
   @Column(name = "fecha_hora_reporte", nullable = false, insertable = false, updatable = false)
   private LocalDateTime fechaHoraReporte;

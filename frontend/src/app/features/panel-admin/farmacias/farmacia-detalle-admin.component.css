@@ -1,0 +1,48 @@
+.volver {
+  margin-bottom: 0.75rem;
+  padding-left: 0;
+}
+
+.encabezado-detalle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.subpestanas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.subpestana {
+  padding: 0.5rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-texto-secundario);
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.subpestana.activa {
+  color: #ffffff;
+  background-color: var(--color-primario);
+  border-color: var(--color-primario);
+}
+
+.calificaciones {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: 0.75rem;
+}
+
+.calificaciones .cabecera {
+  margin-bottom: 1rem;
+}

@@ -1,11 +1,11 @@
 package com.medlab.main.service.impl;
 
-import com.medlab.main.entity.AuditoriaEstadosFarmaciaEntity;
+import com.medlab.main.entity.AuditoriaEstadoFarmacia;
 import com.medlab.main.entity.EstadosFarmaciaEntity;
 import com.medlab.main.entity.FarmaciasEntity;
 import com.medlab.main.exception.FarmaciaNotFoundException;
 import com.medlab.main.exception.FarmaciaNotPendienteException;
-import com.medlab.main.repository.AuditoriaEstadosFarmaciaRepository;
+import com.medlab.main.repository.AuditoriaEstadoFarmaciaRepository;
 import com.medlab.main.repository.EstadosFarmaciaRepository;
 import com.medlab.main.repository.FarmaciasRepository;
 import com.medlab.main.service.AprobacionFarmaciasService;
@@ -26,7 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
  * "pendiente". Busca el estado nuevo por su nombre en EstadosFarmaciaRepository y cambia el
  * estado_aprobacion_id de la farmacia (el id, nunca el nombre como texto), pone
  * fecha_ultima_actualizacion en la hora actual y guarda una fila en
- * auditoria_estados_farmacia con el estado anterior y el nuevo. Todo va en una sola
+ * auditoria_estados_farmacia (AuditoriaEstadoFarmacia, la entity de la HU-9) con el estado
+ * anterior, el nuevo y esa misma hora. Todo va en una sola
  * transacción (@Transactional): si algo falla, por ejemplo la auditoría, no se guarda nada.
  * Lo llama FarmaciasController con el administrador en null hasta que exista el inicio de
  * sesión.
@@ -37,7 +38,7 @@ public class AprobacionFarmaciasServiceImpl implements AprobacionFarmaciasServic
 
   private final FarmaciasRepository farmaciasRepository;
   private final EstadosFarmaciaRepository estadosFarmaciaRepository;
-  private final AuditoriaEstadosFarmaciaRepository auditoriaEstadosFarmaciaRepository;
+  private final AuditoriaEstadoFarmaciaRepository auditoriaEstadoFarmaciaRepository;
 
   @Override
   @Transactional
@@ -65,17 +66,14 @@ public class AprobacionFarmaciasServiceImpl implements AprobacionFarmaciasServic
       throw new FarmaciaNotPendienteException(farmaciaId, estadoAnterior.getNombre());
     }
     EstadosFarmaciaEntity estadoNuevo = findEstadoFarmacia(nombreEstadoNuevo);
+    LocalDateTime ahora = LocalDateTime.now();
 
     farmacia.setEstadoAprobacion(estadoNuevo);
-    farmacia.setFechaUltimaActualizacion(LocalDateTime.now());
+    farmacia.setFechaUltimaActualizacion(ahora);
     farmaciasRepository.save(farmacia);
 
-    AuditoriaEstadosFarmaciaEntity auditoria = new AuditoriaEstadosFarmaciaEntity();
-    auditoria.setFarmacia(farmacia);
-    auditoria.setUsuarioAdminId(usuarioAdminId);
-    auditoria.setEstadoAnterior(estadoAnterior);
-    auditoria.setEstadoNuevo(estadoNuevo);
-    auditoriaEstadosFarmaciaRepository.save(auditoria);
+    auditoriaEstadoFarmaciaRepository.save(new AuditoriaEstadoFarmacia(farmacia, usuarioAdminId,
+        estadoAnterior, estadoNuevo, ahora));
   }
 
   /** Busca un estado de farmacia por su nombre. Si no existe, la V1 está incompleta y lanza

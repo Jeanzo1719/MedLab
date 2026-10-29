@@ -1,4 +1,4 @@
-// TODO: reemplazar por la URL de la API de producción cuando el backend esté desplegado
+// TODO: reemplazar por las URL de la API de producción cuando el backend esté desplegado
 /**
  * 
  * la configuración de producción, la que se usa al compilar la versión final
@@ -8,7 +8,12 @@
  * Angular lo reemplaza por environment.development.ts (configurado en angular.json)
  * 
  */
-export const environment: Readonly<{ wsUrl: string }> = {
+export const environment: Readonly<{
+  wsUrl: string;
+  apiUrl: string;
+  farmaciaIdTemporal: number;
+  adminIdTemporal: number;
+}> = {
   /**
    * 
    * la dirección del WebSocket del backend, adonde se conecta el frontend para
@@ -17,4 +22,27 @@ export const environment: Readonly<{ wsUrl: string }> = {
    * 
    */
   wsUrl: "ws://localhost:8080/ws",
+
+  /**
+   * 
+   * la dirección de la API REST del backend, la que usa el panel de la farmacia
+   * 
+   */
+  apiUrl: "http://localhost:8080/api",
+
+  /**
+   * 
+   * TEMPORAL: el id de la farmacia que usa el panel, porque todavía no hay login (HU-2).
+   * Cuando exista, esto desaparece y la farmacia sale de la sesión
+   * 
+   */
+  farmaciaIdTemporal: 9001,
+
+  /**
+   * 
+   * TEMPORAL: el id del administrador que usa su panel, porque todavía no hay login (HU-2).
+   * Cuando exista, esto desaparece y el administrador sale de la sesión
+   * 
+   */
+  adminIdTemporal: 1,
 };

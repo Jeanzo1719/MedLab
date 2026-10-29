@@ -1,0 +1,180 @@
+<section aria-labelledby="titulo-detalle">
+  <button type="button" class="boton boton-texto volver" (click)="volver.emit()">← Volver a farmacias</button>
+
+  <header class="encabezado-detalle">
+    <h1 id="titulo-detalle">{{ farmacia().nombre }}</h1>
+    <span class="insignia" [attr.data-estado]="farmacia().estado">{{ farmacia().estado }}</span>
+  </header>
+
+  <div class="subpestanas" role="group" aria-label="Secciones de la farmacia">
+    <button
+      type="button"
+      class="subpestana"
+      [class.activa]="seccion() === 'auditoria'"
+      [attr.aria-pressed]="seccion() === 'auditoria'"
+      (click)="cambiarSeccion('auditoria')"
+    >
+      Auditoría de estados
+    </button>
+    <button
+      type="button"
+      class="subpestana"
+      [class.activa]="seccion() === 'publicaciones'"
+      [attr.aria-pressed]="seccion() === 'publicaciones'"
+      (click)="cambiarSeccion('publicaciones')"
+    >
+      Publicaciones
+    </button>
+  </div>
+
+  @if (seccion() === "auditoria") {
+    @let estadoAuditoria = auditoria();
+    @if (estadoAuditoria.tipo === "cargando") {
+      <p class="mensaje">Cargando auditoría…</p>
+    } @else if (estadoAuditoria.tipo === "error") {
+      <p class="mensaje mensaje-error" role="alert">{{ estadoAuditoria.mensaje }}</p>
+    } @else if (estadoAuditoria.tipo === "listo") {
+      @let resultado = estadoAuditoria.resultado;
+      @if (resultado.totalElementos === 0) {
+        <p class="mensaje">Esta farmacia no tiene cambios de estado registrados.</p>
+      } @else {
+        <div class="tabla-contenedor">
+          <table>
+            <caption class="solo-lectores">Cambios de estado de la farmacia</caption>
+            <thead>
+              <tr>
+                <th scope="col">Fecha</th>
+                <th scope="col">Cambio</th>
+                <th scope="col">Hecho por</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (cambio of resultado.contenido; track cambio.id) {
+                <tr>
+                  <td>{{ formatearFecha(cambio.fecha) }}</td>
+                  <td>
+                    <span class="insignia" [attr.data-estado]="cambio.estadoAnterior">{{ cambio.estadoAnterior }}</span>
+                    →
+                    <span class="insignia" [attr.data-estado]="cambio.estadoNuevo">{{ cambio.estadoNuevo }}</span>
+                  </td>
+                  <td>
+                    @if (cambio.automatico) {
+                      Sistema (automático)
+                    } @else {
+                      Administrador {{ cambio.usuarioAdminId }}
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <nav class="paginacion" aria-label="Páginas de la auditoría">
+          <button type="button" class="boton" [disabled]="resultado.pagina === 0" (click)="irAPaginaAuditoria(resultado.pagina - 1)">
+            Anterior
+          </button>
+          <span>Página {{ resultado.pagina + 1 }} de {{ resultado.totalPaginas }}</span>
+          <button
+            type="button"
+            class="boton"
+            [disabled]="resultado.pagina + 1 >= resultado.totalPaginas"
+            (click)="irAPaginaAuditoria(resultado.pagina + 1)"
+          >
+            Siguiente
+          </button>
+        </nav>
+      }
+    }
+  } @else {
+    @let estadoPublicaciones = publicaciones();
+    @if (estadoPublicaciones.tipo === "cargando") {
+      <p class="mensaje">Cargando publicaciones…</p>
+    } @else if (estadoPublicaciones.tipo === "error") {
+      <p class="mensaje mensaje-error" role="alert">{{ estadoPublicaciones.mensaje }}</p>
+    } @else if (estadoPublicaciones.tipo === "listo") {
+      @let resultado = estadoPublicaciones.resultado;
+      @if (resultado.totalElementos === 0) {
+        <p class="mensaje">Esta farmacia no tiene publicaciones.</p>
+      } @else {
+        <div class="tabla-contenedor">
+          <table>
+            <caption class="solo-lectores">Publicaciones de la farmacia</caption>
+            <thead>
+              <tr>
+                <th scope="col">Medicamento</th>
+                <th scope="col">Estado</th>
+                <th scope="col" class="numero">Cantidad</th>
+                <th scope="col" class="numero">Calificaciones</th>
+                <th scope="col">Reportado</th>
+                <th scope="col"><span class="solo-lectores">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (publicacion of resultado.contenido; track publicacion.id) {
+                <tr>
+                  <td>
+                    <span class="nombre">{{ publicacion.medicamento }}</span>
+                    <span class="detalle">{{ publicacion.presentacion }}</span>
+                  </td>
+                  <td>{{ etiquetaEstado(publicacion.estado) }}</td>
+                  <td class="numero">{{ publicacion.cantidad }}</td>
+                  <td class="numero">{{ publicacion.totalCalificaciones }}</td>
+                  <td>{{ formatearFecha(publicacion.fechaHoraReporte) }}</td>
+                  <td class="acciones">
+                    <button
+                      type="button"
+                      class="boton boton-pequeno"
+                      [disabled]="publicacion.totalCalificaciones === 0"
+                      [attr.aria-label]="'Ver calificaciones de ' + publicacion.medicamento"
+                      (click)="verCalificaciones(publicacion)"
+                    >
+                      Ver calificaciones
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <nav class="paginacion" aria-label="Páginas de publicaciones">
+          <button type="button" class="boton" [disabled]="resultado.pagina === 0" (click)="irAPaginaPublicaciones(resultado.pagina - 1)">
+            Anterior
+          </button>
+          <span>Página {{ resultado.pagina + 1 }} de {{ resultado.totalPaginas }}</span>
+          <button
+            type="button"
+            class="boton"
+            [disabled]="resultado.pagina + 1 >= resultado.totalPaginas"
+            (click)="irAPaginaPublicaciones(resultado.pagina + 1)"
+          >
+            Siguiente
+          </button>
+        </nav>
+      }
+    }
+
+    <!--
+
+      el @for de un solo elemento recrea el componente al cambiar de publicación, así se
+      limpian su aviso y su confirmación pendiente
+
+    -->
+    @let elegida = publicacionElegida();
+    @if (elegida) {
+      <section class="calificaciones" aria-labelledby="titulo-calificaciones">
+        <div class="cabecera">
+          <h2 id="titulo-calificaciones">Calificaciones de {{ elegida.medicamento }} ({{ elegida.presentacion }})</h2>
+          <button type="button" class="boton boton-texto" (click)="cerrarCalificaciones()">Cerrar</button>
+        </div>
+        @for (clave of [elegida.id]; track clave) {
+          <app-calificaciones-disponibilidad
+            [disponibilidadId]="clave"
+            (calificacionEliminada)="alEliminarCalificacion()"
+          />
+        }
+      </section>
+    }
+  }
+</section>

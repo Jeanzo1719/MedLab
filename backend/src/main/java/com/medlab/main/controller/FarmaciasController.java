@@ -101,8 +101,7 @@ public class FarmaciasController {
 
   /** Si la farmacia no existe o ya no está pendiente, deja solo un aviso corto en el log del
    * backend. El cliente no recibe respuesta y la lista de pendientes no se vuelve a publicar. */
-  @MessageExceptionHandler({FarmaciaNotFoundException.class,
-      FarmaciaNotPendienteException.class})
+  @MessageExceptionHandler({FarmaciaNotFoundException.class, FarmaciaNotPendienteException.class})
   public void handleCambioEstadoFarmaciaException(RuntimeException ex) {
     log.warn(ex.getMessage());
   }

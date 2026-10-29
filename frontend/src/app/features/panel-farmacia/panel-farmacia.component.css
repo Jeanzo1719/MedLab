@@ -1,0 +1,66 @@
+:host {
+  display: block;
+  min-height: 100%;
+}
+
+.barra {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: var(--alto-encabezado);
+  padding: 0 1.25rem;
+  background-color: var(--color-superficie);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.marca {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-marca);
+  text-decoration: none;
+}
+
+.rol {
+  font-weight: 500;
+  color: var(--color-texto-secundario);
+}
+
+.pestanas {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0 1.25rem;
+  background-color: var(--color-superficie);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.pestanas a {
+  padding: 0.9rem 1rem;
+  font-weight: 600;
+  color: var(--color-texto-secundario);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+
+.pestanas a:hover {
+  color: var(--color-texto);
+}
+
+.pestanas a.activa {
+  color: var(--color-primario);
+  border-bottom-color: var(--color-primario);
+}
+
+.temporal {
+  margin: 0;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.875rem;
+  color: #6b4300;
+  background-color: #fdf1dc;
+}
+
+.contenido {
+  display: block;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}

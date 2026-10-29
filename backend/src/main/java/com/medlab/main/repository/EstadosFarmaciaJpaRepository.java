@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EstadosFarmaciaJpaRepository extends JpaRepository<EstadosFarmaciaEntity, Integer> {
+public interface EstadosFarmaciaJpaRepository
+    extends JpaRepository<EstadosFarmaciaEntity, Integer> {
 
     Optional<EstadosFarmaciaEntity> findByNombre(String nombre);
 }

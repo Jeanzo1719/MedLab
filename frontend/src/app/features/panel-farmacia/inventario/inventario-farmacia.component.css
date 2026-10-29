@@ -1,0 +1,303 @@
+h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+h2 {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+}
+
+.cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+/* botones: el verde lleva texto blanco porque --color-primario es lo bastante oscuro */
+.boton {
+  padding: 0.6rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-texto);
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.boton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.boton-primario {
+  color: #ffffff;
+  background-color: var(--color-primario);
+  border-color: var(--color-primario);
+}
+
+.boton-primario:hover:not(:disabled) {
+  background-color: var(--color-primario-hover);
+}
+
+.boton-peligro {
+  color: #ffffff;
+  background-color: var(--color-error);
+  border-color: var(--color-error);
+}
+
+.boton-peligro-suave {
+  color: var(--color-error);
+}
+
+.boton-texto {
+  padding: 0.25rem 0.5rem;
+  color: var(--color-primario);
+  background: none;
+  border: none;
+  text-decoration: underline;
+}
+
+.boton-pequeno {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.875rem;
+}
+
+.aviso,
+.confirmacion,
+.formulario {
+  margin: 0 0 1.25rem;
+  padding: 1rem 1.25rem;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 0.75rem;
+}
+
+.aviso {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--color-primario-oscuro);
+  background-color: var(--color-primario-suave);
+  border-color: var(--color-primario);
+}
+
+.aviso-error {
+  color: var(--color-error);
+  background-color: #fdeceb;
+  border-color: var(--color-error);
+}
+
+.confirmacion {
+  border-color: var(--color-error);
+}
+
+.confirmacion p {
+  margin-top: 0;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.campo label,
+.etiqueta {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-texto-secundario);
+}
+
+input,
+select {
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+  color: var(--color-texto);
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 0.5rem;
+}
+
+.fila-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+}
+
+.error-campo,
+.error-formulario {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-error);
+}
+
+.error-formulario {
+  margin-bottom: 1rem;
+}
+
+.medicamento-elegido {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.medicamento-elegido p {
+  margin: 0;
+}
+
+.opciones {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.opcion {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--color-borde);
+  cursor: pointer;
+}
+
+.opcion:hover {
+  background-color: var(--color-primario-suave);
+}
+
+.nombre {
+  display: block;
+  font-weight: 700;
+}
+
+.detalle {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-texto-secundario);
+}
+
+.busqueda {
+  margin-bottom: 1rem;
+}
+
+.busqueda input {
+  width: 100%;
+  max-width: 24rem;
+  box-sizing: border-box;
+}
+
+.mensaje {
+  color: var(--color-texto-secundario);
+}
+
+.mensaje-error {
+  color: var(--color-error);
+}
+
+/* en pantallas chicas la tabla se desplaza sola, sin mover toda la página */
+.tabla-contenedor {
+  overflow-x: auto;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 0.75rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+th {
+  font-size: 0.8125rem;
+  color: var(--color-texto-secundario);
+  background-color: var(--color-fondo);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.numero {
+  text-align: right;
+  white-space: nowrap;
+}
+
+td.acciones {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.insignia {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.insignia[data-estado="disponible"] {
+  margin-left: 0;
+  color: var(--color-primario-oscuro);
+  background-color: var(--color-primario-suave);
+}
+
+.insignia[data-estado="agotado"] {
+  margin-left: 0;
+  color: var(--color-error);
+  background-color: #fdeceb;
+}
+
+.insignia[data-estado="bajo_pedido"],
+.insignia[data-estado="stock-bajo"] {
+  color: #6b4300;
+  background-color: #fdf1dc;
+}
+
+.insignia[data-estado="bajo_pedido"] {
+  margin-left: 0;
+}
+
+.paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
