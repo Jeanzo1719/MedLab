@@ -51,13 +51,15 @@ class FarmaciaPanelServiceTest {
 
   @Mock
   private FarmaciasJpaRepository farmaciaRepository;
+  @Mock
+  private ActividadFarmaciaService actividadFarmacia;
 
   private FarmaciaPanelService servicio;
   private FarmaciasEntity farmacia;
 
   @BeforeEach
   void preparar() {
-    servicio = new FarmaciaPanelService(farmaciaRepository);
+    servicio = new FarmaciaPanelService(farmaciaRepository, actividadFarmacia);
     farmacia = farmacia("aprobada");
     when(farmaciaRepository.findById(FARMACIA_ID)).thenReturn(Optional.of(farmacia));
   }
@@ -176,6 +178,39 @@ class FarmaciaPanelServiceTest {
     when(farmaciaRepository.findById(FARMACIA_ID)).thenReturn(Optional.empty());
 
     assertThrows(AccesoPanelDenegadoException.class, () -> servicio.obtener(FARMACIA_ID));
+  }
+
+  @Test
+  void actualizarAtiendeLasAlertasDeInactividad() {
+    GuardarDatosFarmaciaDto datos = new GuardarDatosFarmaciaDto("Farmacia Central", "Calle", "10",
+        null, "5", null, "20", null, null, null, null);
+
+    servicio.actualizar(FARMACIA_ID, datos);
+
+    verify(actividadFarmacia).atenderAlertas(FARMACIA_ID);
+    // La fecha ya la mueve este service: llamar registrarActividad la movería dos veces.
+    verify(actividadFarmacia, never()).registrarActividad(any());
+  }
+
+  @Test
+  void unaActualizacionRechazadaNoAtiendeAlertas() {
+    GuardarDatosFarmaciaDto soloLatitud = new GuardarDatosFarmaciaDto("Nombre nuevo", "Calle", "10",
+        null, "5", null, "20", null, null, LATITUD_NUEVA, null);
+
+    assertThrows(DatosInvalidosException.class, () -> servicio.actualizar(FARMACIA_ID, soloLatitud));
+
+    verify(actividadFarmacia, never()).atenderAlertas(any());
+  }
+
+  @Test
+  void unaFarmaciaPendienteNoAtiendeAlertasAlEditar() {
+    when(farmaciaRepository.findById(FARMACIA_ID)).thenReturn(Optional.of(farmacia("pendiente")));
+    GuardarDatosFarmaciaDto datos = new GuardarDatosFarmaciaDto("Farmacia Central", "Calle", "10",
+        null, "5", null, "20", null, null, null, null);
+
+    assertThrows(AccesoPanelDenegadoException.class, () -> servicio.actualizar(FARMACIA_ID, datos));
+
+    verify(actividadFarmacia, never()).atenderAlertas(any());
   }
 
   private FarmaciasEntity farmacia(String nombreEstado) {

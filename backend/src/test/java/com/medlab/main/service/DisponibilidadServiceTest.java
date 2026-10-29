@@ -49,7 +49,8 @@ import com.medlab.main.repository.MedicamentosJpaRepository;
 /**
  * Pruebas de DisponibilidadService sin base de datos. Se centran en las reglas que la BD no
  * hace cumplir sola: coherencia entre estado y cantidad, farmacia aprobada, límites de la
- * paginación y que un aviso en vivo fallido nunca deshaga un guardado.
+ * paginación, que un aviso en vivo fallido nunca deshaga un guardado y que cada cambio de
+ * inventario registre la actividad de la farmacia (HU-9).
  *
  * Las filas de disponibilidad se simulan con Mockito. Cada mock se guarda en una variable
  * antes de usarlo dentro de un when(...).
@@ -76,13 +77,15 @@ class DisponibilidadServiceTest {
   private MedicamentosJpaRepository medicamentoRepository;
   @Mock
   private MedicamentoDetalleNotificador notificador;
+  @Mock
+  private ActividadFarmaciaService actividadFarmacia;
 
   private DisponibilidadService servicio;
 
   @BeforeEach
   void preparar() {
     servicio = new DisponibilidadService(disponibilidadRepository, estadoDisponibilidadRepository,
-        farmaciaRepository, medicamentoRepository, notificador);
+        farmaciaRepository, medicamentoRepository, notificador, actividadFarmacia);
     // Caso normal por defecto: farmacia aprobada y medicamento existente.
     when(farmaciaRepository.findById(FARMACIA_ID)).thenReturn(Optional.of(farmacia("aprobada")));
     when(medicamentoRepository.existsById(ID_BD)).thenReturn(true);
@@ -163,6 +166,7 @@ class DisponibilidadServiceTest {
     assertThrows(AccesoPanelDenegadoException.class, () -> servicio.resumen(FARMACIA_ID));
 
     verify(disponibilidadRepository, never()).guardar(any(), any(), any(), any(), any());
+    verify(actividadFarmacia, never()).registrarActividad(any());
   }
 
   @Test
@@ -214,6 +218,7 @@ class DisponibilidadServiceTest {
         () -> servicio.marcarAgotado(FARMACIA_ID, MEDICAMENTO_ID));
 
     verify(notificador, never()).publishMedicamentoDetalleUpdate(any());
+    verify(actividadFarmacia, never()).registrarActividad(any());
   }
 
   @Test
@@ -245,6 +250,59 @@ class DisponibilidadServiceTest {
     assertEquals(0, paginacion.getValue().getPageNumber());
     assertEquals(50, paginacion.getValue().getPageSize());
     assertNotNull(paginacion.getValue().getSort().getOrderFor("medicamento.nombreComercial"));
+  }
+
+  // --- Actividad de la farmacia (HU-9) ---
+
+  @Test
+  void guardarRegistraLaActividadDeLaFarmacia() {
+    prepararGuardado(10, EstadoDisponibilidad.DISPONIBLE);
+
+    servicio.guardar(FARMACIA_ID, new GuardarDisponibilidadDto(MEDICAMENTO_ID, 10, PRECIO, null));
+
+    verify(actividadFarmacia).registrarActividad(FARMACIA_ID);
+  }
+
+  @Test
+  void unGuardadoRechazadoNoRegistraActividad() {
+    assertThrows(DatosInvalidosException.class, () -> servicio.guardar(FARMACIA_ID,
+        new GuardarDisponibilidadDto(MEDICAMENTO_ID, 0, PRECIO, "disponible")));
+
+    verify(actividadFarmacia, never()).registrarActividad(any());
+  }
+
+  @Test
+  void marcarAgotadoRegistraLaActividadDeLaFarmacia() {
+    EstadoDisponibilidad agotado = estado(EstadoDisponibilidad.AGOTADO);
+    when(estadoDisponibilidadRepository.findByNombre(EstadoDisponibilidad.AGOTADO))
+        .thenReturn(Optional.of(agotado));
+    when(disponibilidadRepository.marcarAgotado(FARMACIA_ID, ID_BD, ID_ESTADO)).thenReturn(1);
+
+    servicio.marcarAgotado(FARMACIA_ID, MEDICAMENTO_ID);
+
+    verify(actividadFarmacia).registrarActividad(FARMACIA_ID);
+  }
+
+    @Test
+  void unaFarmaciaPendienteNoRegistraActividad() {
+    when(farmaciaRepository.findById(FARMACIA_ID)).thenReturn(Optional.of(farmacia("pendiente")));
+
+    assertThrows(AccesoPanelDenegadoException.class, () -> servicio.guardar(FARMACIA_ID,
+        new GuardarDisponibilidadDto(MEDICAMENTO_ID, 5, PRECIO, null)));
+    assertThrows(AccesoPanelDenegadoException.class,
+        () -> servicio.marcarAgotado(FARMACIA_ID, MEDICAMENTO_ID));
+
+    verify(actividadFarmacia, never()).registrarActividad(any());
+  }
+
+  @Test
+  void siFallaElAvisoEnVivoLaActividadQuedaRegistrada() {
+    prepararGuardado(10, EstadoDisponibilidad.DISPONIBLE);
+    doThrow(new RuntimeException("sin conexión")).when(notificador).publishMedicamentoDetalleUpdate(ID_BD);
+
+    servicio.guardar(FARMACIA_ID, new GuardarDisponibilidadDto(MEDICAMENTO_ID, 10, PRECIO, null));
+
+    verify(actividadFarmacia).registrarActividad(FARMACIA_ID);
   }
 
   /** Deja listo todo lo que guardar() necesita para devolver el producto ya guardado. */

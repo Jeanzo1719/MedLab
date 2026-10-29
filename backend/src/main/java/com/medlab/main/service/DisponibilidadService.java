@@ -57,6 +57,7 @@ public class DisponibilidadService {
   private final FarmaciasJpaRepository farmaciaRepository;
   private final MedicamentosJpaRepository medicamentoRepository;
   private final MedicamentoDetalleNotificador notificador;
+  private final ActividadFarmaciaService actividadFarmacia;
 
   /** Crea el producto o actualiza el existente (misma pareja farmacia-medicamento). */
   @Transactional
@@ -72,6 +73,8 @@ public class DisponibilidadService {
     EstadoDisponibilidad estado = buscarEstado(nombreEstado);
     disponibilidadRepository.guardar(farmaciaId, medicamentoId, datos.cantidad(),
         datos.precio(), estado.getId());
+    // Mueve la fecha de la farmacia y atiende sus alertas de inactividad (HU-9).
+    actividadFarmacia.registrarActividad(farmaciaId);
     publicarTrasCommit(medicamentoId);
 
     return disponibilidadRepository
@@ -106,6 +109,7 @@ public class DisponibilidadService {
     if (filas == 0) {
       throw new RecursoNoEncontradoException("La farmacia no maneja el medicamento " + medicamentoId);
     }
+    actividadFarmacia.registrarActividad(farmaciaId);
     publicarTrasCommit(idMedicamento);
   }
 

@@ -21,14 +21,21 @@ import com.medlab.main.service.FarmaciaAutenticadaProvider;
 @Configuration
 public class PanelCorsConfig implements WebMvcConfigurer {
 
+  /**
+   * TEMPORAL (HU-2): el panel del administrador se identifica con este header. Cuando exista
+   * el login se cambia por el token y esta constante desaparece.
+   */
+  private static final String ENCABEZADO_ADMIN = "X-Admin-Id";
+
   @Value("${spring.cors.allowed-origins}")
   private List<String> allowedOrigins;
 
   @Override
   public void addCorsMappings(CorsRegistry registry) {
+    // POST lo usa el panel del administrador para lanzar la revisión de inactividad.
     registry.addMapping("/api/**")
         .allowedOrigins(allowedOrigins.toArray(String[]::new))
-        .allowedMethods("GET", "PUT", "DELETE", "OPTIONS")
-        .allowedHeaders("Content-Type", FarmaciaAutenticadaProvider.ENCABEZADO);
+        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        .allowedHeaders("Content-Type", FarmaciaAutenticadaProvider.ENCABEZADO, ENCABEZADO_ADMIN);
   }
 }

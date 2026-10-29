@@ -1,0 +1,71 @@
+<section aria-labelledby="titulo-usuarios">
+  <header class="cabecera">
+    <h1 id="titulo-usuarios">Usuarios</h1>
+    <div class="campo">
+      <label for="filtro-rol">Filtrar por rol</label>
+      <select #campoRol id="filtro-rol" [value]="rol()" (change)="alCambiarRol(campoRol.value)">
+        <option value="">Todos</option>
+        <option value="paciente">Pacientes</option>
+        <option value="farmacia">Farmacias</option>
+        <option value="administrador">Administradores</option>
+      </select>
+    </div>
+  </header>
+
+  @let estadoActual = estado();
+  @if (estadoActual.tipo === "cargando") {
+    <p class="mensaje">Cargando usuarios…</p>
+  } @else if (estadoActual.tipo === "error") {
+    <p class="mensaje mensaje-error" role="alert">{{ estadoActual.mensaje }}</p>
+  } @else if (estadoActual.tipo === "listo") {
+    @let resultado = estadoActual.resultado;
+    @if (resultado.totalElementos === 0) {
+      <p class="mensaje">No hay usuarios con ese filtro.</p>
+    } @else {
+      <p class="mensaje">
+        {{ resultado.totalElementos }} {{ resultado.totalElementos === 1 ? "usuario" : "usuarios" }}
+      </p>
+
+      <div class="tabla-contenedor">
+        <table>
+          <caption class="solo-lectores">Historial de usuarios</caption>
+          <thead>
+            <tr>
+              <th scope="col">Identificación</th>
+              <th scope="col">Rol</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Registro</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (usuario of resultado.contenido; track usuario.id) {
+              <tr>
+                <td>{{ usuario.identificacion }}</td>
+                <td>
+                  <span class="insignia">{{ etiquetaRol[usuario.rol] }}</span>
+                </td>
+                <td>{{ usuario.nombre ?? "—" }}</td>
+                <td>{{ formatearFecha(usuario.fechaRegistro) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <nav class="paginacion" aria-label="Páginas de usuarios">
+        <button type="button" class="boton" [disabled]="resultado.pagina === 0" (click)="irAPagina(resultado.pagina - 1)">
+          Anterior
+        </button>
+        <span>Página {{ resultado.pagina + 1 }} de {{ resultado.totalPaginas }}</span>
+        <button
+          type="button"
+          class="boton"
+          [disabled]="resultado.pagina + 1 >= resultado.totalPaginas"
+          (click)="irAPagina(resultado.pagina + 1)"
+        >
+          Siguiente
+        </button>
+      </nav>
+    }
+  }
+</section>

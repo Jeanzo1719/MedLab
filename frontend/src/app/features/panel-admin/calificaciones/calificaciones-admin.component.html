@@ -1,0 +1,99 @@
+<section aria-labelledby="titulo-sospechosas">
+  <header class="cabecera">
+    <h1 id="titulo-sospechosas">Calificaciones sospechosas</h1>
+    <button type="button" class="boton" (click)="actualizar()">Actualizar</button>
+  </header>
+
+  <p class="mensaje">
+    Publicaciones con {{ umbral }} o más calificaciones «No hay» entre las últimas {{ ventana }}. Los avisos llegan
+    en vivo mientras esta pestaña esté abierta.
+  </p>
+
+  <!--
+
+    el aviso en vivo. aria-live hace que el lector de pantalla lo anuncie solo
+
+  -->
+  <div aria-live="polite">
+    @let aviso = avisoVivo();
+    @if (aviso) {
+      <p class="aviso">
+        <span>
+          Nuevo aviso: <strong>{{ aviso.medicamento }}</strong> ({{ aviso.presentacion }}) de
+          {{ aviso.farmacia }} tiene {{ aviso.calificacionesNoHay }} calificaciones «No hay» de las últimas
+          {{ aviso.calificacionesRevisadas }}.
+        </span>
+        <button type="button" class="boton boton-texto" (click)="cerrarAviso()">Cerrar</button>
+      </p>
+    }
+  </div>
+
+  @let errorActual = errorCarga();
+  @if (errorActual) {
+    <p class="mensaje mensaje-error" role="alert">{{ errorActual }}</p>
+  }
+
+  @if (cargando()) {
+    <p class="mensaje">Cargando publicaciones…</p>
+  } @else if (filas().length === 0 && !errorActual) {
+    <p class="mensaje">No hay publicaciones sospechosas.</p>
+  } @else if (filas().length > 0) {
+    <div class="tabla-contenedor">
+      <table>
+        <caption class="solo-lectores">Publicaciones con calificaciones sospechosas</caption>
+        <thead>
+          <tr>
+            <th scope="col">Medicamento</th>
+            <th scope="col">Farmacia</th>
+            <th scope="col" class="numero">«No hay»</th>
+            <th scope="col"><span class="solo-lectores">Acciones</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (fila of filas(); track fila.disponibilidadId) {
+            <tr>
+              <td>
+                <span class="nombre">{{ fila.medicamento }}</span>
+                <span class="detalle">{{ fila.presentacion }}</span>
+              </td>
+              <td>{{ fila.farmacia }}</td>
+              <td class="numero">{{ fila.calificacionesNoHay }} de {{ fila.calificacionesRevisadas }}</td>
+              <td class="acciones">
+                <button
+                  type="button"
+                  class="boton boton-pequeno"
+                  [attr.aria-label]="'Ver calificaciones de ' + fila.medicamento + ' en ' + fila.farmacia"
+                  (click)="verCalificaciones(fila)"
+                >
+                  Ver calificaciones
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!--
+
+    el @for de un solo elemento recrea el componente al cambiar de publicación, así se
+    limpian su aviso y su confirmación pendiente
+
+  -->
+  @let abierta = elegida();
+  @if (abierta) {
+    <section class="calificaciones" aria-labelledby="titulo-calificaciones">
+      <div class="cabecera">
+        <h2 id="titulo-calificaciones">Calificaciones de {{ abierta.medicamento }} ({{ abierta.presentacion }})</h2>
+        <button type="button" class="boton boton-texto" (click)="cerrarCalificaciones()">Cerrar</button>
+      </div>
+      @for (clave of [abierta.disponibilidadId]; track clave) {
+        <app-calificaciones-disponibilidad
+          [disponibilidadId]="clave"
+          (calificacionEliminada)="alEliminarCalificacion()"
+        />
+      }
+    </section>
+  }
+</section>
