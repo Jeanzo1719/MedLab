@@ -7,25 +7,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.medlab.main.service.FarmaciaAutenticadaProvider;
-
 /**
- * Deja que el frontend llame a la API REST del panel desde su propio origen; sin esto el
- * navegador bloquea la llamada. Usa la misma lista de orígenes que el WebSocket, así hay un
- * solo lugar donde permitir o quitar uno. Solo cubre /api/** para no cambiar nada más.
+ * Deja que el frontend llame a la API REST desde su propio origen; sin esto el navegador
+ * bloquea la llamada. Usa la misma lista de orígenes que el WebSocket, así hay un solo lugar
+ * donde permitir o quitar uno. Solo cubre /api/** para no cambiar nada más.
  *
- * Cuando el login (HU-2) cierre rutas en SecurityConfig habrá que activar también
- * http.cors(): Security responde antes que Spring MVC y rechazaría la consulta previa del
- * navegador (OPTIONS) si exige sesión.
+ * Desde HU-2 las llamadas autenticadas viajan con Authorization: Bearer; esa cabecera es la que
+ * se permite aquí. SecurityConfig toma esta misma configuración para contestar la consulta
+ * previa (OPTIONS) antes de exigir el token.
  */
 @Configuration
 public class PanelCorsConfig implements WebMvcConfigurer {
-
-  /**
-   * TEMPORAL (HU-2): el panel del administrador se identifica con este header. Cuando exista
-   * el login se cambia por el token y esta constante desaparece.
-   */
-  private static final String ENCABEZADO_ADMIN = "X-Admin-Id";
 
   @Value("${spring.cors.allowed-origins}")
   private List<String> allowedOrigins;
@@ -36,6 +28,6 @@ public class PanelCorsConfig implements WebMvcConfigurer {
     registry.addMapping("/api/**")
         .allowedOrigins(allowedOrigins.toArray(String[]::new))
         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-        .allowedHeaders("Content-Type", FarmaciaAutenticadaProvider.ENCABEZADO, ENCABEZADO_ADMIN);
+        .allowedHeaders("Content-Type", "Authorization");
   }
 }
