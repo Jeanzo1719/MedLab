@@ -1,5 +1,7 @@
 package com.medlab.main.repository.impl;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Repository;
 
 import com.medlab.main.entity.UsuariosEntity;
@@ -17,6 +19,11 @@ public class UsuariosRepositoryImpl implements UsuariosRepository {
   @Override
   public boolean existsByIdentificacion(String identificacion) {
     return jpaRepository.existsByIdentificacion(identificacion);
+  }
+
+  @Override
+  public Optional<UsuariosEntity> findByIdentificacion(String identificacion) {
+    return jpaRepository.findByIdentificacion(identificacion);
   }
 
   /**
