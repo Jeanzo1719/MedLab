@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { Observable } from "rxjs";
 
@@ -164,7 +164,7 @@ export class PanelFarmaciaService {
   private readonly base: string = `${environment.apiUrl}/panel-farmacia`;
 
   obtenerResumen(): Observable<ResumenInventario> {
-    return this.http.get<ResumenInventario>(`${this.base}/resumen`, { headers: this.encabezados() });
+    return this.http.get<ResumenInventario>(`${this.base}/resumen`);
   }
 
   /**
@@ -179,7 +179,6 @@ export class PanelFarmaciaService {
       .set("pagina", pagina)
       .set("tamano", tamano);
     return this.http.get<Pagina<ProductoInventario>>(`${this.base}/inventario`, {
-      headers: this.encabezados(),
       params,
     });
   }
@@ -190,18 +189,16 @@ export class PanelFarmaciaService {
    * 
    */
   guardarProducto(datos: GuardarProducto): Observable<ProductoInventario> {
-    return this.http.put<ProductoInventario>(`${this.base}/inventario`, datos, {
-      headers: this.encabezados(),
-    });
+    return this.http.put<ProductoInventario>(`${this.base}/inventario`, datos);
   }
 
-    /**
+  /**
    * 
    * pide las opciones de los selectores del formulario de reporte manual
    * 
    */
   obtenerCatalogos(): Observable<Catalogos> {
-    return this.http.get<Catalogos>(`${this.base}/catalogos`, { headers: this.encabezados() });
+    return this.http.get<Catalogos>(`${this.base}/catalogos`);
   }
 
   /**
@@ -211,9 +208,7 @@ export class PanelFarmaciaService {
    * 
    */
   guardarProductoManual(datos: GuardarProductoManual): Observable<ProductoInventario> {
-    return this.http.put<ProductoInventario>(`${this.base}/inventario/manual`, datos, {
-      headers: this.encabezados(),
-    });
+    return this.http.put<ProductoInventario>(`${this.base}/inventario/manual`, datos);
   }
 
   /**
@@ -222,27 +217,15 @@ export class PanelFarmaciaService {
    * 
    */
   marcarAgotado(medicamentoId: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/inventario/${medicamentoId}`, {
-      headers: this.encabezados(),
-    });
+    return this.http.delete<void>(`${this.base}/inventario/${medicamentoId}`);
   }
 
   obtenerDatos(): Observable<DatosFarmacia> {
-    return this.http.get<DatosFarmacia>(`${this.base}/datos`, { headers: this.encabezados() });
+    return this.http.get<DatosFarmacia>(`${this.base}/datos`);
   }
 
   guardarDatos(datos: GuardarDatosFarmacia): Observable<DatosFarmacia> {
-    return this.http.put<DatosFarmacia>(`${this.base}/datos`, datos, { headers: this.encabezados() });
-  }
-
-  /**
-   * 
-   * TEMPORAL: dice al backend qué farmacia es. Es el único lugar que lo hace; cuando
-   * exista el login (HU-2) se cambia por el token y nada más se toca
-   * 
-   */
-  private encabezados(): HttpHeaders {
-    return new HttpHeaders({ "X-Farmacia-Id": String(environment.farmaciaIdTemporal) });
+    return this.http.put<DatosFarmacia>(`${this.base}/datos`, datos);
   }
 }
 
