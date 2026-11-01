@@ -104,15 +104,24 @@
 
       <!--
 
-        los botones para iniciar sesión y registrarse. El registro ya existe
-        (HU-1); la página de iniciar sesión llega con el login (HU-2)
+        los botones de cuenta: con sesión, el acceso al panel y cerrar sesión;
+        sin sesión, iniciar sesión y registrarse
 
       -->
       <div class="acciones">
-        <a class="boton boton-secundario" routerLink="/iniciar-sesion">
-          Iniciar sesión
-        </a>
-        <a class="boton boton-primario" routerLink="/registro">Registrarse</a>
+        @if (sesion(); as actual) {
+          <a class="boton boton-secundario" [routerLink]="rutaInicio(actual.rol)">
+            Mi cuenta
+          </a>
+          <button type="button" class="boton boton-primario" (click)="cerrarSesion()">
+            Cerrar sesión
+          </button>
+        } @else {
+          <a class="boton boton-secundario" routerLink="/iniciar-sesion">
+            Iniciar sesión
+          </a>
+          <a class="boton boton-primario" routerLink="/registro">Registrarse</a>
+        }
       </div>
     </div>
   </div>
