@@ -1,0 +1,587 @@
+<section class="registro" aria-labelledby="titulo-registro">
+  <header class="cabecera">
+    <a class="volver" routerLink="/">← Volver al inicio</a>
+    <h1 id="titulo-registro">Crea tu cuenta en MedLab</h1>
+    <p class="introduccion">
+      Elige cómo vas a usar MedLab y completa solo los datos que necesitas.
+    </p>
+  </header>
+
+  @if (exito(); as resultado) {
+    <div class="tarjeta exito" role="status" aria-live="polite">
+      @if (resultado.rol === "farmacia") {
+        <h2>Tu farmacia quedó en espera de aprobación</h2>
+        <p>
+          Recibimos los datos de tu farmacia. Un administrador los revisará y, cuando la
+          apruebe, aparecerá en el mapa de MedLab.
+        </p>
+      } @else {
+        <h2>Tu cuenta quedó activa</h2>
+        <p>
+          Ya puedes buscar medicamentos y consultar las farmacias cercanas desde la página
+          de inicio.
+        </p>
+      }
+      <a class="boton boton-primario" routerLink="/">Volver al inicio</a>
+    </div>
+  } @else {
+    <div class="tarjeta">
+      <fieldset class="roles">
+        <legend>¿Cómo vas a usar MedLab?</legend>
+
+        <label class="rol-opcion" [class.activo]="rol() === 'paciente'">
+          <input
+            type="radio"
+            name="rol"
+            value="paciente"
+            [checked]="rol() === 'paciente'"
+            (change)="cambiarRol('paciente')"
+          />
+          <span class="rol-titulo">Paciente / Cuidador</span>
+          <span class="rol-detalle">
+            Busca medicamentos y consulta su disponibilidad en las farmacias cercanas.
+          </span>
+        </label>
+
+        <label class="rol-opcion" [class.activo]="rol() === 'farmacia'">
+          <input
+            type="radio"
+            name="rol"
+            value="farmacia"
+            [checked]="rol() === 'farmacia'"
+            (change)="cambiarRol('farmacia')"
+          />
+          <span class="rol-titulo">Farmacia</span>
+          <span class="rol-detalle">
+            Publica tu inventario y aparece en el mapa. La cuenta queda en espera de
+            aprobación.
+          </span>
+        </label>
+      </fieldset>
+
+      @if (errorServidor(); as mensaje) {
+        <p class="mensaje-error" role="alert">{{ mensaje }}</p>
+      }
+
+      @if (rol() === "paciente") {
+        <form class="formulario" [formGroup]="formularioPaciente" (ngSubmit)="enviar()" novalidate>
+          <fieldset>
+            <legend>Tus datos</legend>
+
+            <div class="fila-campos">
+              @let identificacion = formularioPaciente.controls.identificacion;
+              <div class="campo">
+                <label for="paciente-identificacion">Identificación (cédula)</label>
+                <input
+                  id="paciente-identificacion"
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="10"
+                  autocomplete="off"
+                  formControlName="identificacion"
+                />
+                @if (identificacion.touched && identificacion.hasError("required")) {
+                  <p class="error-campo">La identificación es obligatoria.</p>
+                } @else if (identificacion.touched && identificacion.hasError("pattern")) {
+                  <p class="error-campo">Debe tener entre 6 y 10 dígitos, sin letras ni espacios.</p>
+                }
+              </div>
+
+              @let primerNombre = formularioPaciente.controls.primerNombre;
+              <div class="campo">
+                <label for="paciente-primer-nombre">Primer nombre</label>
+                <input
+                  id="paciente-primer-nombre"
+                  type="text"
+                  maxlength="50"
+                  autocomplete="given-name"
+                  formControlName="primerNombre"
+                />
+                @if (primerNombre.touched && primerNombre.invalid) {
+                  <p class="error-campo">El primer nombre es obligatorio (máximo 50 caracteres).</p>
+                }
+              </div>
+            </div>
+
+            <div class="fila-campos">
+              @let segundoNombre = formularioPaciente.controls.segundoNombre;
+              <div class="campo">
+                <label for="paciente-segundo-nombre">Segundo nombre (opcional)</label>
+                <input
+                  id="paciente-segundo-nombre"
+                  type="text"
+                  maxlength="100"
+                  autocomplete="additional-name"
+                  formControlName="segundoNombre"
+                />
+                <p class="ayuda">
+                  Si tienes tres o más nombres, escríbelos aquí separados por espacio.
+                </p>
+                @if (segundoNombre.touched && segundoNombre.invalid) {
+                  <p class="error-campo">No puede pasar de 100 caracteres.</p>
+                }
+              </div>
+
+              @let apellidos = formularioPaciente.controls.apellidos;
+              <div class="campo">
+                <label for="paciente-apellidos">Apellidos</label>
+                <input
+                  id="paciente-apellidos"
+                  type="text"
+                  maxlength="100"
+                  autocomplete="family-name"
+                  formControlName="apellidos"
+                />
+                @if (apellidos.touched && apellidos.invalid) {
+                  <p class="error-campo">Los apellidos son obligatorios (máximo 100 caracteres).</p>
+                }
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Contacto y seguridad</legend>
+
+            <div class="fila-campos">
+              @let correo = formularioPaciente.controls.correo;
+              <div class="campo">
+                <label for="paciente-correo">Correo electrónico</label>
+                <input
+                  id="paciente-correo"
+                  type="email"
+                  maxlength="150"
+                  autocomplete="email"
+                  formControlName="correo"
+                />
+                @if (correo.touched && correo.hasError("required")) {
+                  <p class="error-campo">El correo es obligatorio.</p>
+                } @else if (correo.touched && correo.hasError("pattern")) {
+                  <p class="error-campo">
+                    Escribe un correo válido, por ejemplo nombre&#64;dominio.com.
+                  </p>
+                } @else if (correo.touched && correo.hasError("maxlength")) {
+                  <p class="error-campo">No puede pasar de 150 caracteres.</p>
+                }
+              </div>
+
+              @let telefono = formularioPaciente.controls.telefono;
+              <div class="campo">
+                <label for="paciente-telefono">Teléfono</label>
+                <input
+                  id="paciente-telefono"
+                  type="tel"
+                  maxlength="20"
+                  autocomplete="tel"
+                  formControlName="telefono"
+                />
+                @if (telefono.touched && telefono.hasError("required")) {
+                  <p class="error-campo">El teléfono es obligatorio.</p>
+                } @else if (telefono.touched && telefono.hasError("pattern")) {
+                  <p class="error-campo">Usa entre 7 y 20 números, espacios o los signos + ( ) -.</p>
+                }
+              </div>
+            </div>
+
+            @let epsAfiliada = formularioPaciente.controls.epsAfiliada;
+            <div class="campo">
+              <label for="paciente-eps">EPS afiliada</label>
+              <input
+                id="paciente-eps"
+                type="text"
+                maxlength="100"
+                autocomplete="off"
+                formControlName="epsAfiliada"
+              />
+              @if (epsAfiliada.touched && epsAfiliada.invalid) {
+                <p class="error-campo">La EPS es obligatoria (máximo 100 caracteres).</p>
+              }
+            </div>
+
+            <div class="fila-campos">
+              @let contrasena = formularioPaciente.controls.contrasena;
+              <div class="campo">
+                <label for="paciente-contrasena">Contraseña</label>
+                <input
+                  id="paciente-contrasena"
+                  type="password"
+                  maxlength="25"
+                  autocomplete="new-password"
+                  formControlName="contrasena"
+                />
+                <p class="ayuda">
+                  Entre 8 y 25 caracteres, con una mayúscula, una minúscula y un símbolo.
+                </p>
+                @if (contrasena.touched && contrasena.invalid) {
+                  <p class="error-campo">Revisa la longitud y los requisitos de la contraseña.</p>
+                }
+              </div>
+
+              @let confirmarContrasena = formularioPaciente.controls.confirmarContrasena;
+              <div class="campo">
+                <label for="paciente-confirmar-contrasena">Repite la contraseña</label>
+                <input
+                  id="paciente-confirmar-contrasena"
+                  type="password"
+                  maxlength="25"
+                  autocomplete="new-password"
+                  formControlName="confirmarContrasena"
+                />
+                @if (formularioPaciente.hasError("contrasenasDistintas") && confirmarContrasena.touched) {
+                  <p class="error-campo">Las contraseñas no coinciden.</p>
+                }
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="acciones">
+            <button type="submit" class="boton boton-primario" [disabled]="enviando()">
+              {{ enviando() ? "Creando cuenta…" : "Crear cuenta" }}
+            </button>
+          </div>
+        </form>
+      } @else {
+        <form class="formulario" [formGroup]="formularioFarmacia" (ngSubmit)="enviar()" novalidate>
+          <fieldset>
+            <legend>Datos de la farmacia</legend>
+
+            @let nombreFarmacia = formularioFarmacia.controls.nombreFarmacia;
+            <div class="campo">
+              <label for="farmacia-nombre">Nombre de la farmacia</label>
+              <input
+                id="farmacia-nombre"
+                type="text"
+                maxlength="150"
+                autocomplete="organization"
+                formControlName="nombreFarmacia"
+              />
+              @if (nombreFarmacia.touched && nombreFarmacia.invalid) {
+                <p class="error-campo">El nombre es obligatorio (máximo 150 caracteres).</p>
+              }
+            </div>
+
+            <div class="fila-campos">
+              @let nit = formularioFarmacia.controls.nit;
+              <div class="campo">
+                <label for="farmacia-nit">NIT</label>
+                <input id="farmacia-nit" type="text" maxlength="20" formControlName="nit" />
+                @if (nit.touched && nit.invalid) {
+                  <p class="error-campo">El NIT es obligatorio (máximo 20 caracteres).</p>
+                }
+              </div>
+
+              @let rut = formularioFarmacia.controls.rut;
+              <div class="campo">
+                <label for="farmacia-rut">RUT</label>
+                <input id="farmacia-rut" type="text" maxlength="20" formControlName="rut" />
+                @if (rut.touched && rut.invalid) {
+                  <p class="error-campo">El RUT es obligatorio (máximo 20 caracteres).</p>
+                }
+              </div>
+            </div>
+
+            <div class="fila-campos">
+              @let matricula = formularioFarmacia.controls.matriculaMercantil;
+              <div class="campo">
+                <label for="farmacia-matricula">Matrícula mercantil</label>
+                <input
+                  id="farmacia-matricula"
+                  type="text"
+                  maxlength="20"
+                  formControlName="matriculaMercantil"
+                />
+                @if (matricula.touched && matricula.invalid) {
+                  <p class="error-campo">
+                    Entre 5 y 20 letras o números, sin espacios ni símbolos.
+                  </p>
+                }
+              </div>
+
+              @let director = formularioFarmacia.controls.identificacionDirectorTecnico;
+              <div class="campo">
+                <label for="farmacia-director">Identificación del director técnico</label>
+                <input
+                  id="farmacia-director"
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="10"
+                  formControlName="identificacionDirectorTecnico"
+                />
+                @if (director.touched && director.invalid) {
+                  <p class="error-campo">Debe tener entre 6 y 10 dígitos.</p>
+                }
+              </div>
+            </div>
+
+            @let licencia = formularioFarmacia.controls.licenciaSanitaria;
+            <div class="campo">
+              <label for="farmacia-licencia">Licencia sanitaria o resolución de funcionamiento</label>
+              <input
+                id="farmacia-licencia"
+                type="text"
+                maxlength="50"
+                formControlName="licenciaSanitaria"
+              />
+              @if (licencia.touched && licencia.invalid) {
+                <p class="error-campo">La licencia es obligatoria (máximo 50 caracteres).</p>
+              }
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Dirección exacta</legend>
+
+            <div class="fila-campos">
+              @let tipoVia = formularioFarmacia.controls.tipoViaPrincipal;
+              <div class="campo">
+                <label for="farmacia-tipo-via">Tipo de vía</label>
+                <input
+                  id="farmacia-tipo-via"
+                  type="text"
+                  list="tipos-via-registro"
+                  maxlength="20"
+                  autocomplete="off"
+                  formControlName="tipoViaPrincipal"
+                />
+                <datalist id="tipos-via-registro">
+                  @for (tipo of tiposVia; track tipo) {
+                    <option [value]="tipo"></option>
+                  }
+                </datalist>
+                @if (tipoVia.touched && tipoVia.invalid) {
+                  <p class="error-campo">Indica el tipo de vía.</p>
+                }
+              </div>
+
+              @let numeroPrincipal = formularioFarmacia.controls.numeroViaPrincipal;
+              <div class="campo campo-corto">
+                <label for="farmacia-numero-principal">Número</label>
+                <input
+                  id="farmacia-numero-principal"
+                  type="text"
+                  maxlength="10"
+                  formControlName="numeroViaPrincipal"
+                />
+                @if (numeroPrincipal.touched && numeroPrincipal.invalid) {
+                  <p class="error-campo">Obligatorio.</p>
+                }
+              </div>
+
+              @let letraPrincipal = formularioFarmacia.controls.letraViaPrincipal;
+              <div class="campo campo-corto">
+                <label for="farmacia-letra-principal">Letra</label>
+                <input
+                  id="farmacia-letra-principal"
+                  type="text"
+                  maxlength="5"
+                  formControlName="letraViaPrincipal"
+                />
+                @if (letraPrincipal.touched && letraPrincipal.invalid) {
+                  <p class="error-campo">Máximo 5 caracteres.</p>
+                }
+              </div>
+            </div>
+
+            <div class="fila-campos">
+              @let numeroGeneradora = formularioFarmacia.controls.numeroViaGeneradora;
+              <div class="campo campo-corto">
+                <label for="farmacia-numero-generadora">Número de la vía generadora (#)</label>
+                <input
+                  id="farmacia-numero-generadora"
+                  type="text"
+                  maxlength="10"
+                  formControlName="numeroViaGeneradora"
+                />
+                @if (numeroGeneradora.touched && numeroGeneradora.invalid) {
+                  <p class="error-campo">Obligatorio.</p>
+                }
+              </div>
+
+              @let letraGeneradora = formularioFarmacia.controls.letraViaGeneradora;
+              <div class="campo campo-corto">
+                <label for="farmacia-letra-generadora">Letra</label>
+                <input
+                  id="farmacia-letra-generadora"
+                  type="text"
+                  maxlength="5"
+                  formControlName="letraViaGeneradora"
+                />
+                @if (letraGeneradora.touched && letraGeneradora.invalid) {
+                  <p class="error-campo">Máximo 5 caracteres.</p>
+                }
+              </div>
+
+              @let numeroPredio = formularioFarmacia.controls.numeroPredio;
+              <div class="campo campo-corto">
+                <label for="farmacia-numero-predio">Número del predio (-)</label>
+                <input
+                  id="farmacia-numero-predio"
+                  type="text"
+                  maxlength="10"
+                  formControlName="numeroPredio"
+                />
+                @if (numeroPredio.touched && numeroPredio.invalid) {
+                  <p class="error-campo">Obligatorio.</p>
+                }
+              </div>
+            </div>
+
+            @let complemento = formularioFarmacia.controls.complemento;
+            <div class="campo">
+              <label for="farmacia-complemento">Complemento (opcional)</label>
+              <input
+                id="farmacia-complemento"
+                type="text"
+                maxlength="100"
+                placeholder="Local, torre, piso…"
+                formControlName="complemento"
+              />
+              @if (complemento.touched && complemento.invalid) {
+                <p class="error-campo">No puede pasar de 100 caracteres.</p>
+              }
+            </div>
+
+            <div class="ubicacion">
+              <div class="ubicacion-cabecera">
+                <h2>Ubicación en el mapa</h2>
+                <button
+                  type="button"
+                  class="boton boton-secundario"
+                  [disabled]="buscandoUbicacion()"
+                  (click)="ubicarSegunDireccion()"
+                >
+                  {{ buscandoUbicacion() ? "Buscando…" : "Ubicar según la dirección" }}
+                </button>
+              </div>
+              <p class="ayuda">
+                Busca la dirección o toca el punto exacto de la farmacia en el mapa.
+              </p>
+              @if (errorUbicacion(); as mensaje) {
+                <p class="error-campo" role="alert">{{ mensaje }}</p>
+              }
+              @if (errorMapa(); as mensaje) {
+                <p class="error-campo" role="alert">{{ mensaje }}</p>
+              }
+              <div class="mapa-contenedor">
+                <app-mapa
+                  [seleccionable]="true"
+                  [ubicacion]="coordenadas()"
+                  etiquetaUbicacion="Ubicación de la farmacia"
+                  descripcion="Mapa para marcar la ubicación de la farmacia"
+                  (ubicacionElegida)="elegirUbicacion($event)"
+                />
+              </div>
+              @if (coordenadas(); as punto) {
+                <p class="ayuda">
+                  Ubicación marcada: {{ formatearCoordenada(punto.latitud) }},
+                  {{ formatearCoordenada(punto.longitud) }}
+                </p>
+              } @else {
+                <p class="ayuda">Todavía no has marcado la ubicación.</p>
+              }
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Contacto y seguridad</legend>
+
+            <div class="fila-campos">
+              @let correo = formularioFarmacia.controls.correo;
+              <div class="campo">
+                <label for="farmacia-correo">Correo electrónico</label>
+                <input
+                  id="farmacia-correo"
+                  type="email"
+                  maxlength="150"
+                  autocomplete="email"
+                  formControlName="correo"
+                />
+                @if (correo.touched && correo.hasError("required")) {
+                  <p class="error-campo">El correo es obligatorio.</p>
+                } @else if (correo.touched && correo.hasError("pattern")) {
+                  <p class="error-campo">
+                    Escribe un correo válido, por ejemplo nombre&#64;dominio.com.
+                  </p>
+                } @else if (correo.touched && correo.hasError("maxlength")) {
+                  <p class="error-campo">No puede pasar de 150 caracteres.</p>
+                }
+              </div>
+
+              @let telefono = formularioFarmacia.controls.telefono;
+              <div class="campo">
+                <label for="farmacia-telefono">Teléfono</label>
+                <input
+                  id="farmacia-telefono"
+                  type="tel"
+                  maxlength="20"
+                  autocomplete="tel"
+                  formControlName="telefono"
+                />
+                @if (telefono.touched && telefono.hasError("required")) {
+                  <p class="error-campo">El teléfono es obligatorio.</p>
+                } @else if (telefono.touched && telefono.hasError("pattern")) {
+                  <p class="error-campo">Usa entre 7 y 20 números, espacios o los signos + ( ) -.</p>
+                }
+              </div>
+            </div>
+
+            @let epsAfiliada = formularioFarmacia.controls.epsAfiliada;
+            <div class="campo">
+              <label for="farmacia-eps">EPS afiliada</label>
+              <input
+                id="farmacia-eps"
+                type="text"
+                maxlength="100"
+                autocomplete="off"
+                formControlName="epsAfiliada"
+              />
+              @if (epsAfiliada.touched && epsAfiliada.invalid) {
+                <p class="error-campo">La EPS es obligatoria (máximo 100 caracteres).</p>
+              }
+            </div>
+
+            <div class="fila-campos">
+              @let contrasena = formularioFarmacia.controls.contrasena;
+              <div class="campo">
+                <label for="farmacia-contrasena">Contraseña</label>
+                <input
+                  id="farmacia-contrasena"
+                  type="password"
+                  maxlength="25"
+                  autocomplete="new-password"
+                  formControlName="contrasena"
+                />
+                <p class="ayuda">
+                  Entre 8 y 25 caracteres, con una mayúscula, una minúscula y un símbolo.
+                </p>
+                @if (contrasena.touched && contrasena.invalid) {
+                  <p class="error-campo">Revisa la longitud y los requisitos de la contraseña.</p>
+                }
+              </div>
+
+              @let confirmarContrasena = formularioFarmacia.controls.confirmarContrasena;
+              <div class="campo">
+                <label for="farmacia-confirmar-contrasena">Repite la contraseña</label>
+                <input
+                  id="farmacia-confirmar-contrasena"
+                  type="password"
+                  maxlength="25"
+                  autocomplete="new-password"
+                  formControlName="confirmarContrasena"
+                />
+                @if (formularioFarmacia.hasError("contrasenasDistintas") && confirmarContrasena.touched) {
+                  <p class="error-campo">Las contraseñas no coinciden.</p>
+                }
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="acciones">
+            <button type="submit" class="boton boton-primario" [disabled]="enviando()">
+              {{ enviando() ? "Creando cuenta…" : "Crear cuenta" }}
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  }
+</section>

@@ -16,6 +16,16 @@ export const routes: Routes = [
     component: FarmaciasCercanasComponent,
     title: "MedLab | Farmacias cercanas con tu medicamento",
   },
+  // Registro (HU-1): se carga bajo demanda, igual que los paneles, para que la
+  // landing no pese más por un formulario que no todos abren.
+  {
+    path: "registro",
+    title: "MedLab | Crear cuenta",
+    loadComponent: () =>
+      import("./features/registro/registro.component").then(
+        (modulo) => modulo.RegistroComponent,
+      ),
+  },
   // TODO(HU-2): proteger /farmacia con un guard que exija sesión con rol "farmacia".
   // Se carga bajo demanda para que la landing no pese más por el panel.
   {
