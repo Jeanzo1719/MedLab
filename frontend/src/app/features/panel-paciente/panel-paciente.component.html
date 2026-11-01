@@ -1,0 +1,22 @@
+<header class="barra">
+  <a class="marca" routerLink="/">MedLab</a>
+  <span class="rol">Panel del paciente</span>
+  <button type="button" class="boton-salir" (click)="cerrarSesion()">Cerrar sesión</button>
+</header>
+
+<main class="contenido">
+  @let actual = sesion();
+  <h1>Hola{{ actual ? ", " + actual.identificacion : "" }}</h1>
+  <p class="introduccion">
+    Tu cuenta está activa. Desde aquí podrás ver tus datos y los medicamentos que consultes.
+  </p>
+
+  <section class="accesos" aria-label="Accesos rápidos">
+    <a class="acceso" routerLink="/farmacias-cercanas">
+      <span class="acceso-titulo">Buscar farmacias cercanas</span>
+      <span class="acceso-detalle">
+        Consulta qué farmacia cerca de ti tiene el medicamento que necesitas.
+      </span>
+    </a>
+  </section>
+</main>
