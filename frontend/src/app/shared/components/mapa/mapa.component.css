@@ -34,6 +34,16 @@
   min-height: 320px;
 }
 
+/*
+
+  en modo seleccionable la cruz del cursor dice que se puede tocar para elegir
+  el punto
+
+*/
+.mapa.seleccionable {
+  cursor: crosshair;
+}
+
 :host ::ng-deep .marcador {
   fill: var(--mapa-farmacia);
   stroke: var(--color-superficie);
