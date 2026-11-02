@@ -24,7 +24,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import com.medlab.main.entity.SesionesEntity;
 import com.medlab.main.exception.SesionInvalidaException;
 import com.medlab.main.repository.SesionesRepository;
@@ -53,7 +53,7 @@ class SesionJwtFilterTest {
 
   @BeforeEach
   void preparar() {
-    filtro = new SesionJwtFilter(jwtService, sesionesRepository, new ObjectMapper());
+    filtro = new SesionJwtFilter(jwtService, sesionesRepository, new JsonMapper());
     solicitud = new MockHttpServletRequest("GET", "/api/panel-farmacia/resumen");
     respuesta = new MockHttpServletResponse();
     SecurityContextHolder.clearContext();
