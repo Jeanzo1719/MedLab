@@ -72,6 +72,9 @@ public class FarmaciasEntity {
   @Column(name = "licencia_sanitaria", nullable = false, length = 50)
   private String licenciaSanitaria;
 
+  @Column(name = "eps_afiliada", nullable = false, length = 100)
+  private String epsAfiliada;
+
   @Column(name = "latitud", nullable = false, precision = 10, scale = 8)
   private BigDecimal latitud;
 

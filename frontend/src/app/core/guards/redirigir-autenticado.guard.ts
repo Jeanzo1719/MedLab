@@ -1,19 +1,15 @@
 import { inject } from "@angular/core";
 import { CanActivateFn, Router, UrlTree } from "@angular/router";
 
-import { Sesion, SesionService } from "../services/sesion.service";
+import { Sesion, SesionService, rutaInicio } from "../services/sesion.service";
 
 /**
- * 
- * el guard de la landing: decide si se muestra la landing o si se manda al
- * usuario a su panel
- * 
- * antes de abrir la landing le pregunta a SesionService si hay sesión. Si no hay,
- * deja pasar (true). Si hay, lo manda a la ruta de su panel según su rol, por
- * ejemplo /paciente
- * 
- * por ahora siempre deja pasar, porque SesionService todavía devuelve null
- * 
+ *
+ * el guard de la landing: si el usuario ya inició sesión, lo manda a su panel
+ * en vez de mostrarle la página pública
+ *
+ * cada rol tiene su ruta de inicio: /paciente, /farmacia o /administrador
+ *
  */
 export const redirigirAutenticadoGuard: CanActivateFn = (): boolean | UrlTree => {
   const sesion: Sesion | null = inject(SesionService).obtenerSesionActiva();
@@ -22,5 +18,5 @@ export const redirigirAutenticadoGuard: CanActivateFn = (): boolean | UrlTree =>
     return true;
   }
 
-  return inject(Router).createUrlTree(["/", sesion.rol]);
+  return inject(Router).createUrlTree([rutaInicio(sesion.rol)]);
 };

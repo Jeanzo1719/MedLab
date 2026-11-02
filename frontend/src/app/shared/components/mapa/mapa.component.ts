@@ -24,6 +24,7 @@ import {
   LatLngExpression,
   LatLngTuple,
   LayerGroup,
+  LeafletMouseEvent,
   Map as LeafletMap,
   Polyline,
   PolylineOptions,
@@ -205,6 +206,15 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
 
   /**
    *
+   * el texto que aparece al tocar el punto de la ubicación. Por defecto dice
+   * "Tu ubicación"; el registro de farmacias lo cambia por la ubicación de la
+   * farmacia
+   *
+   */
+  readonly etiquetaUbicacion: InputSignal<string> = input<string>("Tu ubicación");
+
+  /**
+   *
    * el id de la farmacia elegida, para resaltarla. Si es null, no hay ninguna
    * elegida
    *
@@ -225,6 +235,24 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
    *
    */
   readonly seleccionar: OutputEmitterRef<number> = output<number>();
+
+  /**
+   *
+   * pone el mapa en modo "elegir un punto": el cursor cambia y cada clic avisa
+   * las coordenadas. Lo usa el registro de farmacias para marcar la ubicación.
+   * Por defecto está apagado, así la landing y las farmacias cercanas siguen
+   * funcionando igual
+   *
+   */
+  readonly seleccionable: InputSignal<boolean> = input<boolean>(false);
+
+  /**
+   *
+   * avisa las coordenadas del punto que el usuario tocó, cuando el mapa está en
+   * modo seleccionable
+   *
+   */
+  readonly ubicacionElegida: OutputEmitterRef<Coordenadas> = output<Coordenadas>();
 
   /**
    *
@@ -307,7 +335,7 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
       const ubicacion: Coordenadas | null = this.ubicacion();
       if (ubicacion) {
         circleMarker([ubicacion.latitud, ubicacion.longitud], ESTILO_UBICACION)
-          .bindTooltip("Tu ubicación")
+          .bindTooltip(this.etiquetaUbicacion())
           .addTo(this.capaMarcadores);
       }
     });
@@ -399,6 +427,17 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
       maxZoom: ZOOM_MAXIMO,
       noWrap: true,
     }).addTo(mapa);
+
+    // En modo seleccionable cada clic devuelve el punto tocado; si no, el mapa
+    // solo se mueve como siempre.
+    mapa.on("click", (evento: LeafletMouseEvent): void => {
+      if (this.seleccionable()) {
+        this.ubicacionElegida.emit({
+          latitud: evento.latlng.lat,
+          longitud: evento.latlng.lng,
+        });
+      }
+    });
 
     this.capaRuta.addTo(mapa);
     this.capaMarcadores.addTo(mapa);

@@ -9,8 +9,6 @@
 export const environment: Readonly<{
   wsUrl: string;
   apiUrl: string;
-  farmaciaIdTemporal: number;
-  adminIdTemporal: number;
 }> = {
   /**
    * 
@@ -22,24 +20,9 @@ export const environment: Readonly<{
 
   /**
    * 
-   * la dirección de la API REST del backend local, la que usa el panel de la farmacia
+   * la dirección de la API REST del backend local, la que usan el registro, la
+   * sesión y los paneles
    * 
    */
   apiUrl: "http://localhost:8080/api",
-
-  /**
-   * 
-   * TEMPORAL: el id de la farmacia que usa el panel, porque todavía no hay login (HU-2).
-   * 9001 es la farmacia de prueba de la base de datos local
-   * 
-   */
-  farmaciaIdTemporal: 9001,
-
-  /**
-   * 
-   * TEMPORAL: el id del administrador que usa su panel, porque todavía no hay login (HU-2).
-   * 1 es el administrador de la base de datos local
-   * 
-   */
-  adminIdTemporal: 1,
 };

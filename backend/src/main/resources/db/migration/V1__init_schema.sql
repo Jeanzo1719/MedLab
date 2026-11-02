@@ -3,6 +3,11 @@ CREATE TABLE roles (
     nombre          VARCHAR(30)     NOT NULL UNIQUE
 );
 
+INSERT INTO roles (nombre) VALUES
+    ('paciente'),
+    ('farmacia'),
+    ('administrador');
+
 CREATE TABLE estados_farmacia (
     id              INT             AUTO_INCREMENT PRIMARY KEY,
     nombre          VARCHAR(30)     NOT NULL UNIQUE
@@ -14,9 +19,11 @@ INSERT INTO estados_farmacia (nombre) VALUES
     ('suspendida'),
     ('rechazada');
 
+-- La identificacion es la cedula del paciente/cuidador o el UUID que el sistema
+-- genera para una farmacia, porque una farmacia no tiene cedula.
 CREATE TABLE usuarios (
     id                  INT             AUTO_INCREMENT PRIMARY KEY,
-    identificacion      VARCHAR(10)     NOT NULL UNIQUE,
+    identificacion      VARCHAR(36)     NOT NULL UNIQUE,
     correo              VARCHAR(150)    NOT NULL,
     contrasena_hash     VARCHAR(255)    NOT NULL,
     telefono            VARCHAR(20)     NOT NULL,
@@ -27,7 +34,8 @@ CREATE TABLE usuarios (
         ON DELETE RESTRICT
         ON UPDATE CASCADE,
 
-    CHECK (identificacion REGEXP '^[0-9]{6,10}$'),
+    CHECK (identificacion REGEXP '^[0-9]{6,10}$'
+        OR identificacion REGEXP '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'),
     CHECK (correo REGEXP '^[A-Za-z0-9._+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,10}$')
 );
 
@@ -61,6 +69,7 @@ CREATE TABLE farmacias (
     matricula_mercantil                 VARCHAR(20)     NOT NULL,
     identificacion_director_tecnico     VARCHAR(10)     NOT NULL,
     licencia_sanitaria                  VARCHAR(50)     NOT NULL,
+    eps_afiliada                        VARCHAR(100)    NOT NULL,
 
     latitud                             DECIMAL(10, 8)  NOT NULL,
     longitud                            DECIMAL(11, 8)  NOT NULL,

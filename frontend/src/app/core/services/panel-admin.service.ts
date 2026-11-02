@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { Observable } from "rxjs";
 
@@ -143,7 +143,6 @@ export class PanelAdminService {
    */
   listarUsuarios(rol: RolUsuario | "", pagina: number, tamano: number): Observable<Pagina<UsuarioHistorial>> {
     return this.http.get<Pagina<UsuarioHistorial>>(`${this.base}/usuarios`, {
-      headers: this.encabezados(),
       params: this.paginacion(pagina, tamano).set("rol", rol),
     });
   }
@@ -155,35 +154,30 @@ export class PanelAdminService {
    */
   listarFarmacias(estado: EstadoFarmacia | "", pagina: number, tamano: number): Observable<Pagina<FarmaciaHistorial>> {
     return this.http.get<Pagina<FarmaciaHistorial>>(`${this.base}/farmacias`, {
-      headers: this.encabezados(),
       params: this.paginacion(pagina, tamano).set("estado", estado),
     });
   }
 
   listarFarmaciasConAlertas(pagina: number, tamano: number): Observable<Pagina<FarmaciaConAlertas>> {
     return this.http.get<Pagina<FarmaciaConAlertas>>(`${this.base}/farmacias/alertas`, {
-      headers: this.encabezados(),
       params: this.paginacion(pagina, tamano),
     });
   }
 
   listarAuditoria(farmaciaId: number, pagina: number, tamano: number): Observable<Pagina<AuditoriaEstado>> {
     return this.http.get<Pagina<AuditoriaEstado>>(`${this.base}/farmacias/${farmaciaId}/auditoria`, {
-      headers: this.encabezados(),
       params: this.paginacion(pagina, tamano),
     });
   }
 
   listarDisponibilidades(farmaciaId: number, pagina: number, tamano: number): Observable<Pagina<DisponibilidadAdmin>> {
     return this.http.get<Pagina<DisponibilidadAdmin>>(`${this.base}/farmacias/${farmaciaId}/disponibilidades`, {
-      headers: this.encabezados(),
       params: this.paginacion(pagina, tamano),
     });
   }
 
   listarCalificaciones(disponibilidadId: number, pagina: number, tamano: number): Observable<Pagina<CalificacionAdmin>> {
     return this.http.get<Pagina<CalificacionAdmin>>(`${this.base}/disponibilidades/${disponibilidadId}/calificaciones`, {
-      headers: this.encabezados(),
       params: this.paginacion(pagina, tamano),
     });
   }
@@ -194,9 +188,7 @@ export class PanelAdminService {
    * 
    */
   eliminarCalificacion(calificacionId: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/calificaciones/${calificacionId}`, {
-      headers: this.encabezados(),
-    });
+    return this.http.delete<void>(`${this.base}/calificaciones/${calificacionId}`);
   }
 
   /**
@@ -205,28 +197,14 @@ export class PanelAdminService {
    * 
    */
   revisarInactividad(): Observable<RevisionInactividad> {
-    return this.http.post<RevisionInactividad>(`${this.base}/inactividad/revisar`, null, {
-      headers: this.encabezados(),
-    });
+    return this.http.post<RevisionInactividad>(`${this.base}/inactividad/revisar`, null);
   }
 
   listarSospechosas(): Observable<DisponibilidadSospechosa[]> {
-    return this.http.get<DisponibilidadSospechosa[]>(`${this.base}/disponibilidades/sospechosas`, {
-      headers: this.encabezados(),
-    });
+    return this.http.get<DisponibilidadSospechosa[]>(`${this.base}/disponibilidades/sospechosas`);
   }
 
   private paginacion(pagina: number, tamano: number): HttpParams {
     return new HttpParams().set("pagina", pagina).set("tamano", tamano);
-  }
-
-  /**
-   * 
-   * TEMPORAL: dice al backend qué administrador es. Es el único lugar que lo hace; cuando
-   * exista el login (HU-2) se cambia por el token y nada más se toca
-   * 
-   */
-  private encabezados(): HttpHeaders {
-    return new HttpHeaders({ "X-Admin-Id": String(environment.adminIdTemporal) });
   }
 }

@@ -1,0 +1,265 @@
+:host {
+  display: block;
+}
+
+.registro {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+.cabecera {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.barra-superior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.volver {
+  color: var(--color-primario);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.volver:hover {
+  text-decoration: underline;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+}
+
+h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.introduccion {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.tarjeta {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--color-borde);
+  border-radius: 1rem;
+  background: var(--color-superficie);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.06);
+}
+
+.roles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.roles legend {
+  grid-column: 1 / -1;
+  margin-bottom: 0.5rem;
+  padding: 0;
+  font-weight: 700;
+}
+
+.rol-opcion {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.15rem 0.6rem;
+  align-content: start;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-borde);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition:
+    border-color var(--transicion),
+    background-color var(--transicion);
+}
+
+.rol-opcion input {
+  grid-row: span 2;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0.15rem 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  accent-color: var(--color-primario);
+}
+
+.rol-titulo {
+  font-weight: 700;
+}
+
+.rol-detalle {
+  color: var(--color-texto-secundario);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.rol-opcion.activo {
+  border-color: var(--color-primario);
+  background: color-mix(in srgb, var(--color-primario) 8%, transparent);
+}
+
+.formulario {
+  display: grid;
+  gap: 1.25rem;
+}
+
+fieldset {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--color-borde);
+  border-radius: 0.75rem;
+}
+
+legend {
+  padding: 0 0.4rem;
+  font-weight: 700;
+}
+
+.fila-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.9rem;
+}
+
+.campo {
+  display: grid;
+  gap: 0.35rem;
+  align-content: start;
+}
+
+.campo-corto {
+  max-width: 9rem;
+}
+
+label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--color-borde);
+  border-radius: 0.5rem;
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  font: inherit;
+}
+
+input:hover {
+  border-color: var(--color-texto-secundario);
+}
+
+.ayuda {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.error-campo {
+  margin: 0;
+  color: var(--color-error);
+  font-size: 0.8rem;
+}
+
+.mensaje-error {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: light-dark(#fef3f2, #3a1d1a);
+  color: var(--color-error);
+}
+
+.ubicacion {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.ubicacion-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.mapa-contenedor {
+  height: 320px;
+  overflow: hidden;
+  border: 1px solid var(--color-borde);
+  border-radius: 0.75rem;
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.boton {
+  padding: 0.7rem 1.3rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.boton-primario {
+  background: var(--color-primario);
+  color: var(--color-sobre-primario);
+}
+
+.boton-primario:hover:not(:disabled) {
+  background: var(--color-primario-hover);
+}
+
+.boton-secundario {
+  border-color: var(--color-borde);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+}
+
+.boton-secundario:hover:not(:disabled) {
+  border-color: var(--color-primario);
+  color: var(--color-primario);
+}
+
+.boton:disabled {
+  cursor: progress;
+  opacity: 0.65;
+}
+
+.exito {
+  justify-items: start;
+  padding: 2rem;
+}
+
+.exito p {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  line-height: 1.5;
+}
+
+@media (min-width: 40rem) {
+  .tarjeta {
+    padding: 2rem;
+  }
+}

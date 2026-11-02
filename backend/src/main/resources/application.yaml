@@ -16,3 +16,12 @@ spring:
   server:
     port: ${SERVER_PORT:8080}
     address: ${SERVER_ADDRESS:127.0.0.1}
+
+medlab:
+  jwt:
+    # Clave con la que se firman los tokens de sesión (HU-2). En producción hay que
+    # definir MEDLAB_JWT_SECRET con una clave propia de al menos 32 bytes; la que
+    # aparece por defecto solo sirve para desarrollo local.
+    secret: ${MEDLAB_JWT_SECRET:medlab-desarrollo-clave-jwt-de-32-bytes-minimo}
+    emisor: medlab
+    duracion-dias: 14

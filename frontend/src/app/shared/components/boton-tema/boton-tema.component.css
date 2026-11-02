@@ -1,0 +1,29 @@
+:host {
+  display: inline-flex;
+}
+
+.boton-tema {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  color: var(--color-texto);
+  background: none;
+  border: 0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.boton-tema:hover {
+  color: var(--color-primario);
+  background-color: var(--color-fondo);
+}
+
+.boton-tema svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}

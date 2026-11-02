@@ -1,5 +1,6 @@
 import { Routes } from "@angular/router";
 
+import { requiereSesion } from "./core/guards/autenticado.guard";
 import { redirigirAutenticadoGuard } from "./core/guards/redirigir-autenticado.guard";
 import { FarmaciasCercanasComponent } from "./features/farmacias-cercanas/farmacias-cercanas.component";
 import { LandingComponent } from "./features/landing/landing.component";
@@ -16,11 +17,40 @@ export const routes: Routes = [
     component: FarmaciasCercanasComponent,
     title: "MedLab | Farmacias cercanas con tu medicamento",
   },
-  // TODO(HU-2): proteger /farmacia con un guard que exija sesión con rol "farmacia".
+  // Registro (HU-1): se carga bajo demanda, igual que los paneles, para que la
+  // landing no pese más por un formulario que no todos abren.
+  {
+    path: "registro",
+    title: "MedLab | Crear cuenta",
+    loadComponent: () =>
+      import("./features/registro/registro.component").then(
+        (modulo) => modulo.RegistroComponent,
+      ),
+  },
+  // Inicio de sesión (HU-2): público; al entrar redirige al panel del rol.
+  {
+    path: "iniciar-sesion",
+    title: "MedLab | Iniciar sesión",
+    loadComponent: () =>
+      import("./features/iniciar-sesion/iniciar-sesion.component").then(
+        (modulo) => modulo.IniciarSesionComponent,
+      ),
+  },
+  // Panel del paciente (HU-2): protegido; por ahora es la bienvenida de la cuenta.
+  {
+    path: "paciente",
+    title: "MedLab | Mi cuenta",
+    canActivate: [requiereSesion("paciente")],
+    loadComponent: () =>
+      import("./features/panel-paciente/panel-paciente.component").then(
+        (modulo) => modulo.PanelPacienteComponent,
+      ),
+  },
   // Se carga bajo demanda para que la landing no pese más por el panel.
   {
     path: "farmacia",
     title: "MedLab | Panel de la farmacia",
+    canActivate: [requiereSesion("farmacia")],
     loadComponent: () =>
       import("./features/panel-farmacia/panel-farmacia.component").then(
         (modulo) => modulo.PanelFarmaciaComponent,
@@ -53,11 +83,11 @@ export const routes: Routes = [
       },
     ],
   },
-  // TODO(HU-2): proteger /administrador con un guard que exija sesión con rol "administrador".
   // Misma idea que /farmacia: se carga bajo demanda para no pesar en la landing.
   {
     path: "administrador",
     title: "MedLab | Panel del administrador",
+    canActivate: [requiereSesion("administrador")],
     loadComponent: () =>
       import("./features/panel-admin/panel-admin.component").then(
         (modulo) => modulo.PanelAdminComponent,

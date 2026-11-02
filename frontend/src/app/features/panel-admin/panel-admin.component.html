@@ -1,6 +1,8 @@
 <header class="barra">
   <a class="marca" routerLink="/">MedLab</a>
   <span class="rol">Panel del administrador</span>
+  <app-boton-tema />
+  <button type="button" class="boton-salir" (click)="cerrarSesion()">Cerrar sesión</button>
 </header>
 
 <nav class="pestanas" aria-label="Secciones del panel">
@@ -9,16 +11,6 @@
   <a routerLink="/administrador/alertas" routerLinkActive="activa" ariaCurrentWhenActive="page">Alertas</a>
   <a routerLink="/administrador/calificaciones" routerLinkActive="activa" ariaCurrentWhenActive="page">Calificaciones</a>
 </nav>
-
-<!--
-
-  quitar este aviso cuando exista el login (HU-2): por ahora el panel siempre
-  trabaja con un administrador fijo
-
--->
-<p class="temporal" role="note">
-  Modo de prueba: todavía no hay inicio de sesión, así que el panel usa un administrador fijo.
-</p>
 
 <main class="contenido">
   <router-outlet />

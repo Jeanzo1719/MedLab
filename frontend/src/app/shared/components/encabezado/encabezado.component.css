@@ -165,10 +165,12 @@ nav a:hover {
   justify-content: center;
   min-height: 44px;
   padding: 0 1.25rem;
+  font: inherit;
   font-weight: 600;
   text-decoration: none;
   border: 2px solid var(--color-primario);
   border-radius: 0.75rem;
+  cursor: pointer;
 }
 
 .boton-primario {

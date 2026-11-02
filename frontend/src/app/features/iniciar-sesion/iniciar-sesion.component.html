@@ -1,0 +1,65 @@
+<section class="inicio-sesion" aria-labelledby="titulo-inicio-sesion">
+  <header class="cabecera">
+    <div class="barra-superior">
+      <a class="volver" routerLink="/">← Volver al inicio</a>
+      <app-boton-tema />
+    </div>
+    <h1 id="titulo-inicio-sesion">Inicia sesión en MedLab</h1>
+    <p class="introduccion">
+      Entra con la identificación con la que te registraste y tu contraseña.
+    </p>
+  </header>
+
+  <div class="tarjeta">
+    <form class="formulario" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+      @if (error(); as mensaje) {
+        <p class="mensaje-error" role="alert">{{ mensaje }}</p>
+      }
+
+      @let identificacion = formulario.controls.identificacion;
+      <div class="campo">
+        <label for="sesion-identificacion">Identificación</label>
+        <input
+          id="sesion-identificacion"
+          type="text"
+          maxlength="36"
+          autocomplete="username"
+          formControlName="identificacion"
+        />
+        @if (identificacion.touched && identificacion.hasError("required")) {
+          <p class="error-campo">La identificación es obligatoria.</p>
+        } @else if (identificacion.touched && identificacion.hasError("pattern")) {
+          <p class="error-campo">
+            Escribe tu cédula (6 a 10 dígitos) o el código de tu farmacia.
+          </p>
+        }
+      </div>
+
+      @let contrasena = formulario.controls.contrasena;
+      <div class="campo">
+        <label for="sesion-contrasena">Contraseña</label>
+        <input
+          id="sesion-contrasena"
+          type="password"
+          maxlength="25"
+          autocomplete="current-password"
+          formControlName="contrasena"
+        />
+        @if (contrasena.touched && contrasena.invalid) {
+          <p class="error-campo">La contraseña debe tener entre 8 y 25 caracteres.</p>
+        }
+      </div>
+
+      <div class="acciones">
+        <button type="submit" class="boton boton-primario" [disabled]="enviando()">
+          {{ enviando() ? "Entrando…" : "Iniciar sesión" }}
+        </button>
+      </div>
+    </form>
+
+    <p class="registro">
+      ¿Todavía no tienes cuenta?
+      <a routerLink="/registro">Regístrate</a>
+    </p>
+  </div>
+</section>

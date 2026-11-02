@@ -11,8 +11,6 @@
 export const environment: Readonly<{
   wsUrl: string;
   apiUrl: string;
-  farmaciaIdTemporal: number;
-  adminIdTemporal: number;
 }> = {
   /**
    * 
@@ -25,24 +23,9 @@ export const environment: Readonly<{
 
   /**
    * 
-   * la dirección de la API REST del backend, la que usa el panel de la farmacia
+   * la dirección de la API REST del backend, la que usan el registro, la sesión
+   * y los paneles
    * 
    */
   apiUrl: "http://localhost:8080/api",
-
-  /**
-   * 
-   * TEMPORAL: el id de la farmacia que usa el panel, porque todavía no hay login (HU-2).
-   * Cuando exista, esto desaparece y la farmacia sale de la sesión
-   * 
-   */
-  farmaciaIdTemporal: 9001,
-
-  /**
-   * 
-   * TEMPORAL: el id del administrador que usa su panel, porque todavía no hay login (HU-2).
-   * Cuando exista, esto desaparece y el administrador sale de la sesión
-   * 
-   */
-  adminIdTemporal: 1,
 };
