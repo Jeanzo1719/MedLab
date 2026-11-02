@@ -25,8 +25,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Puerta de entrada al backend para el mapa de la landing. Recibe los pedidos del frontend
- * por WebSocket y se los pasa al service. No tiene lógica propia.
+ * Puerta de entrada al backend para las farmacias: el mapa de la landing, las farmacias cercanas
+ * y las solicitudes que revisa el administrador. Recibe los pedidos del frontend por WebSocket y
+ * se los pasa al service. No tiene lógica propia.
+ *
+ * Las solicitudes y las decisiones sobre ellas son solo para administradores: lo revisa
+ * SesionStompInterceptor antes de que el mensaje llegue aquí.
  */
 @Slf4j
 @Controller
@@ -82,8 +86,8 @@ public class FarmaciasController {
   /**
    * Aprueba una farmacia pendiente cuando el frontend envía un mensaje a
    * /app/farmacias/aprobar con el header farmaciaId (un número mayor que 0). Después publica
-   * la lista de pendientes actualizada en /topic/farmacias/pendientes. El administrador va en
-   * null hasta que exista el inicio de sesión.
+   * la lista de pendientes actualizada en /topic/farmacias/pendientes. El administrador que queda
+   * en la auditoría sale de la sesión con la que llegó el mensaje.
    */
   @MessageMapping("/farmacias/aprobar")
   public void approveFarmacia(@Header("farmaciaId") @NotNull @Positive Integer farmaciaId,
@@ -110,12 +114,13 @@ public class FarmaciasController {
     log.warn(ex.getMessage());
   }
 
-  /** Envía la lista actual de farmacias pendientes a quienes escuchan
-   * /topic/farmacias/pendientes. */
+  /** Saca el id del administrador de la sesión que dejó SesionStompInterceptor en el mensaje. */
   private Integer getUsuarioAdminId(Authentication autenticacion) {
     return ((UsuarioAutenticado) autenticacion.getPrincipal()).usuarioId();
   }
 
+  /** Envía la lista actual de farmacias pendientes a quienes escuchan
+   * /topic/farmacias/pendientes. */
   private void publishFarmaciasPendientes() {
     messagingTemplate.convertAndSend(DESTINO_FARMACIAS_PENDIENTES,
         farmaciasService.getAllFarmaciasPendientes());

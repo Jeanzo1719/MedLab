@@ -170,6 +170,13 @@ body {
   backdrop-filter: var(--vidrio-desenfoque);
 }
 
+/*
+
+  la calificación de la disponibilidad debajo de cada farmacia cercana. Está aquí
+  y no en la página para no pasar el presupuesto de estilos de cada componente.
+  Cada opción es un botón redondeado, y la elegida se pinta con el color principal
+
+*/
 .calificar {
   margin: 0.35rem 0 0;
   padding: 0.5rem 1rem;

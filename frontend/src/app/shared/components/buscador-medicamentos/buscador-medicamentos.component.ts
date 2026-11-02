@@ -63,9 +63,9 @@ type EstadoBusqueda =
 
 /**
  * 
- * el buscador de medicamentos de la landing. Busca mientras el usuario escribe,
- * sin tener que presionar ningún botón ni tener cuenta
- * 
+ * el buscador de medicamentos de la landing y del panel del paciente. Busca
+ * mientras el usuario escribe, sin tener que presionar ningún botón ni tener cuenta
+ *
  * muestra "Buscando…" mientras espera, la lista de resultados cuando llega, o un
  * mensaje si no hay resultados o si hubo un error
  * 

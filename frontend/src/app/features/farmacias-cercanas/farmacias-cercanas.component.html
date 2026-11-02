@@ -15,7 +15,8 @@
   <!--
 
     si la dirección de la página no trae un medicamento válido, se muestra un
-    mensaje con un botón para volver al buscador de la landing
+    mensaje con un botón para volver al buscador: el de la landing o, si hay una
+    sesión de paciente, el de su panel
 
   -->
   @if (medicamentoId() === null) {
@@ -264,6 +265,14 @@
                         <span class="veracidad">{{ mensaje }}</span>
                       }
                     </button>
+                    <!--
+
+                      la calificación de la disponibilidad. Va fuera del botón de la farmacia
+                      porque un botón no puede tener otros botones adentro. El paciente ve las
+                      tres opciones; quien no ha iniciado sesión ve el enlace para hacerlo y
+                      volver a esta página. Las farmacias y los administradores no califican
+
+                    -->
                     @if (puedeCalificar()) {
                       <div class="calificar" role="group" [attr.aria-label]="'Calificar la disponibilidad en ' + farmacia.nombre">
                         <span class="calificar-titulo">¿Qué encontraste?</span>

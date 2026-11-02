@@ -36,7 +36,7 @@ export const routes: Routes = [
         (modulo) => modulo.IniciarSesionComponent,
       ),
   },
-  // Panel del paciente (HU-2): protegido; por ahora es la bienvenida de la cuenta.
+  // Panel del paciente (HU-2): protegido; tiene la bienvenida y el buscador de medicamentos.
   {
     path: "paciente",
     title: "MedLab | Mi cuenta",

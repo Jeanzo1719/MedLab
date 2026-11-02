@@ -140,6 +140,15 @@ export class MedicamentoService {
     );
   }
 
+  /**
+   *
+   * guarda lo que el paciente dice de un reporte: si hay, bajo pedido o no hay
+   *
+   * primero escucha /topic/medicamentos/{id} y después envía la calificación a
+   * /app/calificaciones. El backend publica el detalle al guardar, así que ese
+   * mensaje es la confirmación. Si en 10 segundos no llega nada, devuelve un error
+   *
+   */
   calificar(medicamentoId: number, disponibilidadId: number, tipoCalificacionId: number): Observable<void> {
     return merge(
       this.stomp

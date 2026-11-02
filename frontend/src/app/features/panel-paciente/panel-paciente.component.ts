@@ -7,8 +7,9 @@ import { BuscadorMedicamentosComponent } from "../../shared/components/buscador-
 
 /**
  *
- * el panel del paciente/cuidador: por ahora una bienvenida con los accesos que ya
- * existen. Las historias siguientes le irán añadiendo secciones
+ * el panel del paciente/cuidador: la bienvenida y el buscador de medicamentos. Con
+ * sesión iniciada la landing redirige aquí, así que este es su punto de partida para
+ * buscar un medicamento, ver las farmacias cercanas y calificar
  *
  */
 @Component({

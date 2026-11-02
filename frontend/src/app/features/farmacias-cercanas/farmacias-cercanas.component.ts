@@ -153,30 +153,79 @@ export class FarmaciasCercanasComponent {
    */
   private readonly rutaService: RutaService = inject(RutaService);
 
+  /**
+   *
+   * el enrutador, para saber en qué página está el usuario
+   *
+   */
   private readonly router: Router = inject(Router);
 
+  /**
+   *
+   * avisa cuando la página se cierra, para dejar de esperar una calificación
+   *
+   */
   private readonly destroyRef: DestroyRef = inject(DestroyRef);
 
+  /**
+   *
+   * la sesión del usuario, o null si no ha iniciado sesión
+   *
+   */
   private readonly sesionActual: Signal<Sesion | null> = inject(SesionService).sesionActual;
 
+  /**
+   *
+   * si se muestran los botones para calificar: solo los pacientes pueden hacerlo
+   *
+   */
   protected readonly puedeCalificar: Signal<boolean> = computed(
     (): boolean => this.sesionActual()?.rol === "paciente",
   );
 
+  /**
+   *
+   * si se muestra el enlace para iniciar sesión y poder calificar
+   *
+   */
   protected readonly sinSesion: Signal<boolean> = computed((): boolean => this.sesionActual() === null);
 
+  /**
+   *
+   * las opciones para calificar. Cada id es el de la tabla tipos_calificacion
+   *
+   */
   protected readonly tiposCalificacion: readonly { id: number; etiqueta: string }[] = [
     { id: 1, etiqueta: "Si hay" },
     { id: 2, etiqueta: "Bajo pedido" },
     { id: 3, etiqueta: "No hay" },
   ];
 
+  /**
+   *
+   * lo que el paciente votó en esta visita a la página: el número de cada reporte con
+   * el tipo elegido. Con esto se resalta su opción. Al recargar la página se vacía,
+   * aunque los votos siguen guardados en el backend
+   *
+   */
   protected readonly votos: WritableSignal<ReadonlyMap<number, number>> = signal<ReadonlyMap<number, number>>(
     new Map<number, number>(),
   );
 
+  /**
+   *
+   * el número del reporte que se está guardando. Es null si no se está guardando
+   * ninguno
+   *
+   */
   protected readonly calificando: WritableSignal<number | null> = signal<number | null>(null);
 
+  /**
+   *
+   * el número del reporte cuya calificación no se pudo guardar, para mostrar el
+   * mensaje debajo de esa farmacia
+   *
+   */
   protected readonly errorCalificacion: WritableSignal<number | null> = signal<number | null>(null);
 
   /**
@@ -384,10 +433,23 @@ export class FarmaciasCercanasComponent {
     inject(MetadatosService).definirDescripcion(FarmaciasCercanasComponent.DESCRIPCION);
   }
 
+  /**
+   *
+   * la dirección de esta página, para volver a ella después de iniciar sesión
+   *
+   */
   protected urlActual(): string {
     return this.router.url;
   }
 
+  /**
+   *
+   * guarda la calificación del paciente sobre un reporte
+   *
+   * mientras se guarda, los botones quedan desactivados. Si sale bien, se resalta la
+   * opción elegida; si sale mal, se muestra el error debajo de esa farmacia
+   *
+   */
   protected calificar(disponibilidadId: number, tipoCalificacionId: number): void {
     const medicamentoId: number | null = this.medicamentoId();
     if (medicamentoId === null || this.calificando() !== null) {

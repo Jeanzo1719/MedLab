@@ -32,6 +32,11 @@ export class StompService {
    */
   private readonly cliente: RxStomp = new RxStomp();
 
+  /**
+   *
+   * la sesión del usuario, de donde sale el token que se envía en cada mensaje
+   *
+   */
   private readonly sesionService: SesionService = inject(SesionService);
 
   /**
@@ -82,10 +87,26 @@ export class StompService {
       .pipe(map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T));
   }
 
+  /**
+   *
+   * envía un mensaje al backend, por ejemplo una calificación, sin esperar respuesta
+   *
+   * los datos extra van en encabezados. Si la conexión está caída, el mensaje se
+   * envía cuando vuelva
+   *
+   */
   publicar(destino: string, encabezados: StompHeaders = {}): void {
     this.cliente.publish({ destination: destino, headers: this.conSesion(encabezados) });
   }
 
+  /**
+   *
+   * agrega el token de la sesión a los encabezados de un mensaje
+   *
+   * el backend lo revisa en cada mensaje que va a un destino privado. Si no hay
+   * sesión, los encabezados quedan igual: los destinos públicos no lo necesitan
+   *
+   */
   private conSesion(encabezados: StompHeaders = {}): StompHeaders {
     const token: string | null = this.sesionService.token();
     return token ? { ...encabezados, Authorization: `Bearer ${token}` } : encabezados;

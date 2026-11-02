@@ -3,6 +3,11 @@
     <h1 id="titulo-solicitudes">Solicitudes de farmacias</h1>
   </header>
 
+  <!--
+
+    el resultado de la última decisión, en verde si salió bien y en rojo si salió mal
+
+  -->
   @let avisoActual = aviso();
   @if (avisoActual) {
     <div class="aviso" [class.aviso-error]="avisoActual.error" [attr.role]="avisoActual.error ? 'alert' : 'status'">
@@ -10,6 +15,12 @@
     </div>
   }
 
+  <!--
+
+    la confirmación antes de aprobar o rechazar, porque la decisión no se puede
+    cambiar desde esta pantalla
+
+  -->
   @let decision = porDecidir();
   @if (decision) {
     <div class="confirmacion" role="group" aria-labelledby="texto-decision">
@@ -35,6 +46,12 @@
     </div>
   }
 
+  <!--
+
+    la lista de solicitudes, con un mensaje distinto según su estado. Cada fila tiene
+    los datos de validación de la farmacia y los botones para decidir
+
+  -->
   @let estadoActual = estado();
   @if (estadoActual.tipo === "cargando") {
     <p class="mensaje">Cargando solicitudes…</p>
