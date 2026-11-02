@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   Signal,
   WritableSignal,
   computed,
@@ -8,8 +9,8 @@ import {
   linkedSignal,
   signal,
 } from "@angular/core";
-import { toObservable, toSignal } from "@angular/core/rxjs-interop";
-import { ActivatedRoute, ParamMap, RouterLink } from "@angular/router";
+import { takeUntilDestroyed, toObservable, toSignal } from "@angular/core/rxjs-interop";
+import { ActivatedRoute, ParamMap, Router, RouterLink } from "@angular/router";
 import { Observable, catchError, combineLatest, map, of, startWith, switchMap } from "rxjs";
 
 import { FarmaciaCercana, FarmaciaService } from "../../core/services/farmacia.service";
@@ -20,6 +21,7 @@ import {
 } from "../../core/services/medicamento.service";
 import { MetadatosService } from "../../core/services/metadatos.service";
 import { MedioRuta, Ruta, RutaService } from "../../core/services/ruta.service";
+import { Sesion, SesionService } from "../../core/services/sesion.service";
 import { Coordenadas, UbicacionService } from "../../core/services/ubicacion.service";
 import { EncabezadoComponent } from "../../shared/components/encabezado/encabezado.component";
 import { MapaComponent } from "../../shared/components/mapa/mapa.component";
@@ -150,6 +152,32 @@ export class FarmaciasCercanasComponent {
    *
    */
   private readonly rutaService: RutaService = inject(RutaService);
+
+  private readonly router: Router = inject(Router);
+
+  private readonly destroyRef: DestroyRef = inject(DestroyRef);
+
+  private readonly sesionActual: Signal<Sesion | null> = inject(SesionService).sesionActual;
+
+  protected readonly puedeCalificar: Signal<boolean> = computed(
+    (): boolean => this.sesionActual()?.rol === "paciente",
+  );
+
+  protected readonly sinSesion: Signal<boolean> = computed((): boolean => this.sesionActual() === null);
+
+  protected readonly tiposCalificacion: readonly { id: number; etiqueta: string }[] = [
+    { id: 1, etiqueta: "Si hay" },
+    { id: 2, etiqueta: "Bajo pedido" },
+    { id: 3, etiqueta: "No hay" },
+  ];
+
+  protected readonly votos: WritableSignal<ReadonlyMap<number, number>> = signal<ReadonlyMap<number, number>>(
+    new Map<number, number>(),
+  );
+
+  protected readonly calificando: WritableSignal<number | null> = signal<number | null>(null);
+
+  protected readonly errorCalificacion: WritableSignal<number | null> = signal<number | null>(null);
 
   /**
    *
@@ -354,6 +382,36 @@ export class FarmaciasCercanasComponent {
    */
   constructor() {
     inject(MetadatosService).definirDescripcion(FarmaciasCercanasComponent.DESCRIPCION);
+  }
+
+  protected urlActual(): string {
+    return this.router.url;
+  }
+
+  protected calificar(disponibilidadId: number, tipoCalificacionId: number): void {
+    const medicamentoId: number | null = this.medicamentoId();
+    if (medicamentoId === null || this.calificando() !== null) {
+      return;
+    }
+
+    this.calificando.set(disponibilidadId);
+    this.errorCalificacion.set(null);
+    this.medicamentoService
+      .calificar(medicamentoId, disponibilidadId, tipoCalificacionId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (): void => {
+          this.votos.update(
+            (votos: ReadonlyMap<number, number>): ReadonlyMap<number, number> =>
+              new Map(votos).set(disponibilidadId, tipoCalificacionId),
+          );
+          this.calificando.set(null);
+        },
+        error: (): void => {
+          this.errorCalificacion.set(disponibilidadId);
+          this.calificando.set(null);
+        },
+      });
   }
 
   /**

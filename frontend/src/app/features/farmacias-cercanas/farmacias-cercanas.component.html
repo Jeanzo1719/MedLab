@@ -264,6 +264,34 @@
                         <span class="veracidad">{{ mensaje }}</span>
                       }
                     </button>
+                    @if (puedeCalificar()) {
+                      <div class="calificar" role="group" [attr.aria-label]="'Calificar la disponibilidad en ' + farmacia.nombre">
+                        <span class="calificar-titulo">¿Qué encontraste?</span>
+                        <div class="calificar-opciones">
+                          @for (tipo of tiposCalificacion; track tipo.id) {
+                            <button
+                              type="button"
+                              class="calificar-opcion"
+                              [class.activa]="votos().get(farmacia.disponibilidadId) === tipo.id"
+                              [attr.aria-pressed]="votos().get(farmacia.disponibilidadId) === tipo.id"
+                              [disabled]="calificando() !== null"
+                              (click)="calificar(farmacia.disponibilidadId, tipo.id)"
+                            >
+                              {{ tipo.etiqueta }}
+                            </button>
+                          }
+                        </div>
+                        @if (errorCalificacion() === farmacia.disponibilidadId) {
+                          <p class="calificar-error" role="alert">
+                            No pudimos guardar tu calificación. Intenta de nuevo; si continúa, vuelve a iniciar sesión.
+                          </p>
+                        }
+                      </div>
+                    } @else if (sinSesion()) {
+                      <p class="calificar">
+                        <a routerLink="/iniciar-sesion" [queryParams]="{ volver: urlActual() }">Inicia sesión para calificar</a>
+                      </p>
+                    }
                   </li>
                 }
               </ol>
