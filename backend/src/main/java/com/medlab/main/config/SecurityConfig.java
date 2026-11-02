@@ -63,6 +63,9 @@ public class SecurityConfig {
             .requestMatchers("/api/panel-farmacia/**").hasRole(ROL_FARMACIA)
             .requestMatchers("/api/panel-admin/**").hasRole(ROL_ADMINISTRADOR)
             .requestMatchers("/api/sesiones/**").authenticated()
+            .requestMatchers(HttpMethod.POST, "/api/medicamentos/**").hasRole(ROL_ADMINISTRADOR)
+            .requestMatchers(HttpMethod.PUT, "/api/medicamentos/**").hasRole(ROL_ADMINISTRADOR)
+            .requestMatchers(HttpMethod.DELETE, "/api/medicamentos/**").hasRole(ROL_ADMINISTRADOR)
             .anyRequest().permitAll())
         .exceptionHandling((errores) -> errores
             .authenticationEntryPoint((solicitud, respuesta, excepcion) -> escribirError(respuesta,

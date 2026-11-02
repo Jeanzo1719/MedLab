@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.Message;
@@ -30,14 +31,19 @@ import lombok.extern.slf4j.Slf4j;
 public class SesionStompInterceptor implements ChannelInterceptor {
 
   private static final String ROL_ADMINISTRADOR = "administrador";
+  private static final String ROL_FARMACIA = "farmacia";
+  private static final String ROL_PACIENTE = "paciente";
   private static final String PREFIJO_APLICACION = "/app/";
   private static final List<String> SECUENCIAS_NO_PERMITIDAS = List.of("*", "?", "{", "}", "//");
+  private static final Pattern DESTINO_ALERTAS_FARMACIA = Pattern.compile("^/topic/farmacias/\\d+/alertas$");
 
   private static final Map<String, String> ROLES_POR_DESTINO_PROTEGIDO = Map.of(
       "/app/farmacias/pendientes", ROL_ADMINISTRADOR,
       "/topic/farmacias/pendientes", ROL_ADMINISTRADOR,
       "/app/farmacias/aprobar", ROL_ADMINISTRADOR,
-      "/app/farmacias/rechazar", ROL_ADMINISTRADOR);
+      "/app/farmacias/rechazar", ROL_ADMINISTRADOR,
+      "/topic/admin/calificaciones", ROL_ADMINISTRADOR,
+      "/app/calificaciones", ROL_PACIENTE);
 
   private final JwtService jwtService;
   private final SesionesRepository sesionesRepository;
@@ -60,15 +66,15 @@ public class SesionStompInterceptor implements ChannelInterceptor {
       return null;
     }
 
-    String rolRequerido = ROLES_POR_DESTINO_PROTEGIDO.get(destino);
+    String rolRequerido = findRolRequerido(destino);
     if (rolRequerido == null) {
       return message;
     }
 
     try {
       UsuarioAutenticado usuario = authenticateUsuario(accessor);
-      if (!rolRequerido.equals(usuario.rol())) {
-        log.warn("Rol sin permiso para el destino STOMP: {} {}", comando, destino);
+      if (!isUsuarioAutorizado(usuario, rolRequerido, destino)) {
+        log.warn("Usuario sin permiso para el destino STOMP: {} {}", comando, destino);
         return null;
       }
       SimpleGrantedAuthority autoridad = new SimpleGrantedAuthority(
@@ -86,6 +92,21 @@ public class SesionStompInterceptor implements ChannelInterceptor {
       return false;
     }
     return comando != StompCommand.SEND || destino.startsWith(PREFIJO_APLICACION);
+  }
+
+  private String findRolRequerido(String destino) {
+    if (DESTINO_ALERTAS_FARMACIA.matcher(destino).matches()) {
+      return ROL_FARMACIA;
+    }
+    return ROLES_POR_DESTINO_PROTEGIDO.get(destino);
+  }
+
+  private boolean isUsuarioAutorizado(UsuarioAutenticado usuario, String rolRequerido, String destino) {
+    if (!rolRequerido.equals(usuario.rol())) {
+      return false;
+    }
+    return !DESTINO_ALERTAS_FARMACIA.matcher(destino).matches()
+        || destino.equals("/topic/farmacias/" + usuario.usuarioId() + "/alertas");
   }
 
   private UsuarioAutenticado authenticateUsuario(StompHeaderAccessor accessor) {
