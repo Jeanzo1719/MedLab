@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 
 import { SesionService } from "../../core/services/sesion.service";
+import { BotonTemaComponent } from "../../shared/components/boton-tema/boton-tema.component";
 
 /**
  * 
@@ -15,7 +16,7 @@ import { SesionService } from "../../core/services/sesion.service";
  */
 @Component({
   selector: "app-panel-farmacia",
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, BotonTemaComponent],
   templateUrl: "./panel-farmacia.component.html",
   styleUrl: "./panel-farmacia.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,

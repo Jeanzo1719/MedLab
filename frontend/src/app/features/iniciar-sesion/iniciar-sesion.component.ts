@@ -17,6 +17,7 @@ import {
   mensajeDeSesionError,
   rutaInicio,
 } from "../../core/services/sesion.service";
+import { BotonTemaComponent } from "../../shared/components/boton-tema/boton-tema.component";
 
 /**
  *
@@ -35,7 +36,7 @@ const PATRON_IDENTIFICACION: RegExp =
  */
 @Component({
   selector: "app-iniciar-sesion",
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, BotonTemaComponent],
   templateUrl: "./iniciar-sesion.component.html",
   styleUrl: "./iniciar-sesion.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,

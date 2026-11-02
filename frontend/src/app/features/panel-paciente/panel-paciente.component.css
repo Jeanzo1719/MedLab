@@ -25,8 +25,19 @@
   color: var(--color-texto-secundario);
 }
 
-.boton-salir {
+/* en pantallas muy angostas el nombre del panel se esconde para que quepan el
+   botón de tema y el de cerrar sesión */
+@media (max-width: 30rem) {
+  .rol {
+    display: none;
+  }
+}
+
+app-boton-tema {
   margin-left: auto;
+}
+
+.boton-salir {
   padding: 0.5rem 1rem;
   border: 1px solid var(--color-borde);
   border-radius: 999px;

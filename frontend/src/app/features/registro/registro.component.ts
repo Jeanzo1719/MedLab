@@ -29,6 +29,7 @@ import {
 } from "../../core/services/registro.service";
 import { Coordenadas, UbicacionService } from "../../core/services/ubicacion.service";
 import { MapaComponent } from "../../shared/components/mapa/mapa.component";
+import { BotonTemaComponent } from "../../shared/components/boton-tema/boton-tema.component";
 
 /**
  *
@@ -126,7 +127,7 @@ interface ExitoRegistro {
  */
 @Component({
   selector: "app-registro",
-  imports: [ReactiveFormsModule, RouterLink, MapaComponent],
+  imports: [ReactiveFormsModule, RouterLink, MapaComponent, BotonTemaComponent],
   templateUrl: "./registro.component.html",
   styleUrl: "./registro.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,

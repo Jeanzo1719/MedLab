@@ -14,8 +14,14 @@
   margin-bottom: 1.5rem;
 }
 
+.barra-superior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 .volver {
-  justify-self: start;
   color: var(--color-primario);
   font-weight: 600;
   text-decoration: none;

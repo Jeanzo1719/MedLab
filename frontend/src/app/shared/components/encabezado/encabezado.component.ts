@@ -10,6 +10,7 @@ import { Router, RouterLink } from "@angular/router";
 
 import { Sesion, SesionService, rutaInicio } from "../../../core/services/sesion.service";
 import { Tema, TemaService } from "../../../core/services/tema.service";
+import { BotonTemaComponent } from "../boton-tema/boton-tema.component";
 
 /**
  * 
@@ -22,7 +23,7 @@ import { Tema, TemaService } from "../../../core/services/tema.service";
  */
 @Component({
   selector: "app-encabezado",
-  imports: [RouterLink],
+  imports: [RouterLink, BotonTemaComponent],
   templateUrl: "./encabezado.component.html",
   styleUrl: "./encabezado.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,10 +62,6 @@ export class EncabezadoComponent {
    */
   protected cerrarMenu(): void {
     this.menuAbierto.set(false);
-  }
-
-  protected alternarTema(): void {
-    this.temaService.alternar();
   }
 
   /**

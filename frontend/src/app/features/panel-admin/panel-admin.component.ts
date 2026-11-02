@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
 
 import { SesionService } from "../../core/services/sesion.service";
+import { BotonTemaComponent } from "../../shared/components/boton-tema/boton-tema.component";
 
 /**
  * 
@@ -15,7 +16,7 @@ import { SesionService } from "../../core/services/sesion.service";
  */
 @Component({
   selector: "app-panel-admin",
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, BotonTemaComponent],
   templateUrl: "./panel-admin.component.html",
   styleUrl: "./panel-admin.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
