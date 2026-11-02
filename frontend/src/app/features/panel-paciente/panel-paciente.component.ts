@@ -3,6 +3,7 @@ import { Router, RouterLink } from "@angular/router";
 
 import { Sesion, SesionService } from "../../core/services/sesion.service";
 import { BotonTemaComponent } from "../../shared/components/boton-tema/boton-tema.component";
+import { BuscadorMedicamentosComponent } from "../../shared/components/buscador-medicamentos/buscador-medicamentos.component";
 
 /**
  *
@@ -12,7 +13,7 @@ import { BotonTemaComponent } from "../../shared/components/boton-tema/boton-tem
  */
 @Component({
   selector: "app-panel-paciente",
-  imports: [RouterLink, BotonTemaComponent],
+  imports: [RouterLink, BotonTemaComponent, BuscadorMedicamentosComponent],
   templateUrl: "./panel-paciente.component.html",
   styleUrl: "./panel-paciente.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,

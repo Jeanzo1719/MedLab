@@ -22,7 +22,7 @@ import {
 import {
   MedicamentoBusqueda,
   MedicamentoService,
-} from "../../../../core/services/medicamento.service";
+} from "../../../core/services/medicamento.service";
 
 /**
  * 
