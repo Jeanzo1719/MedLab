@@ -1,8 +1,9 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { IMessage, RxStomp, StompHeaders } from "@stomp/rx-stomp";
 import { Observable, map, take, timeout } from "rxjs";
 
 import { environment } from "../../../environments/environment";
+import { SesionService } from "./sesion.service";
 
 /**
  * 
@@ -31,6 +32,8 @@ export class StompService {
    */
   private readonly cliente: RxStomp = new RxStomp();
 
+  private readonly sesionService: SesionService = inject(SesionService);
+
   /**
    * 
    * configura la dirección del WebSocket (wsUrl de environment) y abre la conexión
@@ -55,7 +58,7 @@ export class StompService {
    * 
    */
   consultar<T>(destino: string, encabezados: StompHeaders = {}): Observable<T> {
-    return this.cliente.watch({ destination: destino, subHeaders: encabezados }).pipe(
+    return this.cliente.watch({ destination: destino, subHeaders: () => this.conSesion(encabezados) }).pipe(
       take(1),
       timeout(TIEMPO_MAXIMO_RESPUESTA_MS),
       map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T),
@@ -75,7 +78,16 @@ export class StompService {
    */
   escuchar<T>(destino: string): Observable<T> {
     return this.cliente
-      .watch({ destination: destino })
+      .watch({ destination: destino, subHeaders: () => this.conSesion() })
       .pipe(map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T));
+  }
+
+  publicar(destino: string, encabezados: StompHeaders = {}): void {
+    this.cliente.publish({ destination: destino, headers: this.conSesion(encabezados) });
+  }
+
+  private conSesion(encabezados: StompHeaders = {}): StompHeaders {
+    const token: string | null = this.sesionService.token();
+    return token ? { ...encabezados, Authorization: `Bearer ${token}` } : encabezados;
   }
 }
