@@ -5,6 +5,7 @@ import com.medlab.main.dto.FarmaciaMapaDto;
 import com.medlab.main.dto.FarmaciaPendienteDto;
 import com.medlab.main.exception.FarmaciaNotFoundException;
 import com.medlab.main.exception.FarmaciaNotPendienteException;
+import com.medlab.main.security.UsuarioAutenticado;
 import com.medlab.main.service.AprobacionFarmaciasService;
 import com.medlab.main.service.FarmaciasService;
 import jakarta.validation.constraints.DecimalMax;
@@ -19,6 +20,7 @@ import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 
@@ -84,8 +86,9 @@ public class FarmaciasController {
    * null hasta que exista el inicio de sesión.
    */
   @MessageMapping("/farmacias/aprobar")
-  public void approveFarmacia(@Header("farmaciaId") @NotNull @Positive Integer farmaciaId) {
-    aprobacionFarmaciasService.approveFarmacia(farmaciaId, null);
+  public void approveFarmacia(@Header("farmaciaId") @NotNull @Positive Integer farmaciaId,
+      Authentication autenticacion) {
+    aprobacionFarmaciasService.approveFarmacia(farmaciaId, getUsuarioAdminId(autenticacion));
     publishFarmaciasPendientes();
   }
 
@@ -94,8 +97,9 @@ public class FarmaciasController {
    * /app/farmacias/rechazar con el header farmaciaId. Funciona igual que approveFarmacia.
    */
   @MessageMapping("/farmacias/rechazar")
-  public void rejectFarmacia(@Header("farmaciaId") @NotNull @Positive Integer farmaciaId) {
-    aprobacionFarmaciasService.rejectFarmacia(farmaciaId, null);
+  public void rejectFarmacia(@Header("farmaciaId") @NotNull @Positive Integer farmaciaId,
+      Authentication autenticacion) {
+    aprobacionFarmaciasService.rejectFarmacia(farmaciaId, getUsuarioAdminId(autenticacion));
     publishFarmaciasPendientes();
   }
 
@@ -108,6 +112,10 @@ public class FarmaciasController {
 
   /** Envía la lista actual de farmacias pendientes a quienes escuchan
    * /topic/farmacias/pendientes. */
+  private Integer getUsuarioAdminId(Authentication autenticacion) {
+    return ((UsuarioAutenticado) autenticacion.getPrincipal()).usuarioId();
+  }
+
   private void publishFarmaciasPendientes() {
     messagingTemplate.convertAndSend(DESTINO_FARMACIAS_PENDIENTES,
         farmaciasService.getAllFarmaciasPendientes());
