@@ -95,7 +95,7 @@ class RegistroServiceImplTest {
 
     RegistroResponseDto respuesta = servicio.registrarPaciente(datos);
 
-    assertEquals(new RegistroResponseDto(USUARIO_ID, RegistroService.ROL_PACIENTE,
+    assertEquals(new RegistroResponseDto(USUARIO_ID, "12345678", RegistroService.ROL_PACIENTE,
         RegistroService.ESTADO_ACTIVO), respuesta);
 
     ArgumentCaptor<UsuariosEntity> usuarioCapturado = ArgumentCaptor.forClass(UsuariosEntity.class);
@@ -147,12 +147,12 @@ class RegistroServiceImplTest {
 
     RegistroResponseDto respuesta = servicio.registrarFarmacia(datos);
 
-    assertEquals(new RegistroResponseDto(USUARIO_ID, RegistroService.ROL_FARMACIA,
-        RegistroService.ESTADO_PENDIENTE), respuesta);
-
     ArgumentCaptor<UsuariosEntity> usuarioCapturado = ArgumentCaptor.forClass(UsuariosEntity.class);
     verify(usuariosRepository).save(usuarioCapturado.capture());
     UsuariosEntity usuario = usuarioCapturado.getValue();
+
+    assertEquals(new RegistroResponseDto(USUARIO_ID, usuario.getIdentificacion(),
+        RegistroService.ROL_FARMACIA, RegistroService.ESTADO_PENDIENTE), respuesta);
     assertTrue(PATRON_UUID.matcher(usuario.getIdentificacion()).matches(),
         "La farmacia debe identificarse con un UUID");
     assertEquals(RegistroService.ROL_FARMACIA, usuario.getRol().getNombre());

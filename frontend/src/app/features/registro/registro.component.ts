@@ -114,6 +114,7 @@ const contrasenasIguales: ValidatorFn = (grupo: AbstractControl): ValidationErro
  *
  */
 interface ExitoRegistro {
+  identificacion: string;
   rol: RolRegistro;
   estado: string;
 }
@@ -452,7 +453,7 @@ export class RegistroComponent {
       .subscribe({
         next: (creado: RegistroCreado) => {
           this.enviando.set(false);
-          this.exito.set({ rol, estado: creado.estado });
+          this.exito.set({ identificacion: creado.identificacion, rol, estado: creado.estado });
         },
         error: (error: unknown) => {
           this.enviando.set(false);

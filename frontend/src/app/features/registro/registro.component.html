@@ -18,6 +18,17 @@
           Recibimos los datos de tu farmacia. Un administrador los revisará y, cuando la
           apruebe, aparecerá en el mapa de MedLab.
         </p>
+        <!--
+
+          el código con el que la farmacia inicia sesión. Solo se muestra aquí, por eso
+          se le pide guardarlo. Al tocarlo se selecciona completo para copiarlo fácil
+
+        -->
+        <p>
+          Este es el código de tu farmacia. Guárdalo: lo necesitas junto con tu contraseña para
+          iniciar sesión cuando te aprueben.
+        </p>
+        <code class="codigo-farmacia">{{ resultado.identificacion }}</code>
       } @else {
         <h2>Tu cuenta quedó activa</h2>
         <p>

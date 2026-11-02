@@ -258,6 +258,16 @@ input:hover {
   line-height: 1.5;
 }
 
+.codigo-farmacia {
+  padding: 0.5rem 0.75rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  user-select: all;
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: 0.5rem;
+}
+
 @media (min-width: 40rem) {
   .tarjeta {
     padding: 2rem;

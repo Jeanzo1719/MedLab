@@ -66,7 +66,8 @@ public class RegistroServiceImpl implements RegistroService {
     paciente.setEpsAfiliada(datos.epsAfiliada().trim());
     pacientesRepository.save(paciente);
 
-    return new RegistroResponseDto(usuario.getId(), ROL_PACIENTE, ESTADO_ACTIVO);
+    return new RegistroResponseDto(usuario.getId(), usuario.getIdentificacion(), ROL_PACIENTE,
+        ESTADO_ACTIVO);
   }
 
   @Override
@@ -96,7 +97,8 @@ public class RegistroServiceImpl implements RegistroService {
     farmacia.setEstadoAprobacion(buscarEstado(ESTADO_PENDIENTE));
     farmaciasRepository.save(farmacia);
 
-    return new RegistroResponseDto(usuario.getId(), ROL_FARMACIA, ESTADO_PENDIENTE);
+    return new RegistroResponseDto(usuario.getId(), usuario.getIdentificacion(), ROL_FARMACIA,
+        ESTADO_PENDIENTE);
   }
 
   /**
