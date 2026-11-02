@@ -206,7 +206,8 @@ td.acciones {
   background-color: #fdf1dc;
 }
 
-.insignia[data-estado="suspendida"] {
+.insignia[data-estado="suspendida"],
+.insignia[data-estado="rechazada"] {
   color: var(--color-error);
   background-color: #fdeceb;
 }

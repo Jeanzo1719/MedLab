@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { Observable } from "rxjs";
+import { EMPTY, Observable, defer, map, merge } from "rxjs";
 
 import { StompService } from "./stomp.service";
 
@@ -68,6 +68,18 @@ export interface FarmaciaCercana extends FarmaciaMapa {
   disponibilidadId: number;
 }
 
+export interface FarmaciaPendiente {
+  id: number;
+  nombre: string;
+  nit: string;
+  rut: string;
+  matriculaMercantil: string;
+  identificacionDirectorTecnico: string;
+  licenciaSanitaria: string;
+}
+
+const DESTINO_CAMBIOS_PENDIENTES: string = "/topic/farmacias/pendientes";
+
 /**
  * 
  * el service de las farmacias en el frontend. Le pide al backend las farmacias
@@ -110,5 +122,32 @@ export class FarmaciaService {
       latitud: String(latitud),
       longitud: String(longitud),
     });
+  }
+
+  seguirPendientes(): Observable<FarmaciaPendiente[]> {
+    return merge(
+      this.stomp.consultar<FarmaciaPendiente[]>("/app/farmacias/pendientes"),
+      this.stomp.escuchar<FarmaciaPendiente[]>(DESTINO_CAMBIOS_PENDIENTES),
+    );
+  }
+
+  aprobar(farmaciaId: number): Observable<void> {
+    return this.enviarDecision("/app/farmacias/aprobar", farmaciaId);
+  }
+
+  rechazar(farmaciaId: number): Observable<void> {
+    return this.enviarDecision("/app/farmacias/rechazar", farmaciaId);
+  }
+
+  private enviarDecision(destino: string, farmaciaId: number): Observable<void> {
+    return merge(
+      this.stomp
+        .consultar<FarmaciaPendiente[]>(DESTINO_CAMBIOS_PENDIENTES)
+        .pipe(map((): void => undefined)),
+      defer((): Observable<never> => {
+        this.stomp.publicar(destino, { farmaciaId: String(farmaciaId) });
+        return EMPTY;
+      }),
+    );
   }
 }
