@@ -6,3 +6,7 @@
 #
 User-agent: *
 Allow: /
+Disallow: /paciente
+Disallow: /farmacia/
+Disallow: /farmacia$
+Disallow: /administrador
