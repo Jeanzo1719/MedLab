@@ -3,6 +3,7 @@ import {
   Component,
   Signal,
   WritableSignal,
+  computed,
   inject,
   signal,
 } from "@angular/core";
@@ -23,6 +24,7 @@ import {
   MedicamentoBusqueda,
   MedicamentoService,
 } from "../../../core/services/medicamento.service";
+import { SesionService } from "../../../core/services/sesion.service";
 
 /**
  * 
@@ -85,6 +87,15 @@ export class BuscadorMedicamentosComponent {
    */
   private readonly medicamentoService: MedicamentoService =
     inject(MedicamentoService);
+
+  /**
+   *
+   * si el usuario no ha iniciado sesión, para decirle que no necesita una cuenta. El
+   * buscador también está en el panel del paciente, donde ese mensaje sobra
+   *
+   */
+  private readonly autenticado: Signal<boolean> = inject(SesionService).autenticado;
+  protected readonly sinSesion: Signal<boolean> = computed((): boolean => !this.autenticado());
 
   /**
    * 
