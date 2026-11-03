@@ -108,9 +108,10 @@ pipeline {
 
     post {
         failure {
+            // el diagnóstico necesita .env, por eso el borrado va en cleanup y no en always
             sh '$COMPOSE_PROD ps || true; $COMPOSE_PROD logs --tail=200 || true'
         }
-        always {
+        cleanup {
             sh 'rm -f .env; docker image prune -f >/dev/null 2>&1 || true'
         }
     }
