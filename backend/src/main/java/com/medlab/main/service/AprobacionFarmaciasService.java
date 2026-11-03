@@ -18,8 +18,7 @@ public interface AprobacionFarmaciasService {
    * Cambia una farmacia pendiente a "aprobada" y registra el cambio.
    *
    * farmaciaId: id de la farmacia.
-   * usuarioAdminId: id del administrador que decide. Puede ser null mientras no exista el
-   * inicio de sesión.
+   * usuarioAdminId: id del administrador que decide, el de su sesión.
    *
    * Si la farmacia no existe, lanza FarmaciaNotFoundException. Si no está pendiente, lanza
    * FarmaciaNotPendienteException y no cambia nada.

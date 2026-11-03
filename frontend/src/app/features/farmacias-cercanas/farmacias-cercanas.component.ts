@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   Signal,
   WritableSignal,
   computed,
@@ -8,8 +9,8 @@ import {
   linkedSignal,
   signal,
 } from "@angular/core";
-import { toObservable, toSignal } from "@angular/core/rxjs-interop";
-import { ActivatedRoute, ParamMap, RouterLink } from "@angular/router";
+import { takeUntilDestroyed, toObservable, toSignal } from "@angular/core/rxjs-interop";
+import { ActivatedRoute, ParamMap, Router, RouterLink } from "@angular/router";
 import { Observable, catchError, combineLatest, map, of, startWith, switchMap } from "rxjs";
 
 import { FarmaciaCercana, FarmaciaService } from "../../core/services/farmacia.service";
@@ -20,6 +21,7 @@ import {
 } from "../../core/services/medicamento.service";
 import { MetadatosService } from "../../core/services/metadatos.service";
 import { MedioRuta, Ruta, RutaService } from "../../core/services/ruta.service";
+import { Sesion, SesionService } from "../../core/services/sesion.service";
 import { Coordenadas, UbicacionService } from "../../core/services/ubicacion.service";
 import { EncabezadoComponent } from "../../shared/components/encabezado/encabezado.component";
 import { MapaComponent } from "../../shared/components/mapa/mapa.component";
@@ -150,6 +152,81 @@ export class FarmaciasCercanasComponent {
    *
    */
   private readonly rutaService: RutaService = inject(RutaService);
+
+  /**
+   *
+   * el enrutador, para saber en qué página está el usuario
+   *
+   */
+  private readonly router: Router = inject(Router);
+
+  /**
+   *
+   * avisa cuando la página se cierra, para dejar de esperar una calificación
+   *
+   */
+  private readonly destroyRef: DestroyRef = inject(DestroyRef);
+
+  /**
+   *
+   * la sesión del usuario, o null si no ha iniciado sesión
+   *
+   */
+  private readonly sesionActual: Signal<Sesion | null> = inject(SesionService).sesionActual;
+
+  /**
+   *
+   * si se muestran los botones para calificar: solo los pacientes pueden hacerlo
+   *
+   */
+  protected readonly puedeCalificar: Signal<boolean> = computed(
+    (): boolean => this.sesionActual()?.rol === "paciente",
+  );
+
+  /**
+   *
+   * si se muestra el enlace para iniciar sesión y poder calificar
+   *
+   */
+  protected readonly sinSesion: Signal<boolean> = computed((): boolean => this.sesionActual() === null);
+
+  /**
+   *
+   * las opciones para calificar. Cada id es el de la tabla tipos_calificacion
+   *
+   */
+  protected readonly tiposCalificacion: readonly { id: number; etiqueta: string }[] = [
+    { id: 1, etiqueta: "Si hay" },
+    { id: 2, etiqueta: "Bajo pedido" },
+    { id: 3, etiqueta: "No hay" },
+  ];
+
+  /**
+   *
+   * lo que el paciente votó en esta visita a la página: el número de cada reporte con
+   * el tipo elegido. Con esto se resalta su opción. Al recargar la página se vacía,
+   * aunque los votos siguen guardados en el backend
+   *
+   */
+  protected readonly votos: WritableSignal<ReadonlyMap<number, number>> = signal<ReadonlyMap<number, number>>(
+    new Map<number, number>(),
+  );
+
+  /**
+   *
+   * el número del reporte que se está guardando. Es null si no se está guardando
+   * ninguno
+   *
+   */
+  protected readonly calificando: WritableSignal<number | null> = signal<number | null>(null);
+
+  /**
+   *
+   * el número del reporte cuya calificación no se pudo guardar, para mostrar el
+   * mensaje debajo de esa farmacia
+   *
+   */
+  protected readonly errorCalificacion: WritableSignal<number | null> = signal<number | null>(null);
 
   /**
    *
@@ -354,6 +431,49 @@ export class FarmaciasCercanasComponent {
    */
   constructor() {
     inject(MetadatosService).definirDescripcion(FarmaciasCercanasComponent.DESCRIPCION);
+  }
+
+  /**
+   *
+   * la dirección de esta página, para volver a ella después de iniciar sesión
+   *
+   */
+  protected urlActual(): string {
+    return this.router.url;
+  }
+
+  /**
+   *
+   * guarda la calificación del paciente sobre un reporte
+   *
+   * mientras se guarda, los botones quedan desactivados. Si sale bien, se resalta la
+   * opción elegida; si sale mal, se muestra el error debajo de esa farmacia
+   *
+   */
+  protected calificar(disponibilidadId: number, tipoCalificacionId: number): void {
+    const medicamentoId: number | null = this.medicamentoId();
+    if (medicamentoId === null || this.calificando() !== null) {
+      return;
+    }
+
+    this.calificando.set(disponibilidadId);
+    this.errorCalificacion.set(null);
+    this.medicamentoService
+      .calificar(medicamentoId, disponibilidadId, tipoCalificacionId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (): void => {
+          this.votos.update(
+            (votos: ReadonlyMap<number, number>): ReadonlyMap<number, number> =>
+              new Map(votos).set(disponibilidadId, tipoCalificacionId),
+          );
+          this.calificando.set(null);
+        },
+        error: (): void => {
+          this.errorCalificacion.set(disponibilidadId);
+          this.calificando.set(null);
+        },
+      });
   }
 
   /**

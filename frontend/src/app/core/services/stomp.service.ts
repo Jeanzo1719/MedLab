@@ -1,8 +1,9 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { IMessage, RxStomp, StompHeaders } from "@stomp/rx-stomp";
-import { Observable, map, take, timeout } from "rxjs";
+import { Observable, defer, from, ignoreElements, map, merge, take, tap, timeout } from "rxjs";
 
 import { environment } from "../../../environments/environment";
+import { SesionService } from "./sesion.service";
 
 /**
  * 
@@ -32,6 +33,13 @@ export class StompService {
   private readonly cliente: RxStomp = new RxStomp();
 
   /**
+   *
+   * la sesión del usuario, de donde sale el token que se envía en cada mensaje
+   *
+   */
+  private readonly sesionService: SesionService = inject(SesionService);
+
+  /**
    * 
    * configura la dirección del WebSocket (wsUrl de environment) y abre la conexión
    * 
@@ -55,11 +63,47 @@ export class StompService {
    * 
    */
   consultar<T>(destino: string, encabezados: StompHeaders = {}): Observable<T> {
-    return this.cliente.watch({ destination: destino, subHeaders: encabezados }).pipe(
+    return this.cliente.watch({ destination: destino, subHeaders: () => this.conSesion(encabezados) }).pipe(
       take(1),
       timeout(TIEMPO_MAXIMO_RESPUESTA_MS),
       map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T),
     );
+  }
+
+  /**
+   *
+   * envía un mensaje y devuelve la primera respuesta que llegue a otro destino,
+   * sin perderla por carrera
+   *
+   * primero se suscribe al destino de respuesta y espera el RECEIPT del broker, que
+   * confirma que la suscripción ya existe. Solo entonces envía el mensaje; así la
+   * respuesta nunca llega antes de que alguien la escuche. Si en 10 segundos no llega
+   * nada, devuelve un error
+   *
+   */
+  enviarYEsperar<T>(destinoEnvio: string, destinoRespuesta: string, encabezados: StompHeaders = {}): Observable<T> {
+    return defer((): Observable<T> => {
+      const receiptId: string = crypto.randomUUID();
+      const suscripcionConfirmada = this.cliente.asyncReceipt(receiptId);
+
+      const respuesta$: Observable<T> = this.cliente
+        .watch({
+          destination: destinoRespuesta,
+          subHeaders: (): StompHeaders => this.conSesion({ receipt: receiptId }),
+        })
+        .pipe(
+          take(1),
+          timeout(TIEMPO_MAXIMO_RESPUESTA_MS),
+          map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T),
+        );
+
+      const envio$: Observable<never> = from(suscripcionConfirmada).pipe(
+        tap((): void => this.publicar(destinoEnvio, encabezados)),
+        ignoreElements(),
+      );
+
+      return merge(respuesta$, envio$);
+    });
   }
 
   /**
@@ -75,7 +119,32 @@ export class StompService {
    */
   escuchar<T>(destino: string): Observable<T> {
     return this.cliente
-      .watch({ destination: destino })
+      .watch({ destination: destino, subHeaders: () => this.conSesion() })
       .pipe(map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T));
+  }
+
+  /**
+   *
+   * envía un mensaje al backend, por ejemplo una calificación, sin esperar respuesta
+   *
+   * los datos extra van en encabezados. Si la conexión está caída, el mensaje se
+   * envía cuando vuelva
+   *
+   */
+  publicar(destino: string, encabezados: StompHeaders = {}): void {
+    this.cliente.publish({ destination: destino, headers: this.conSesion(encabezados) });
+  }
+
+  /**
+   *
+   * agrega el token de la sesión a los encabezados de un mensaje
+   *
+   * el backend lo revisa en cada mensaje que va a un destino privado. Si no hay
+   * sesión, los encabezados quedan igual: los destinos públicos no lo necesitan
+   *
+   */
+  private conSesion(encabezados: StompHeaders = {}): StompHeaders {
+    const token: string | null = this.sesionService.token();
+    return token ? { ...encabezados, Authorization: `Bearer ${token}` } : encabezados;
   }
 }

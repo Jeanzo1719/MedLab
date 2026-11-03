@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import { EMPTY, Observable, catchError, map, merge } from "rxjs";
 
@@ -235,32 +235,25 @@ export class MedicamentoService {
   }
 
   /**
-   * Guarda la calificación del usuario sobre un reporte. El backend toma el
-   * usuario del token de la sesión.
+   *
+   * guarda lo que el paciente dice de un reporte: si hay, bajo pedido o no hay
+   *
+   * envía la calificación a /app/calificaciones y espera en /topic/medicamentos/{id}
+   * el detalle que el backend publica al guardar, que es la confirmación. La espera
+   * empieza solo cuando el broker confirma la suscripción, para no perder ese mensaje.
+   * Si en 10 segundos no llega nada, devuelve un error
+   *
    */
-  calificar(disponibilidadId: number, tipoCalificacionId: number): Observable<void> {
-    return this.http
-      .post<RespuestaApi<void>>(`${environment.apiUrl}/calificaciones`, {
-        disponibilidadId,
-        tipoCalificacionId,
-      })
+  calificar(medicamentoId: number, disponibilidadId: number, tipoCalificacionId: number): Observable<void> {
+    return this.stomp
+      .enviarYEsperar<MedicamentoDetalle>(
+        "/app/calificaciones",
+        `/topic/medicamentos/${medicamentoId}`,
+        {
+          disponibilidadId: String(disponibilidadId),
+          tipoCalificacionId: String(tipoCalificacionId),
+        },
+      )
       .pipe(map((): void => undefined));
-  }
-
-  /** Convierte un error HTTP en el texto que se le muestra al usuario. */
-  mensajeDeError(error: unknown): string {
-    if (error instanceof HttpErrorResponse) {
-      if (error.status === 0) {
-        return "No hay conexión con el servidor";
-      }
-      if (error.status === 401 || error.status === 403) {
-        return "Tu sesión no permite calificar. Vuelve a iniciar sesión.";
-      }
-      if (error.status === 404) {
-        return "El reporte ya no existe";
-      }
-      return "No se pudo guardar la calificación";
-    }
-    return "No se pudo guardar la calificación";
   }
 }

@@ -12,7 +12,22 @@ import { environment } from "../../../environments/environment";
 export type EstadoProducto = "disponible" | "agotado" | "bajo_pedido";
 
 /**
- * 
+ *
+ * el aviso que recibe la farmacia cuando se le genera una alerta de inactividad. Es
+ * el espejo de AlertaInactividadDto. suspendida es true si con esta alerta llegó al
+ * máximo (alertasParaSuspender) y su cuenta quedó suspendida
+ *
+ */
+export interface AlertaInactividad {
+  farmaciaId: number;
+  alertasPendientes: number;
+  alertasParaSuspender: number;
+  suspendida: boolean;
+  fecha: string;
+}
+
+/**
+ *
  * cuántos productos hay en cada estado, para el resumen del panel. Es el espejo
  * de ResumenInventarioDto
  * 

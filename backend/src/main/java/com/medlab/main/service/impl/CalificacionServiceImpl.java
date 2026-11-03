@@ -28,8 +28,8 @@ import org.springframework.stereotype.Service;
  * MedicamentoDetalleNotificador que publique el detalle del medicamento del reporte en
  * /topic/medicamentos/{id}, con el mensaje de disponibilidad ya recalculado. Por último le
  * pide a CalificacionesSospechosasService (HU-9) que revise el reporte; si esa revisión falla
- * solo se registra, porque la calificación ya quedó guardada. Lo llama CalificacionController
- * (HU-3) con el id del usuario que viene en el token de la sesión.
+ * solo se registra, porque la calificación ya quedó guardada. Lo llama
+ * CalificacionesController con el usuario de la sesión.
  */
 @Slf4j
 @Service

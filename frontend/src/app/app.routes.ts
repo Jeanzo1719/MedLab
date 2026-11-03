@@ -103,6 +103,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: "solicitudes",
+        title: "MedLab | Solicitudes de farmacias",
+        loadComponent: () =>
+          import("./features/panel-admin/solicitudes/solicitudes-admin.component").then(
+            (modulo) => modulo.SolicitudesAdminComponent,
+          ),
+      },
+      {
         path: "farmacias",
         title: "MedLab | Farmacias",
         loadComponent: () =>

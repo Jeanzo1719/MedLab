@@ -141,16 +141,16 @@ export class DetalleMedicamentoComponent {
     this.errorCalificacion.set("");
 
     this.medicamentoService
-      .calificar(reporte.disponibilidadId, tipoCalificacionId)
+      .calificar(this.medicamentoId(), reporte.disponibilidadId, tipoCalificacionId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (): void => {
           this.calificando.set(null);
           this.calificacionEnviada.set(reporte.disponibilidadId);
         },
-        error: (error: unknown): void => {
+        error: (): void => {
           this.calificando.set(null);
-          this.errorCalificacion.set(this.medicamentoService.mensajeDeError(error));
+          this.errorCalificacion.set("No se pudo guardar la calificación. Intenta de nuevo.");
         },
       });
   }

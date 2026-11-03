@@ -15,7 +15,8 @@
   <!--
 
     si la dirección de la página no trae un medicamento válido, se muestra un
-    mensaje con un botón para volver al buscador de la landing
+    mensaje con un botón para volver al buscador: el de la landing o, si hay una
+    sesión de paciente, el de su panel
 
   -->
   @if (medicamentoId() === null) {
@@ -264,6 +265,42 @@
                         <span class="veracidad">{{ mensaje }}</span>
                       }
                     </button>
+                    <!--
+
+                      la calificación de la disponibilidad. Va fuera del botón de la farmacia
+                      porque un botón no puede tener otros botones adentro. El paciente ve las
+                      tres opciones; quien no ha iniciado sesión ve el enlace para hacerlo y
+                      volver a esta página. Las farmacias y los administradores no califican
+
+                    -->
+                    @if (puedeCalificar()) {
+                      <div class="calificar" role="group" [attr.aria-label]="'Calificar la disponibilidad en ' + farmacia.nombre">
+                        <span class="calificar-titulo">¿Qué encontraste?</span>
+                        <div class="calificar-opciones">
+                          @for (tipo of tiposCalificacion; track tipo.id) {
+                            <button
+                              type="button"
+                              class="calificar-opcion"
+                              [class.activa]="votos().get(farmacia.disponibilidadId) === tipo.id"
+                              [attr.aria-pressed]="votos().get(farmacia.disponibilidadId) === tipo.id"
+                              [disabled]="calificando() !== null"
+                              (click)="calificar(farmacia.disponibilidadId, tipo.id)"
+                            >
+                              {{ tipo.etiqueta }}
+                            </button>
+                          }
+                        </div>
+                        @if (errorCalificacion() === farmacia.disponibilidadId) {
+                          <p class="calificar-error" role="alert">
+                            No pudimos guardar tu calificación. Intenta de nuevo; si continúa, vuelve a iniciar sesión.
+                          </p>
+                        }
+                      </div>
+                    } @else if (sinSesion()) {
+                      <p class="calificar">
+                        <a routerLink="/iniciar-sesion" [queryParams]="{ volver: urlActual() }">Inicia sesión para calificar</a>
+                      </p>
+                    }
                   </li>
                 }
               </ol>

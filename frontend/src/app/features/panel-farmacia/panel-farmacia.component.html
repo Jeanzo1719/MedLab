@@ -12,5 +12,27 @@
 </nav>
 
 <main class="contenido">
+  <!--
+
+    el aviso en vivo de una alerta de inactividad: dice cuántas lleva la farmacia o si
+    su cuenta ya quedó suspendida
+
+  -->
+  @let alertaActual = alerta();
+  @if (alertaActual) {
+    <div class="alerta" role="alert">
+      <p>
+        @if (alertaActual.suspendida) {
+          Tu farmacia quedó suspendida por inactividad. Comunícate con el administrador.
+        } @else {
+          Llevas mucho tiempo sin actualizar tu inventario. Tienes
+          {{ alertaActual.alertasPendientes }} de {{ alertaActual.alertasParaSuspender }} alertas:
+          al llegar al máximo, tu farmacia quedará suspendida.
+        }
+      </p>
+      <button type="button" class="boton-salir" (click)="cerrarAlerta()">Entendido</button>
+    </div>
+  }
+
   <router-outlet />
 </main>

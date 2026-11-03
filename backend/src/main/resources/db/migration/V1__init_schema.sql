@@ -39,6 +39,12 @@ CREATE TABLE usuarios (
     CHECK (correo REGEXP '^[A-Za-z0-9._+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,10}$')
 );
 
+-- La cuenta inicial de administrador, porque el registro solo crea pacientes y farmacias.
+-- Aqui solo va el hash Argon2: la contrasena no se guarda en el repositorio.
+INSERT INTO usuarios (identificacion, correo, contrasena_hash, telefono, rol_id) VALUES
+    ('0000000001', 'administrador@medlab.example', '$argon2id$v=19$m=16384,t=2,p=1$rlLwsVBRaM7gMt21iIyvzg$3NU5PVGHydFUYo0axgQgf8zIEg55nzkqv6XDU0lxAR0', '0000000000',
+        (SELECT id FROM roles WHERE nombre = 'administrador'));
+
 CREATE TABLE pacientes (
     usuario_id          INT             PRIMARY KEY,
     primer_nombre       VARCHAR(50)     NOT NULL,

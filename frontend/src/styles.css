@@ -170,6 +170,61 @@ body {
   backdrop-filter: var(--vidrio-desenfoque);
 }
 
+/*
+
+  la calificación de la disponibilidad debajo de cada farmacia cercana. Está aquí
+  y no en la página para no pasar el presupuesto de estilos de cada componente.
+  Cada opción es un botón redondeado, y la elegida se pinta con el color principal
+
+*/
+.calificar {
+  margin: 0.35rem 0 0;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.calificar-titulo {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--color-texto-secundario);
+}
+
+.calificar-opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.calificar-opcion {
+  padding: 0.3rem 0.7rem;
+  font: inherit;
+  color: var(--color-texto);
+  cursor: pointer;
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 999px;
+}
+
+.calificar-opcion:hover:not(:disabled) {
+  border-color: var(--color-primario);
+}
+
+.calificar-opcion.activa {
+  color: var(--color-sobre-primario);
+  background-color: var(--color-primario);
+  border-color: var(--color-primario);
+}
+
+.calificar-opcion:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.calificar-error {
+  margin: 0.35rem 0 0;
+  color: var(--color-error);
+}
+
 @keyframes aparecer {
   from {
     opacity: 0;

@@ -5,9 +5,9 @@ import { catchError, of } from "rxjs";
 
 import { FarmaciaMapa, FarmaciaService } from "../../core/services/farmacia.service";
 import { MetadatosService } from "../../core/services/metadatos.service";
+import { BuscadorMedicamentosComponent } from "../../shared/components/buscador-medicamentos/buscador-medicamentos.component";
 import { EncabezadoComponent } from "../../shared/components/encabezado/encabezado.component";
 import { MapaComponent } from "../../shared/components/mapa/mapa.component";
-import { BuscadorMedicamentosComponent } from "./components/buscador-medicamentos/buscador-medicamentos.component";
 import { ComoFuncionaComponent } from "./components/como-funciona/como-funciona.component";
 import { ParaFarmaciasComponent } from "./components/para-farmacias/para-farmacias.component";
 

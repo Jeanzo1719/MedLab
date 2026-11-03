@@ -178,7 +178,7 @@ class MedicamentoDetalleServiceTest {
     DisponibilidadEntity disponibilidad = mock(DisponibilidadEntity.class);
     when(disponibilidad.getId()).thenReturn(id);
     when(disponibilidad.getFarmacia()).thenReturn(farmacia);
-    when(disponibilidad.getFechaHoraReporte()).thenReturn(LocalDateTime.of(2026, 10, 16, 8, 0));
+    when(disponibilidad.getFechaHoraReporte()).thenReturn(LocalDateTime.now().minusHours(2));
     when(disponibilidad.getPrecio()).thenReturn(new BigDecimal("12500.00"));
     when(disponibilidad.getCantidadDisponible()).thenReturn(8);
     when(disponibilidad.getEstadoDisponibilidad()).thenReturn(estado);

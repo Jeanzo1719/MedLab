@@ -29,8 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
  * auditoria_estados_farmacia (AuditoriaEstadoFarmacia, la entity de la HU-9) con el estado
  * anterior, el nuevo y esa misma hora. Todo va en una sola
  * transacción (@Transactional): si algo falla, por ejemplo la auditoría, no se guarda nada.
- * Lo llama FarmaciasController con el administrador en null hasta que exista el inicio de
- * sesión.
+ * Lo llama FarmaciasController con el id del administrador de la sesión.
  */
 @Service
 @AllArgsConstructor
