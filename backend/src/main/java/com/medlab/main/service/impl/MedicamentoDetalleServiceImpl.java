@@ -99,16 +99,59 @@ public class MedicamentoDetalleServiceImpl implements MedicamentoDetalleService 
    * Convierte un reporte en el dato que se envía al frontend. Si tiposRecientes está vacía,
    * el reporte no tiene calificaciones y su mensaje es "sin calificaciones aún". Si el reporte
    * tiene más de 15 días, el mensaje lleva además el aviso de que puede estar desactualizado.
+   *
+   * La confianza es el porcentaje de calificaciones recientes que apoyan la tendencia
+   * ganadora. Si no hay calificaciones es 0; si hay empate, se toma el grupo más votado.
    */
   private DisponibilidadReporteDto toDisponibilidadReporteDto(DisponibilidadEntity disponibilidad,
       List<String> tiposRecientes, LocalDateTime ahora) {
     LocalDateTime fecha = disponibilidad.getFechaHoraReporte();
     TendenciaDisponibilidad tendencia = mensajeDisponibilidadService
         .calculateTendenciaDisponibilidad(tiposRecientes);
+    String estado = disponibilidad.getEstadoDisponibilidad() == null
+        ? null
+        : disponibilidad.getEstadoDisponibilidad().getNombre();
 
     return new DisponibilidadReporteDto(disponibilidad.getId(),
         disponibilidad.getFarmacia().getNombreFarmacia(), fecha,
         tiempoRelativoService.getTiempoRelativo(fecha, ahora), tendencia,
-        mensajeDisponibilidadService.buildMensajeDisponibilidad(tendencia, fecha, ahora));
+        mensajeDisponibilidadService.buildMensajeDisponibilidad(tendencia, fecha, ahora),
+        disponibilidad.getPrecio(), disponibilidad.getCantidadDisponible(), estado,
+        calcularConfianza(tiposRecientes, tendencia));
+  }
+
+  /**
+   * Calcula el porcentaje de votos que respaldan la tendencia. Los tipos que no son los tres
+   * válidos se ignoran, igual que en MensajeDisponibilidadService.
+   */
+  private int calcularConfianza(List<String> tiposRecientes, TendenciaDisponibilidad tendencia) {
+    long votosValidos = tiposRecientes.stream()
+        .filter(tipo -> MensajeDisponibilidadService.TIPO_SI_HAY.equals(tipo)
+            || MensajeDisponibilidadService.TIPO_BAJO_PEDIDO.equals(tipo)
+            || MensajeDisponibilidadService.TIPO_NO_HAY.equals(tipo))
+        .count();
+    if (votosValidos == 0) {
+      return 0;
+    }
+
+    long votosGanadores;
+    if (tendencia == TendenciaDisponibilidad.SIN_CONSENSO) {
+      votosGanadores = tiposRecientes.stream()
+          .collect(Collectors.groupingBy(tipo -> tipo, Collectors.counting()))
+          .values().stream()
+          .mapToLong(Long::longValue)
+          .max()
+          .orElse(0);
+    } else {
+      String tipoGanador = switch (tendencia) {
+        case DISPONIBLE -> MensajeDisponibilidadService.TIPO_SI_HAY;
+        case BAJO_PEDIDO -> MensajeDisponibilidadService.TIPO_BAJO_PEDIDO;
+        case NO_DISPONIBLE -> MensajeDisponibilidadService.TIPO_NO_HAY;
+        default -> "";
+      };
+      votosGanadores = tiposRecientes.stream().filter(tipoGanador::equals).count();
+    }
+
+    return (int) Math.round(votosGanadores * 100.0 / votosValidos);
   }
 }
