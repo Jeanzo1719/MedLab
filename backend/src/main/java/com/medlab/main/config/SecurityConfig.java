@@ -26,9 +26,10 @@ import jakarta.servlet.http.HttpServletResponse;
 /**
  * Seguridad HTTP (HU-2).
  *
- * Las rutas públicas (registro, búsquedas, WebSocket y el propio inicio de sesión) siguen
- * abiertas. Los paneles exigen un token válido con el rol correcto, y crear, editar o borrar
- * medicamentos es solo para administradores; consultarlos sigue siendo público.
+ * Política por defecto: toda ruta exige un token válido, salvo las que se abren de forma explícita
+ * (registro, inicio de sesión, consulta de medicamentos, handshake del WebSocket y el health check).
+ * Los paneles exigen además el rol correcto, y crear, editar o borrar medicamentos es solo para
+ * administradores.
  *
  * Esto cubre solo HTTP. Los mensajes que viajan por el WebSocket los revisa SesionStompInterceptor.
  *
@@ -61,14 +62,21 @@ public class SecurityConfig {
         .sessionManagement((sesiones) -> sesiones
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests((autorizacion) -> autorizacion
+            // Públicas: iniciar sesión, registrarse, consultar medicamentos, el handshake del WebSocket,
+            // el health check de Docker y la página de error de Spring
             .requestMatchers(HttpMethod.POST, "/api/sesiones").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/registro/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/medicamentos/**").permitAll()
+            .requestMatchers("/ws", "/actuator/health", "/error").permitAll()
+            // Privadas por rol
             .requestMatchers("/api/panel-farmacia/**").hasRole(ROL_FARMACIA)
             .requestMatchers("/api/panel-admin/**").hasRole(ROL_ADMINISTRADOR)
             .requestMatchers("/api/sesiones/**").authenticated()
             .requestMatchers(HttpMethod.POST, "/api/medicamentos/**").hasRole(ROL_ADMINISTRADOR)
             .requestMatchers(HttpMethod.PUT, "/api/medicamentos/**").hasRole(ROL_ADMINISTRADOR)
             .requestMatchers(HttpMethod.DELETE, "/api/medicamentos/**").hasRole(ROL_ADMINISTRADOR)
-            .anyRequest().permitAll())
+            // Cualquier ruta nueva nace protegida: hay que abrirla a propósito arriba
+            .anyRequest().authenticated())
         .exceptionHandling((errores) -> errores
             .authenticationEntryPoint((solicitud, respuesta, excepcion) -> escribirError(respuesta,
                 HttpServletResponse.SC_UNAUTHORIZED, "Inicia sesión para continuar"))
