@@ -8,7 +8,7 @@ import {
   signal,
 } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { Subscription } from "rxjs";
+import { Subject, Subscription, debounceTime, distinctUntilChanged, map } from "rxjs";
 
 import {
   FiltrosMedicamentos,
@@ -19,6 +19,14 @@ import {
 
 type CampoBusqueda = "nombre" | "principio" | "todos";
 type OrdenBusqueda = "relevancia" | "precio";
+
+/**
+ *
+ * cuánto se espera después de la última tecla antes de buscar: 300 milisegundos,
+ * igual que el buscador de la landing
+ *
+ */
+const ESPERA_ESCRITURA_MS: number = 300;
 
 /**
  *
@@ -39,6 +47,9 @@ export class BuscadorPacienteComponent {
   private readonly medicamentoService: MedicamentoService = inject(MedicamentoService);
   private readonly destroyRef: DestroyRef = inject(DestroyRef);
   private busquedaActual: Subscription | null = null;
+
+  /** cada tecla que escribe el usuario; las búsquedas por texto esperan a que haga una pausa */
+  private readonly textoEscrito: Subject<string> = new Subject<string>();
 
   /** avisa el medicamento que el usuario tocó para abrir su detalle */
   readonly seleccionar = output<number>();
@@ -92,6 +103,20 @@ export class BuscadorPacienteComponent {
   constructor() {
     this.destroyRef.onDestroy((): void => this.busquedaActual?.unsubscribe());
     this.buscar(0);
+
+    this.textoEscrito
+      .pipe(
+        debounceTime(ESPERA_ESCRITURA_MS),
+        map((texto: string): string => texto.trim()),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((): void => this.buscar(0));
+  }
+
+  protected cambiarTexto(valor: string): void {
+    this.texto.set(valor);
+    this.textoEscrito.next(valor);
   }
 
   protected alternarCampo(campo: "nombre" | "principio"): void {
