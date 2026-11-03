@@ -3,6 +3,7 @@ import {
   Component,
   Signal,
   WritableSignal,
+  computed,
   inject,
   signal,
 } from "@angular/core";
@@ -22,7 +23,8 @@ import {
 import {
   MedicamentoBusqueda,
   MedicamentoService,
-} from "../../../../core/services/medicamento.service";
+} from "../../../core/services/medicamento.service";
+import { SesionService } from "../../../core/services/sesion.service";
 
 /**
  * 
@@ -63,9 +65,9 @@ type EstadoBusqueda =
 
 /**
  * 
- * el buscador de medicamentos de la landing. Busca mientras el usuario escribe,
- * sin tener que presionar ningún botón ni tener cuenta
- * 
+ * el buscador de medicamentos de la landing y del panel del paciente. Busca
+ * mientras el usuario escribe, sin tener que presionar ningún botón ni tener cuenta
+ *
  * muestra "Buscando…" mientras espera, la lista de resultados cuando llega, o un
  * mensaje si no hay resultados o si hubo un error
  * 
@@ -85,6 +87,15 @@ export class BuscadorMedicamentosComponent {
    */
   private readonly medicamentoService: MedicamentoService =
     inject(MedicamentoService);
+
+  /**
+   *
+   * si el usuario no ha iniciado sesión, para decirle que no necesita una cuenta. El
+   * buscador también está en el panel del paciente, donde ese mensaje sobra
+   *
+   */
+  private readonly autenticado: Signal<boolean> = inject(SesionService).autenticado;
+  protected readonly sinSesion: Signal<boolean> = computed((): boolean => !this.autenticado());
 
   /**
    * 

@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { EMPTY, Observable, catchError, merge } from "rxjs";
+import { EMPTY, Observable, catchError, defer, map, merge } from "rxjs";
 
 import { StompService } from "./stomp.service";
 
@@ -137,6 +137,30 @@ export class MedicamentoService {
         .consultar<MedicamentoDetalle>("/app/medicamentos/detalle", { medicamentoId: String(id) })
         .pipe(catchError(() => EMPTY)),
       this.stomp.escuchar<MedicamentoDetalle>(`/topic/medicamentos/${id}`),
+    );
+  }
+
+  /**
+   *
+   * guarda lo que el paciente dice de un reporte: si hay, bajo pedido o no hay
+   *
+   * primero escucha /topic/medicamentos/{id} y después envía la calificación a
+   * /app/calificaciones. El backend publica el detalle al guardar, así que ese
+   * mensaje es la confirmación. Si en 10 segundos no llega nada, devuelve un error
+   *
+   */
+  calificar(medicamentoId: number, disponibilidadId: number, tipoCalificacionId: number): Observable<void> {
+    return merge(
+      this.stomp
+        .consultar<MedicamentoDetalle>(`/topic/medicamentos/${medicamentoId}`)
+        .pipe(map((): void => undefined)),
+      defer((): Observable<never> => {
+        this.stomp.publicar("/app/calificaciones", {
+          disponibilidadId: String(disponibilidadId),
+          tipoCalificacionId: String(tipoCalificacionId),
+        });
+        return EMPTY;
+      }),
     );
   }
 }

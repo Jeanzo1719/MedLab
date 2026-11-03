@@ -9,15 +9,9 @@
   @let actual = sesion();
   <h1>Hola{{ actual ? ", " + actual.identificacion : "" }}</h1>
   <p class="introduccion">
-    Tu cuenta está activa. Desde aquí podrás ver tus datos y los medicamentos que consultes.
+    Busca el medicamento que necesitas, consulta qué farmacia cerca de ti lo tiene y cuéntanos
+    qué encontraste.
   </p>
 
-  <section class="accesos" aria-label="Accesos rápidos">
-    <a class="acceso" routerLink="/farmacias-cercanas">
-      <span class="acceso-titulo">Buscar farmacias cercanas</span>
-      <span class="acceso-detalle">
-        Consulta qué farmacia cerca de ti tiene el medicamento que necesitas.
-      </span>
-    </a>
-  </section>
+  <app-buscador-medicamentos />
 </main>

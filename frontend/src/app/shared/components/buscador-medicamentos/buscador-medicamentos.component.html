@@ -47,7 +47,10 @@
 
   -->
   <p id="ayuda-busqueda" class="ayuda">
-    Por nombre comercial o principio activo. No necesitas una cuenta.
+    Por nombre comercial o principio activo.
+    @if (sinSesion()) {
+      No necesitas una cuenta.
+    }
   </p>
 </form>
 

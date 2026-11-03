@@ -34,7 +34,7 @@ public class GestionAdminService {
 
   private static final int TAMANO_MAXIMO_PAGINA = 50;
   private static final Set<String> ROLES = Set.of("paciente", "farmacia", "administrador");
-  private static final Set<String> ESTADOS_FARMACIA = Set.of("pendiente", "aprobada", "suspendida");
+  private static final Set<String> ESTADOS_FARMACIA = Set.of("pendiente", "aprobada", "suspendida", "rechazada");
 
   private final HistorialAdminRepository historialRepository;
   private final AuditoriaEstadoFarmaciaRepository auditoriaRepository;

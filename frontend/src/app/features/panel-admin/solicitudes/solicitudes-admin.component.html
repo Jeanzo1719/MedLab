@@ -1,0 +1,117 @@
+<section aria-labelledby="titulo-solicitudes">
+  <header class="cabecera">
+    <h1 id="titulo-solicitudes">Solicitudes de farmacias</h1>
+  </header>
+
+  <!--
+
+    el resultado de la última decisión, en verde si salió bien y en rojo si salió mal
+
+  -->
+  @let avisoActual = aviso();
+  @if (avisoActual) {
+    <div class="aviso" [class.aviso-error]="avisoActual.error" [attr.role]="avisoActual.error ? 'alert' : 'status'">
+      {{ avisoActual.texto }}
+    </div>
+  }
+
+  <!--
+
+    la confirmación antes de aprobar o rechazar, porque la decisión no se puede
+    cambiar desde esta pantalla
+
+  -->
+  @let decision = porDecidir();
+  @if (decision) {
+    <div class="confirmacion" role="group" aria-labelledby="texto-decision">
+      <p id="texto-decision">
+        ¿{{ decision.tipo === "aprobar" ? "Aprobar" : "Rechazar" }} a <strong>{{ decision.farmacia.nombre }}</strong>?
+        Esta decisión queda registrada y no se puede cambiar desde aquí.
+      </p>
+      <div class="acciones">
+        <button
+          type="button"
+          class="boton"
+          [class.boton-primario]="decision.tipo === 'aprobar'"
+          [class.boton-peligro]="decision.tipo === 'rechazar'"
+          [disabled]="procesando()"
+          (click)="confirmarDecision()"
+        >
+          Sí, {{ decision.tipo === "aprobar" ? "aprobar" : "rechazar" }}
+        </button>
+        <button type="button" class="boton" [disabled]="procesando()" (click)="cancelarDecision()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  }
+
+  <!--
+
+    la lista de solicitudes, con un mensaje distinto según su estado. Cada fila tiene
+    los datos de validación de la farmacia y los botones para decidir
+
+  -->
+  @let estadoActual = estado();
+  @if (estadoActual.tipo === "cargando") {
+    <p class="mensaje">Cargando solicitudes…</p>
+  } @else if (estadoActual.tipo === "error") {
+    <p class="mensaje mensaje-error" role="alert">No se pudieron cargar las solicitudes.</p>
+    <button type="button" class="boton" (click)="reintentar()">Reintentar</button>
+  } @else if (estadoActual.tipo === "listo" && estadoActual.farmacias.length === 0) {
+    <p class="mensaje">No hay farmacias esperando aprobación.</p>
+  } @else if (estadoActual.tipo === "listo") {
+    <p class="mensaje">
+      {{ estadoActual.farmacias.length }} {{ estadoActual.farmacias.length === 1 ? "solicitud" : "solicitudes" }}
+    </p>
+
+    <div class="tabla-contenedor">
+      <table>
+        <caption class="solo-lectores">Farmacias que esperan aprobación</caption>
+        <thead>
+          <tr>
+            <th scope="col">Farmacia</th>
+            <th scope="col">NIT</th>
+            <th scope="col">RUT</th>
+            <th scope="col">Matrícula mercantil</th>
+            <th scope="col">Director técnico</th>
+            <th scope="col">Licencia sanitaria</th>
+            <th scope="col"><span class="solo-lectores">Acciones</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (farmacia of estadoActual.farmacias; track farmacia.id) {
+            <tr>
+              <td><span class="nombre">{{ farmacia.nombre }}</span></td>
+              <td>{{ farmacia.nit }}</td>
+              <td>{{ farmacia.rut }}</td>
+              <td>{{ farmacia.matriculaMercantil }}</td>
+              <td>{{ farmacia.identificacionDirectorTecnico }}</td>
+              <td>{{ farmacia.licenciaSanitaria }}</td>
+              <td class="acciones">
+                <button
+                  type="button"
+                  class="boton boton-pequeno boton-primario"
+                  [attr.aria-label]="'Aprobar a ' + farmacia.nombre"
+                  [disabled]="procesando()"
+                  (click)="pedirDecision(farmacia, 'aprobar')"
+                >
+                  Aprobar
+                </button>
+                <button
+                  type="button"
+                  class="boton boton-pequeno boton-peligro-suave"
+                  [attr.aria-label]="'Rechazar a ' + farmacia.nombre"
+                  [disabled]="procesando()"
+                  (click)="pedirDecision(farmacia, 'rechazar')"
+                >
+                  Rechazar
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

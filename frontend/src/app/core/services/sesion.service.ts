@@ -175,6 +175,20 @@ export class SesionService {
 
   /**
    *
+   * el id del usuario de la sesión, que viene dentro del token, o null si no hay
+   * sesión. Por ejemplo, con él la farmacia escucha sus propias alertas. El backend
+   * igual revisa el token: cambiar este número no da acceso a nada de otra cuenta
+   *
+   */
+  usuarioId(): number | null {
+    const token: string | null = this.token();
+    const contenido: ContenidoToken | null = token ? this.decodificar(token) : null;
+    const id: number = Number(contenido?.sub);
+    return Number.isInteger(id) && id > 0 ? id : null;
+  }
+
+  /**
+   *
    * borra la sesión del navegador sin llamar al backend. La usa el interceptor
    * cuando el servidor responde 401
    *

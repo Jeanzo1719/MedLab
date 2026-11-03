@@ -8,10 +8,10 @@ import { RolUsuario } from "./sesion.service";
 
 /**
  * 
- * los tres estados en que puede estar una farmacia
- * 
+ * los cuatro estados en que puede estar una farmacia
+ *
  */
-export type EstadoFarmacia = "pendiente" | "aprobada" | "suspendida";
+export type EstadoFarmacia = "pendiente" | "aprobada" | "suspendida" | "rechazada";
 
 /**
  * 

@@ -13,8 +13,8 @@ import lombok.extern.slf4j.Slf4j;
  * Avisos en vivo de HU-9 por WebSocket. Un aviso fallido solo se registra: lo importante ya
  * quedó guardado en la BD y el panel puede consultarlo cuando quiera.
  *
- * Los topics no tienen autenticación hasta que exista el login (HU-2): cualquiera conectado
- * podría suscribirse. No debe llegar a producción tal como está.
+ * Los topics están protegidos por SesionStompInterceptor: los avisos de calificaciones son solo
+ * para administradores y las alertas de una farmacia, solo para esa farmacia.
  */
 @Slf4j
 @Service

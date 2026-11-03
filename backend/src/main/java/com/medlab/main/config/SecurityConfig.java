@@ -27,8 +27,10 @@ import jakarta.servlet.http.HttpServletResponse;
  * Seguridad HTTP (HU-2).
  *
  * Las rutas públicas (registro, búsquedas, WebSocket y el propio inicio de sesión) siguen
- * abiertas. Los paneles exigen un token válido con el rol correcto; el resto de la API no cambia
- * en esta historia.
+ * abiertas. Los paneles exigen un token válido con el rol correcto, y crear, editar o borrar
+ * medicamentos es solo para administradores; consultarlos sigue siendo público.
+ *
+ * Esto cubre solo HTTP. Los mensajes que viajan por el WebSocket los revisa SesionStompInterceptor.
  *
  * La sesión no se guarda en el servidor: cada solicitud trae su JWT y SesionJwtFilter decide.
  * Por eso la política es STATELESS y no hay cookies de sesión de Spring.
@@ -63,6 +65,9 @@ public class SecurityConfig {
             .requestMatchers("/api/panel-farmacia/**").hasRole(ROL_FARMACIA)
             .requestMatchers("/api/panel-admin/**").hasRole(ROL_ADMINISTRADOR)
             .requestMatchers("/api/sesiones/**").authenticated()
+            .requestMatchers(HttpMethod.POST, "/api/medicamentos/**").hasRole(ROL_ADMINISTRADOR)
+            .requestMatchers(HttpMethod.PUT, "/api/medicamentos/**").hasRole(ROL_ADMINISTRADOR)
+            .requestMatchers(HttpMethod.DELETE, "/api/medicamentos/**").hasRole(ROL_ADMINISTRADOR)
             .anyRequest().permitAll())
         .exceptionHandling((errores) -> errores
             .authenticationEntryPoint((solicitud, respuesta, excepcion) -> escribirError(respuesta,

@@ -63,9 +63,13 @@ export interface RegistroFarmacia {
  * RegistroResponseDto; el estado de una farmacia es "pendiente" y el de un
  * paciente, "activo"
  *
+ * identificacion es con la que la cuenta inicia sesión: la cédula del paciente o
+ * el código que el sistema le genera a la farmacia
+ *
  */
 export interface RegistroCreado {
   id: number;
+  identificacion: string;
   rol: RolRegistro;
   estado: string;
 }
