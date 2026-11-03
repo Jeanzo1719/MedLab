@@ -1,0 +1,163 @@
+:host {
+  display: block;
+}
+
+.cercania {
+  display: grid;
+  gap: 0.7rem;
+  margin-bottom: 1.1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 750;
+}
+
+.oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.ubicacion {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.direccion {
+  display: flex;
+  gap: 0.4rem;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--color-borde);
+  border-radius: 0.6rem;
+  background-color: var(--color-superficie);
+  color: var(--color-texto);
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.boton {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--color-borde);
+  border-radius: 0.6rem;
+  background-color: var(--color-superficie);
+  color: var(--color-texto);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.boton:hover:not(:disabled),
+.medio:hover {
+  border-color: var(--color-primario);
+  color: var(--color-primario);
+}
+
+.boton:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.estado,
+.mensaje,
+.pista,
+.resumen {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-texto-secundario);
+}
+
+.error {
+  color: var(--color-error, #b3261e);
+}
+
+.ruta {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.medios {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.medio {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--color-borde);
+  border-radius: 999px;
+  background-color: var(--color-superficie);
+  color: var(--color-texto);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.medio.activo {
+  border-color: var(--color-primario);
+  background-color: var(--color-primario);
+  color: var(--color-sobre-primario, #fff);
+}
+
+.resumen strong {
+  color: var(--color-texto);
+}
+
+.lista {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.farmacia {
+  display: grid;
+  gap: 0.2rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-borde);
+  border-radius: 0.7rem;
+  background-color: var(--color-superficie);
+  color: var(--color-texto);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.farmacia.seleccionada {
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 1px var(--color-primario);
+}
+
+.nombre {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.distancia,
+.veracidad {
+  font-size: 0.8rem;
+  color: var(--color-texto-secundario);
+}
+
+.cercana {
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background-color: var(--color-primario);
+  color: var(--color-sobre-primario, #fff);
+  font-size: 0.7rem;
+  font-weight: 700;
+}

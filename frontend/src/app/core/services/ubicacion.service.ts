@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, WritableSignal, signal } from "@angular/core";
 import { Observable, from, map } from "rxjs";
 
 /**
@@ -64,6 +64,15 @@ interface ResultadoNominatim {
  */
 @Injectable({ providedIn: "root" })
 export class UbicacionService {
+  /**
+   *
+   * la ubicación que eligió el usuario en el panel del paciente. Vive en el service
+   * y no en el componente, para que no se pierda al cerrar el detalle o cambiar de
+   * medicamento. Es null mientras no se haya dado
+   *
+   */
+  readonly ubicacionActual: WritableSignal<Coordenadas | null> = signal<Coordenadas | null>(null);
+
   /**
    * 
    * devuelve la ubicación del dispositivo (celular o computador)
