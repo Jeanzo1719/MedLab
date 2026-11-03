@@ -1,0 +1,5 @@
+# Imagen del proxy de producción: incorpora el Caddyfile dentro de la imagen.
+# Así no depende de un bind mount, que falla cuando Jenkins usa el Docker Engine del host.
+FROM caddy:2
+
+COPY Caddyfile /etc/caddy/Caddyfile

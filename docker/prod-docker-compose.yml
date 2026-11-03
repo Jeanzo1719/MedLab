@@ -77,7 +77,10 @@ services:
       - publica
 
   proxy:
-    image: caddy:2-alpine
+    build:
+      ## la configuración de Caddy va dentro de la imagen (docker/prod/Dockerfile.caddy)
+      context: ./prod
+      dockerfile: Dockerfile.caddy
     container_name: medlab-prod-proxy
     restart: unless-stopped
     ports:
@@ -87,7 +90,6 @@ services:
       ## :80 for testing without a domain; set a domain in .env to enable HTTPS
       SITE_ADDRESS: ${SITE_ADDRESS:-:80}
     volumes:
-      - ./prod/Caddyfile:/etc/caddy/Caddyfile:ro
       ## certificates and their state, they must survive container recreation
       - caddy_data:/data
       - caddy_config:/config
