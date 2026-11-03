@@ -18,6 +18,14 @@ SET @rol_farmacia = (SELECT id FROM roles WHERE nombre = 'farmacia');
 SET @estado_aprobada = (SELECT id FROM estados_farmacia WHERE nombre = 'aprobada');
 SET @hash_pruebas = '$argon2id$v=19$m=16384,t=2,p=1$oN26dmUq0bKeo0le+utZww$sxBTCKvl7PSvZkuzIUzrCS5suEXRlnCDGbW4pfxs0dU';
 
+-- Administrador de prueba: identificación 0000000001, contraseña Prueba#2026a. Solo se inserta
+-- si no existe, así el bloque se puede repetir sin duplicar la cuenta.
+INSERT INTO usuarios (identificacion, correo, contrasena_hash, telefono, rol_id)
+SELECT '0000000001', 'administrador@medlab-pruebas.com', @hash_pruebas, '0000000000',
+    (SELECT id FROM roles WHERE nombre = 'administrador')
+FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE identificacion = '0000000001');
+
 INSERT INTO usuarios (identificacion, correo, contrasena_hash, telefono, rol_id) VALUES
     ('901659578', 'farmacia01@medlab-pruebas.com', @hash_pruebas, '6048720670', @rol_farmacia),
     ('902830057', 'farmacia02@medlab-pruebas.com', @hash_pruebas, '6049401550', @rol_farmacia),
