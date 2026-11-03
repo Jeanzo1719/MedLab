@@ -26,12 +26,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Qué hace: revisa los mensajes que llegan por WebSocket y solo deja pasar a los destinos
- * protegidos a quien tiene una sesión válida y el rol correcto.
+ * Qué hace: revisa los mensajes que llegan por WebSocket. Solo deja pasar los destinos públicos
+ * (búsqueda, mapa y detalle) y los protegidos a quien tiene una sesión válida y el rol correcto.
  *
  * Cómo entenderlo: es el mismo portero de SesionJwtFilter, pero en la puerta del WebSocket.
- * La conexión sigue abierta para todos, porque la búsqueda y el mapa son públicos; lo que se
- * revisa es cada mensaje que quiere entrar a una zona privada.
+ * La conexión sigue abierta para todos; lo que se revisa es cada mensaje, y un destino que no
+ * esté en ninguna lista se rechaza.
  *
  * Detalles técnicos: mira los mensajes SEND y SUBSCRIBE. El token llega en el encabezado
  * Authorization de cada mensaje. Si el mensaje no cumple, se descarta y queda un aviso en el
@@ -56,7 +56,16 @@ public class SesionStompInterceptor implements ChannelInterceptor {
   /** Las alertas de una farmacia, por ejemplo /topic/farmacias/7/alertas. */
   private static final Pattern DESTINO_ALERTAS_FARMACIA = Pattern.compile("^/topic/farmacias/\\d+/alertas$");
 
-  /** Cada destino protegido con el único rol que puede usarlo. El resto de destinos es público. */
+  /**
+   * Los únicos destinos que cualquiera puede escuchar: las búsquedas, el mapa y el detalle del
+   * medicamento. Todo lo que no esté aquí ni en ROLES_POR_DESTINO_PROTEGIDO se rechaza.
+   */
+  private static final List<Pattern> DESTINOS_PUBLICOS = List.of(
+      Pattern.compile("^/app/farmacias/(aprobadas|cercanas)$"),
+      Pattern.compile("^/app/medicamentos/(buscar|buscar/filtros|detalle)$"),
+      Pattern.compile("^/topic/medicamentos/\\d+$"));
+
+  /** Cada destino protegido con el único rol que puede usarlo. */
   private static final Map<String, String> ROLES_POR_DESTINO_PROTEGIDO = Map.of(
       "/app/farmacias/pendientes", ROL_ADMINISTRADOR,
       "/topic/farmacias/pendientes", ROL_ADMINISTRADOR,
@@ -92,7 +101,11 @@ public class SesionStompInterceptor implements ChannelInterceptor {
 
     String rolRequerido = findRolRequerido(destino);
     if (rolRequerido == null) {
-      return message;
+      if (comando == StompCommand.SUBSCRIBE && esDestinoPublico(destino)) {
+        return message;
+      }
+      log.warn("Destino STOMP sin regla de acceso: {} {}", comando, destino);
+      return null;
     }
 
     try {
@@ -125,6 +138,10 @@ public class SesionStompInterceptor implements ChannelInterceptor {
       return ROL_FARMACIA;
     }
     return ROLES_POR_DESTINO_PROTEGIDO.get(destino);
+  }
+
+  private boolean esDestinoPublico(String destino) {
+    return DESTINOS_PUBLICOS.stream().anyMatch(patron -> patron.matcher(destino).matches());
   }
 
   /** Revisa el rol y, en las alertas de una farmacia, que sean las de su propia cuenta. */
