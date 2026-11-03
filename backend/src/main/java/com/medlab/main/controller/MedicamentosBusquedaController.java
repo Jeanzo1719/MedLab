@@ -1,6 +1,8 @@
 package com.medlab.main.controller;
 
+import com.medlab.main.dto.BusquedaMedicamentosDto;
 import com.medlab.main.dto.MedicamentoBusquedaDto;
+import com.medlab.main.dto.PaginaMedicamentosDto;
 import com.medlab.main.service.MedicamentosService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -12,8 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Atiende las búsquedas del buscador de la landing por WebSocket: responde con los
- * medicamentos que coinciden con el texto que escribió el usuario.
+ * Atiende las búsquedas de medicamentos por WebSocket: la búsqueda rápida de la landing y la
+ * búsqueda combinada con filtros y paginación del panel del paciente/cuidador (HU-3).
  */
 @Controller
 @Validated
@@ -35,5 +37,33 @@ public class MedicamentosBusquedaController {
   public List<MedicamentoBusquedaDto> searchMedicamentos(
       @Header("q") @NotBlank @Size(min = 2, max = 150) String textoBusqueda) {
     return medicamentosService.searchMedicamentosByTexto(textoBusqueda);
+  }
+
+  /**
+   * Búsqueda combinada de la página del paciente/cuidador (HU-3).
+   *
+   * Todos los datos llegan como encabezados opcionales de la suscripción STOMP:
+   * q (texto), campo (nombre, principio o todos), farmacia, precioMin, precioMax, orden
+   * (relevancia o precio), pagina (desde 0) y tamano (1 a 50). Se reciben como texto y
+   * BusquedaMedicamentosDto los normaliza: los valores que no se entienden se descartan en
+   * vez de lanzar una excepción, para que el cliente siempre reciba una página.
+   *
+   * Devuelve una página vacía si no hay criterios o si ninguna coincidencia existe; así el
+   * frontend puede mostrar "sin resultados" sin tratar un error como si fuera una falla del
+   * servidor.
+   */
+  @SubscribeMapping("/medicamentos/buscar/filtros")
+  public PaginaMedicamentosDto buscarMedicamentos(
+      @Header(value = "q", required = false) String texto,
+      @Header(value = "campo", required = false) String campo,
+      @Header(value = "farmacia", required = false) String farmacia,
+      @Header(value = "precioMin", required = false) String precioMin,
+      @Header(value = "precioMax", required = false) String precioMax,
+      @Header(value = "orden", required = false) String orden,
+      @Header(value = "pagina", required = false) String pagina,
+      @Header(value = "tamano", required = false) String tamano) {
+    return medicamentosService.buscarMedicamentos(
+        BusquedaMedicamentosDto.desde(texto, campo, farmacia, precioMin, precioMax, orden, pagina,
+            tamano));
   }
 }

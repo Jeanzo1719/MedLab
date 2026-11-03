@@ -1,8 +1,10 @@
 package com.medlab.main.service.impl;
 
+import com.medlab.main.dto.BusquedaMedicamentosDto;
 import com.medlab.main.dto.MedicamentoBusquedaDto;
 import com.medlab.main.dto.MedicamentoRequestDto;
 import com.medlab.main.dto.MedicamentoResponseDto;
+import com.medlab.main.dto.PaginaMedicamentosDto;
 import com.medlab.main.entity.CategoriasEntity;
 import com.medlab.main.entity.DisponibilidadEntity;
 import com.medlab.main.entity.FormasFarmaceuticasEntity;
@@ -11,6 +13,7 @@ import com.medlab.main.repository.CategoriasRepository;
 import com.medlab.main.repository.DisponibilidadRepository;
 import com.medlab.main.repository.FormasFarmaceuticasRepository;
 import com.medlab.main.repository.MedicamentosRepository;
+import com.medlab.main.repository.MedicamentosRepository.MedicamentoBusquedaProyeccion;
 import com.medlab.main.service.MedicamentosService;
 import java.math.BigDecimal;
 import java.util.Comparator;
@@ -20,6 +23,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -243,13 +247,31 @@ public class MedicamentosServiceImpl implements MedicamentosService {
     @Override
     public List<MedicamentoBusquedaDto> searchMedicamentosByTexto(String texto) {
         // La misma palabra se busca en el nombre comercial y en el principio activo; basta
-        // con que coincida uno de los dos campos. La forma farmaceutica viaja ya cargada
-        // gracias al @EntityGraph del repositorio.
+        // con que coincida uno de los dos campos. La forma farmaceutica y la categoria viajan
+        // ya cargadas gracias al @EntityGraph del repositorio.
         return medicamentosRepository
                 .findByNombreComercialContainingIgnoreCaseOrPrincipioActivoContainingIgnoreCase(texto, texto)
                 .stream()
                 .map(this::toMedicamentoBusquedaDto)
                 .toList();
+    }
+
+    @Override
+    public PaginaMedicamentosDto buscarMedicamentos(BusquedaMedicamentosDto filtros) {
+        if (filtros.sinCriterios()) {
+            return PaginaMedicamentosDto.vacia(filtros);
+        }
+
+        Pageable paginaPedida = PageRequest.of(filtros.pagina(), filtros.tamano());
+        Page<MedicamentoBusquedaProyeccion> pagina = medicamentosRepository
+                .buscarMedicamentos(filtros, paginaPedida);
+
+        List<MedicamentoBusquedaDto> resultados = pagina.getContent().stream()
+                .map(this::toMedicamentoBusquedaDto)
+                .toList();
+
+        return new PaginaMedicamentosDto(resultados, pagina.getTotalElements(),
+                filtros.pagina(), filtros.tamano(), pagina.getTotalPages(), pagina.hasNext());
     }
 
     private MedicamentoBusquedaDto toMedicamentoBusquedaDto(MedicamentosEntity medicamento) {
@@ -258,6 +280,23 @@ public class MedicamentosServiceImpl implements MedicamentosService {
                 medicamento.getNombreComercial(),
                 medicamento.getPrincipioActivo(),
                 medicamento.getPresentacion(),
-                medicamento.getFormaFarmaceutica().getNombre());
+                medicamento.getFormaFarmaceutica().getNombre(),
+                medicamento.getCategoria().getNombre(),
+                null,
+                0L,
+                0L);
+    }
+
+    private MedicamentoBusquedaDto toMedicamentoBusquedaDto(MedicamentoBusquedaProyeccion fila) {
+        return new MedicamentoBusquedaDto(
+                fila.getId(),
+                fila.getNombreComercial(),
+                fila.getPrincipioActivo(),
+                fila.getPresentacion(),
+                fila.getFormaFarmaceutica(),
+                fila.getCategoria(),
+                fila.getPrecioMinimo(),
+                fila.getFarmaciasDisponibles() == null ? 0L : fila.getFarmaciasDisponibles(),
+                fila.getFarmaciasReportaron() == null ? 0L : fila.getFarmaciasReportaron());
     }
 }
