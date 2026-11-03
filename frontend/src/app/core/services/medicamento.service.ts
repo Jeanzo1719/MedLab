@@ -239,9 +239,9 @@ export class MedicamentoService {
    * guarda lo que el paciente dice de un reporte: si hay, bajo pedido o no hay
    *
    * envía la calificación a /app/calificaciones y espera en /topic/medicamentos/{id}
-   * el detalle que el backend publica al guardar, que es la confirmación. La espera
-   * empieza solo cuando el broker confirma la suscripción, para no perder ese mensaje.
-   * Si en 10 segundos no llega nada, devuelve un error
+   * el detalle que el backend publica al guardar, que es la confirmación. Se suscribe
+   * antes de enviar, para no perder ese mensaje. Si en 10 segundos no llega nada,
+   * devuelve un error
    *
    */
   calificar(medicamentoId: number, disponibilidadId: number, tipoCalificacionId: number): Observable<void> {

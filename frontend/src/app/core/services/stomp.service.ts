@@ -1,6 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { IMessage, RxStomp, StompHeaders } from "@stomp/rx-stomp";
-import { Observable, defer, from, ignoreElements, map, merge, take, tap, timeout } from "rxjs";
+import { Observable, defer, ignoreElements, map, merge, take, tap, timeout, timer } from "rxjs";
 
 import { environment } from "../../../environments/environment";
 import { SesionService } from "./sesion.service";
@@ -12,6 +12,15 @@ import { SesionService } from "./sesion.service";
  * 
  */
 const TIEMPO_MAXIMO_RESPUESTA_MS: number = 10000;
+
+/**
+ *
+ * cuánto se espera después de suscribirse, antes de enviar un mensaje que espera respuesta:
+ * medio segundo. El servidor no confirma las suscripciones con RECEIPT, así que este margen
+ * deja que la suscripción quede registrada antes de que llegue la respuesta
+ *
+ */
+const ESPERA_SUSCRIPCION_MS: number = 500;
 
 /**
  * 
@@ -72,32 +81,24 @@ export class StompService {
 
   /**
    *
-   * envía un mensaje y devuelve la primera respuesta que llegue a otro destino,
-   * sin perderla por carrera
+   * envía un mensaje y devuelve la primera respuesta que llegue a otro destino
    *
-   * primero se suscribe al destino de respuesta y espera el RECEIPT del broker, que
-   * confirma que la suscripción ya existe. Solo entonces envía el mensaje; así la
-   * respuesta nunca llega antes de que alguien la escuche. Si en 10 segundos no llega
-   * nada, devuelve un error
+   * primero se suscribe al destino de respuesta y, después de un breve margen, envía
+   * el mensaje; así la respuesta no llega antes de que alguien la escuche. Si en 10
+   * segundos no llega nada, devuelve un error
    *
    */
   enviarYEsperar<T>(destinoEnvio: string, destinoRespuesta: string, encabezados: StompHeaders = {}): Observable<T> {
     return defer((): Observable<T> => {
-      const receiptId: string = crypto.randomUUID();
-      const suscripcionConfirmada = this.cliente.asyncReceipt(receiptId);
-
       const respuesta$: Observable<T> = this.cliente
-        .watch({
-          destination: destinoRespuesta,
-          subHeaders: (): StompHeaders => this.conSesion({ receipt: receiptId }),
-        })
+        .watch({ destination: destinoRespuesta, subHeaders: (): StompHeaders => this.conSesion() })
         .pipe(
           take(1),
           timeout(TIEMPO_MAXIMO_RESPUESTA_MS),
           map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T),
         );
 
-      const envio$: Observable<never> = from(suscripcionConfirmada).pipe(
+      const envio$: Observable<never> = timer(ESPERA_SUSCRIPCION_MS).pipe(
         tap((): void => this.publicar(destinoEnvio, encabezados)),
         ignoreElements(),
       );
