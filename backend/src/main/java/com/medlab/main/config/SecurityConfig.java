@@ -38,6 +38,7 @@ public class SecurityConfig {
 
   private static final String ROL_FARMACIA = "FARMACIA";
   private static final String ROL_ADMINISTRADOR = "ADMINISTRADOR";
+  private static final String ROL_PACIENTE = "PACIENTE";
 
   private final JwtService jwtService;
   private final SesionesRepository sesionesRepository;
@@ -60,6 +61,7 @@ public class SecurityConfig {
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests((autorizacion) -> autorizacion
             .requestMatchers(HttpMethod.POST, "/api/sesiones").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/calificaciones").hasRole(ROL_PACIENTE)
             .requestMatchers("/api/panel-farmacia/**").hasRole(ROL_FARMACIA)
             .requestMatchers("/api/panel-admin/**").hasRole(ROL_ADMINISTRADOR)
             .requestMatchers("/api/sesiones/**").authenticated()

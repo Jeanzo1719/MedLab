@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(NoSuchElementException.class)
-  public ResponseEntity<ApiResponse<Void>> handleNoSuchElementException(NoSuchElementException ex) {
+  @ExceptionHandler({NoSuchElementException.class, DisponibilidadNotFoundException.class})
+  public ResponseEntity<ApiResponse<Void>> handleNoSuchElementException(RuntimeException ex) {
     ApiResponse<Void> notFoundResponse = ApiResponse.<Void>builder()
         .code(HttpStatus.NOT_FOUND.value())
         .message(ex.getMessage())
