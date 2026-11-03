@@ -1,0 +1,135 @@
+<aside class="detalle vidrio" aria-label="Detalle del medicamento">
+  <button type="button" class="cerrar" aria-label="Cerrar detalle" (click)="cerrar.emit()">
+    ×
+  </button>
+
+  @if (detalle(); as medicamento) {
+    <header class="encabezado">
+      <p class="etiqueta">{{ medicamento.categoria }}</p>
+      <h2>{{ medicamento.nombreComercial }}</h2>
+      <p class="principio">{{ medicamento.principioActivo }}</p>
+      <p class="presentacion">
+        {{ medicamento.presentacion }} · {{ medicamento.formaFarmaceutica }}
+      </p>
+      <p class="resumen">
+        <strong>{{ medicamento.reportes.length }}</strong>
+        {{ medicamento.reportes.length === 1 ? "farmacia lo reportó" : "farmacias lo reportaron" }}
+      </p>
+    </header>
+
+    <div class="cuerpo">
+      <section aria-labelledby="titulo-farmacias-detalle">
+        <h3 id="titulo-farmacias-detalle">Dónde conseguirlo</h3>
+
+        @if (medicamento.reportes.length === 0) {
+          <p class="mensaje">
+            Ninguna farmacia ha reportado este medicamento todavía. Vuelve a intentarlo más
+            tarde.
+          </p>
+        } @else {
+          <div class="farmacias">
+            @for (reporte of medicamento.reportes; track reporte.disponibilidadId) {
+              <article class="farmacia">
+                <div class="farmacia-cabecera">
+                  <div>
+                    <h4>{{ reporte.farmacia }}</h4>
+                    <p class="reporte">{{ reporte.reporteRelativo }}</p>
+                  </div>
+                  <span class="precio">{{ formatearPrecio(reporte.precio) }}</span>
+                </div>
+
+                <div class="estado-linea">
+                  <span [class]="'estado ' + claseEstado(reporte.estado)">
+                    {{ etiquetaEstado(reporte.estado) }}
+                  </span>
+                  @if (reporte.cantidadDisponible > 0) {
+                    <span class="unidades">{{ reporte.cantidadDisponible }} unidades</span>
+                  }
+                </div>
+
+                <div [class]="'tendencia ' + claseTendencia(reporte.tendencia)">
+                  <p class="tendencia-titulo">{{ etiquetaTendencia(reporte.tendencia) }}</p>
+                  <p class="tendencia-mensaje">{{ reporte.mensajeDisponibilidad }}</p>
+                  @if (reporte.confianza > 0) {
+                    <div class="confianza">
+                      <div class="barra" aria-hidden="true">
+                        <span [style.width.%]="reporte.confianza"></span>
+                      </div>
+                      <span class="porcentaje">{{ reporte.confianza }}%</span>
+                    </div>
+                  }
+                </div>
+
+                <div class="calificar" role="group" aria-label="¿Encontraste el medicamento?">
+                  <span class="pregunta">¿Lo encontraste?</span>
+                  <div class="opciones">
+                    <button
+                      type="button"
+                      [disabled]="calificando() === reporte.disponibilidadId"
+                      (click)="calificar(reporte, 1)"
+                    >
+                      Sí hay
+                    </button>
+                    <button
+                      type="button"
+                      [disabled]="calificando() === reporte.disponibilidadId"
+                      (click)="calificar(reporte, 2)"
+                    >
+                      Bajo pedido
+                    </button>
+                    <button
+                      type="button"
+                      [disabled]="calificando() === reporte.disponibilidadId"
+                      (click)="calificar(reporte, 3)"
+                    >
+                      No hay
+                    </button>
+                  </div>
+                </div>
+
+                @if (calificacionEnviada() === reporte.disponibilidadId) {
+                  <p class="gracias">¡Gracias! Tu respuesta se sumó a los reportes.</p>
+                }
+              </article>
+            }
+          </div>
+        }
+
+        @if (errorCalificacion()) {
+          <p class="mensaje mensaje-error" role="alert">{{ errorCalificacion() }}</p>
+        }
+      </section>
+
+      @if (recomendaciones().length > 0) {
+        <section class="recomendaciones" aria-labelledby="titulo-recomendaciones">
+          <h3 id="titulo-recomendaciones">Otros con {{ medicamento.principioActivo }}</h3>
+          <p class="mensaje">
+            Medicamentos con el mismo principio activo que podrían servirte.
+          </p>
+          <ul class="lista-recomendaciones">
+            @for (recomendado of recomendaciones(); track recomendado.id) {
+              <li>
+                <button type="button" (click)="seleccionar.emit(recomendado.id)">
+                  <span class="recomendado-nombre">{{ recomendado.nombreComercial }}</span>
+                  <span class="recomendado-detalle">
+                    {{ recomendado.presentacion }} ·
+                    {{ recomendado.formaFarmaceuticaNombre ?? "Forma no registrada" }}
+                  </span>
+                </button>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    </div>
+  } @else if (cargando()) {
+    <div class="estado-carga" aria-live="polite">
+      <span class="girador" aria-hidden="true"></span>
+      <p>Cargando el detalle del medicamento…</p>
+    </div>
+  } @else {
+    <div class="estado-carga" aria-live="polite">
+      <p class="mensaje-error">{{ error() || "No se pudo cargar el detalle." }}</p>
+    </div>
+  }
+</aside>

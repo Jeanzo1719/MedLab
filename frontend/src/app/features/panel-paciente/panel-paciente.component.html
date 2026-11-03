@@ -5,19 +5,32 @@
   <button type="button" class="boton-salir" (click)="cerrarSesion()">Cerrar sesión</button>
 </header>
 
-<main class="contenido">
-  @let actual = sesion();
-  <h1>Hola{{ actual ? ", " + actual.identificacion : "" }}</h1>
-  <p class="introduccion">
-    Tu cuenta está activa. Desde aquí podrás ver tus datos y los medicamentos que consultes.
-  </p>
+<main class="tablero">
+  <div class="mapa" aria-label="Mapa de farmacias aprobadas">
+    <app-mapa
+      [farmacias]="farmaciasVisibles()"
+      descripcion="Mapa de farmacias aprobadas con medicamentos reportados"
+    />
+  </div>
 
-  <section class="accesos" aria-label="Accesos rápidos">
-    <a class="acceso" routerLink="/farmacias-cercanas">
-      <span class="acceso-titulo">Buscar farmacias cercanas</span>
-      <span class="acceso-detalle">
-        Consulta qué farmacia cerca de ti tiene el medicamento que necesitas.
-      </span>
-    </a>
-  </section>
+  <app-buscador-paciente
+    class="buscador"
+    (seleccionar)="seleccionar($event)"
+    (buscarIniciado)="cerrarDetalle()"
+  />
+
+  @if (seleccionado(); as medicamentoId) {
+    <app-detalle-medicamento
+      class="detalle"
+      [medicamentoId]="medicamentoId"
+      (cerrar)="cerrarDetalle()"
+      (seleccionar)="seleccionar($event)"
+      (farmaciasReportadas)="actualizarFarmaciasReportadas($event)"
+    />
+  }
+
+  <p class="contador-farmacias">
+    {{ farmaciasVisibles().length }}
+    {{ farmaciasVisibles().length === 1 ? "farmacia en el mapa" : "farmacias en el mapa" }}
+  </p>
 </main>
