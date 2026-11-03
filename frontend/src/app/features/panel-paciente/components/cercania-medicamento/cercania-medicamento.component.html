@@ -51,7 +51,10 @@
           No encontramos "{{ ubicacionActual.direccion }}". Revisa la dirección o escribe solo la ciudad.
         </span>
       } @else if (ubicacionActual.tipo === "error") {
-        <span class="error">No pudimos obtener la ubicación. Intenta de nuevo o escribe una dirección.</span>
+        <span class="error">
+          No pudimos obtener tu ubicación. Revisa que el navegador tenga activado el servicio de
+          ubicación, intenta de nuevo o escribe una dirección.
+        </span>
       }
     </p>
   </div>

@@ -1,5 +1,5 @@
 import { Injectable, WritableSignal, signal } from "@angular/core";
-import { Observable, from, map } from "rxjs";
+import { Observable, catchError, from, map, throwError } from "rxjs";
 
 /**
  * 
@@ -15,6 +15,22 @@ const URL_NOMINATIM: string = "https://nominatim.openstreetmap.org/search";
  * 
  */
 const TIEMPO_MAXIMO_UBICACION_MS: number = 10000;
+
+/**
+ *
+ * cuánto se espera la ubicación cuando se pide sin precisión alta: 20 segundos. En
+ * computadores sin GPS el navegador tarda más en dar una posición aproximada
+ *
+ */
+const TIEMPO_MAXIMO_UBICACION_SIN_PRECISION_MS: number = 20000;
+
+/**
+ *
+ * el número con el que el navegador avisa que el usuario no dio permiso para
+ * usar su ubicación (1)
+ *
+ */
+const CODIGO_PERMISO_DENEGADO: number = 1;
 
 /**
  * 
@@ -84,6 +100,22 @@ export class UbicacionService {
    * 
    */
   obtenerDelDispositivo(): Observable<Coordenadas> {
+    return this.pedirPosicion(true).pipe(
+      catchError((error: unknown): Observable<Coordenadas> =>
+        error instanceof GeolocationPositionError && error.code !== CODIGO_PERMISO_DENEGADO
+          ? this.pedirPosicion(false)
+          : throwError(() => error),
+      ),
+    );
+  }
+
+  /**
+   *
+   * pide la posición al navegador, con alta precisión (GPS) o sin ella (Wi-Fi o red).
+   * Con precisión alta espera 10 segundos; sin ella, 20
+   *
+   */
+  private pedirPosicion(precisa: boolean): Observable<Coordenadas> {
     return new Observable<Coordenadas>((suscriptor) => {
       if (!("geolocation" in navigator)) {
         suscriptor.error(new Error("Geolocalización no disponible"));
@@ -100,8 +132,8 @@ export class UbicacionService {
         },
         (error: GeolocationPositionError): void => suscriptor.error(error),
         {
-          enableHighAccuracy: true,
-          timeout: TIEMPO_MAXIMO_UBICACION_MS,
+          enableHighAccuracy: precisa,
+          timeout: precisa ? TIEMPO_MAXIMO_UBICACION_MS : TIEMPO_MAXIMO_UBICACION_SIN_PRECISION_MS,
           maximumAge: ANTIGUEDAD_MAXIMA_UBICACION_MS,
         },
       );
