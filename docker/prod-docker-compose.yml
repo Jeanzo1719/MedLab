@@ -1,0 +1,110 @@
+# Despliegue de producción: MariaDB, backend, frontend y proxy inverso (Caddy).
+# Se ejecuta desde la raíz del proyecto, con las variables de .env (ver .env.example):
+#   docker compose --env-file .env -f docker/prod-docker-compose.yml up -d --build
+#
+# Solo el proxy publica puertos (80 y 443). La base de datos vive en una red interna,
+# sin salida a Internet ni puerto publicado, y el backend solo es alcanzable a través del proxy.
+services:
+  mariadb:
+    image: mariadb:12.3
+    container_name: medlab-prod-database
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?Define MARIADB_ROOT_PASSWORD en .env}
+      MARIADB_DATABASE: ${MARIADB_DATABASE:?Define MARIADB_DATABASE en .env}
+      MARIADB_USER: ${MARIADB_USER:?Define MARIADB_USER en .env}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:?Define MARIADB_PASSWORD en .env}
+    volumes:
+      ## mariadb still uses "mysql" path in Linux systems
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - base_datos
+    healthcheck:
+      ## MariaDB brings by default a shell script to test health in containers
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      ## context starts from root folder of the project THIS SHOULD NOT BE CHANGED
+      context: ..
+      dockerfile: docker/prod-backend.Dockerfile
+    container_name: medlab-prod-backend
+    restart: unless-stopped
+    expose:
+      - "8080"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      ## the container must listen on all interfaces; application.yaml defaults to 127.0.0.1
+      SERVER_ADDRESS: 0.0.0.0
+
+      # Base de datos: el host es el nombre del servicio dentro de la red interna
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_NAME: ${MARIADB_DATABASE:?Define MARIADB_DATABASE en .env}
+      DB_USER: ${DB_USER:?Define DB_USER en .env}
+      DB_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD en .env}
+
+      # Firma de los tokens de sesión: sin una clave propia el arranque debe fallar
+      MEDLAB_JWT_SECRET: ${MEDLAB_JWT_SECRET:?Define MEDLAB_JWT_SECRET en .env (al menos 32 bytes)}
+
+      # Orígenes permitidos para la API y el WebSocket: el dominio público con su esquema
+      SPRING_CORS_ALLOWED_ORIGINS: ${SPRING_CORS_ALLOWED_ORIGINS:?Define SPRING_CORS_ALLOWED_ORIGINS en .env}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 40s
+    networks:
+      - publica
+      - base_datos
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/prod-frontend.Dockerfile
+    container_name: medlab-prod-frontend
+    restart: unless-stopped
+    expose:
+      - "8080"
+    networks:
+      - publica
+
+  proxy:
+    image: caddy:2-alpine
+    container_name: medlab-prod-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      ## :80 for testing without a domain; set a domain in .env to enable HTTPS
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    volumes:
+      - ./prod/Caddyfile:/etc/caddy/Caddyfile:ro
+      ## certificates and their state, they must survive container recreation
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - publica
+
+networks:
+  ## normal network: the proxy is reachable from outside through published ports
+  publica: {}
+  ## internal: containers here cannot reach or be reached from outside the host network
+  base_datos:
+    internal: true
+
+volumes:
+  mariadb_data:
+  caddy_data:
+  caddy_config:

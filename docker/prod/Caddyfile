@@ -1,0 +1,29 @@
+# proxy inverso de producción
+#
+# SITE_ADDRESS decide cómo se atiende el sitio:
+#   :80                  solo HTTP, para probar sin dominio (valor por defecto)
+#   midominio.com        HTTPS automático: Caddy pide y renueva el certificado
+#                        (el dominio debe apuntar a este servidor y los puertos 80 y 443 estar abiertos)
+{$SITE_ADDRESS:":80"} {
+    encode zstd gzip
+
+    # la API REST y el WebSocket van al backend
+    handle /api/* {
+        reverse_proxy backend:8080
+    }
+
+    @websocket path /ws /ws/*
+    handle @websocket {
+        reverse_proxy backend:8080
+    }
+
+    # el resto es la aplicación Angular
+    handle {
+        reverse_proxy frontend:8080
+    }
+
+    header {
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+    }
+}
