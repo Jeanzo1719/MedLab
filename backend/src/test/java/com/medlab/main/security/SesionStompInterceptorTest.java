@@ -22,6 +22,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.security.core.Authentication;
 
 import com.medlab.main.entity.SesionesEntity;
 import com.medlab.main.repository.SesionesRepository;
@@ -94,7 +95,8 @@ class SesionStompInterceptorTest {
 
     assertNotNull(resultado);
     StompHeaderAccessor accessor = StompHeaderAccessor.wrap(resultado);
-    assertEquals("administrador", ((UsuarioAutenticado) accessor.getUser().getPrincipal()).rol());
+    Authentication autenticacion = (Authentication) accessor.getUser();
+    assertEquals("administrador", ((UsuarioAutenticado) autenticacion.getPrincipal()).rol());
   }
 
   @Test
