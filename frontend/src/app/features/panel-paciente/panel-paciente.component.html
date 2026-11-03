@@ -9,6 +9,10 @@
   <div class="mapa" aria-label="Mapa de farmacias aprobadas">
     <app-mapa
       [farmacias]="farmaciasVisibles()"
+      [ubicacion]="ubicacion()"
+      [seleccionada]="farmaciaElegida()"
+      [ruta]="rutaPuntos()"
+      (seleccionar)="farmaciaElegida.set($event)"
       descripcion="Mapa de farmacias aprobadas con medicamentos reportados"
     />
   </div>
@@ -23,9 +27,12 @@
     <app-detalle-medicamento
       class="detalle"
       [medicamentoId]="medicamentoId"
+      [farmaciaElegida]="farmaciaElegida()"
       (cerrar)="cerrarDetalle()"
       (seleccionar)="seleccionar($event)"
       (farmaciasReportadas)="actualizarFarmaciasReportadas($event)"
+      (farmaciaElegidaCambiada)="farmaciaElegida.set($event)"
+      (rutaCambiada)="rutaPuntos.set($event)"
     />
   }
 

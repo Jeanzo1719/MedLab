@@ -18,18 +18,22 @@ import {
   MedicamentoService,
   ReporteDisponibilidad,
 } from "../../../../core/services/medicamento.service";
+import { Coordenadas } from "../../../../core/services/ubicacion.service";
+import { CercaniaMedicamentoComponent } from "../cercania-medicamento/cercania-medicamento.component";
 
 /**
  *
  * la ficha lateral del medicamento elegido en el buscador (HU-3)
  *
- * muestra sus datos, las farmacias que lo reportaron con precio y estado, el
- * resultado de las calificaciones recientes y los demás medicamentos con el
- * mismo principio activo. También permite calificar cada reporte
+ * muestra sus datos, las farmacias cercanas con su distancia y cómo llegar, las
+ * farmacias que lo reportaron con precio y estado, el resultado de las
+ * calificaciones recientes y los demás medicamentos con el mismo principio activo.
+ * También permite calificar cada reporte
  *
  */
 @Component({
   selector: "app-detalle-medicamento",
+  imports: [CercaniaMedicamentoComponent],
   templateUrl: "./detalle-medicamento.component.html",
   styleUrl: "./detalle-medicamento.component.css",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,6 +56,15 @@ export class DetalleMedicamentoComponent {
 
   /** avisa los nombres de las farmacias que reportaron el medicamento, para el mapa */
   readonly farmaciasReportadas = output<string[]>();
+
+  /** la farmacia elegida desde el mapa, o null; se pasa a la sección "Cerca de ti" */
+  readonly farmaciaElegida = input<number | null>(null);
+
+  /** avisa qué farmacia quedó elegida en la sección "Cerca de ti", o null */
+  readonly farmaciaElegidaCambiada = output<number | null>();
+
+  /** avisa los puntos de la ruta hasta la farmacia elegida, para dibujarla en el mapa */
+  readonly rutaCambiada = output<Coordenadas[]>();
 
   protected readonly detalle = signal<MedicamentoDetalle | null>(null);
   protected readonly recomendaciones = signal<MedicamentoRecomendado[]>([]);

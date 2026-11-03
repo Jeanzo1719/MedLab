@@ -18,6 +18,14 @@
     </header>
 
     <div class="cuerpo">
+      <app-cercania-medicamento
+        [medicamentoId]="medicamento.id"
+        [reportes]="medicamento.reportes"
+        [farmaciaElegida]="farmaciaElegida()"
+        (elegir)="farmaciaElegidaCambiada.emit($event)"
+        (rutaCambiada)="rutaCambiada.emit($event)"
+      />
+
       <section aria-labelledby="titulo-farmacias-detalle">
         <h3 id="titulo-farmacias-detalle">Dónde conseguirlo</h3>
 

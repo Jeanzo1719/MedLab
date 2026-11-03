@@ -12,6 +12,7 @@ import { Router, RouterLink } from "@angular/router";
 
 import { FarmaciaMapa, FarmaciaService } from "../../core/services/farmacia.service";
 import { Sesion, SesionService } from "../../core/services/sesion.service";
+import { Coordenadas, UbicacionService } from "../../core/services/ubicacion.service";
 import { BotonTemaComponent } from "../../shared/components/boton-tema/boton-tema.component";
 import { MapaComponent } from "../../shared/components/mapa/mapa.component";
 import { BuscadorPacienteComponent } from "./components/buscador-medicamentos/buscador-medicamentos.component";
@@ -50,6 +51,15 @@ export class PanelPacienteComponent {
   protected readonly seleccionado = signal<number | null>(null);
   private readonly nombresFarmacias = signal<string[]>([]);
 
+  /** dónde está el usuario, para dibujarlo en el mapa */
+  protected readonly ubicacion: Signal<Coordenadas | null> = inject(UbicacionService).ubicacionActual;
+
+  /** la farmacia elegida en la lista o en el mapa, para resaltarla en ambos */
+  protected readonly farmaciaElegida = signal<number | null>(null);
+
+  /** los puntos de la ruta hasta la farmacia elegida, para dibujarlos en el mapa */
+  protected readonly rutaPuntos = signal<Coordenadas[]>([]);
+
   /**
    * las farmacias que se dibujan en el mapa: todas las aprobadas, o solo las que
    * reportaron el medicamento elegido cuando el detalle ya las conoce
@@ -80,11 +90,15 @@ export class PanelPacienteComponent {
   protected seleccionar(medicamentoId: number): void {
     this.seleccionado.set(medicamentoId);
     this.nombresFarmacias.set([]);
+    this.farmaciaElegida.set(null);
+    this.rutaPuntos.set([]);
   }
 
   protected cerrarDetalle(): void {
     this.seleccionado.set(null);
     this.nombresFarmacias.set([]);
+    this.farmaciaElegida.set(null);
+    this.rutaPuntos.set([]);
   }
 
   protected actualizarFarmaciasReportadas(nombres: string[]): void {
