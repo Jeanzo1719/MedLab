@@ -1,0 +1,117 @@
+// Despliegue automático de producción de MedLab.
+//
+// Se ejecuta con cada push a main (webhook del job). El .env de producción vive en Jenkins como
+// credencial de tipo "Secret file" con el id medlab-prod-env; nunca se guarda en el repositorio.
+//
+// No hace "down -v": los volúmenes de la base de datos sobreviven a cada despliegue.
+pipeline {
+    agent any
+
+    options {
+        disableConcurrentBuilds()
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+    }
+
+    environment {
+        COMPOSE_PROD = 'docker compose -p medlab-prod --env-file .env -f docker/prod-docker-compose.yml'
+    }
+
+    stages {
+        stage('checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('verify branch') {
+            steps {
+                script {
+                    def rama = env.BRANCH_NAME ?: env.GIT_BRANCH ?: ''
+                    if (!(rama in ['main', 'origin/main'])) {
+                        error("Este pipeline solo despliega la rama main; esta ejecución es de '${rama}'")
+                    }
+                }
+            }
+        }
+
+        stage('configure environment') {
+            steps {
+                withCredentials([file(credentialsId: 'medlab-prod-env', variable: 'ARCHIVO_ENV')]) {
+                    sh '''
+                        cp "$ARCHIVO_ENV" .env
+                        chmod 600 .env
+                    '''
+                }
+
+                // Antes de construir nada se rechaza una configuración insegura: sin dominio
+                // HTTPS, el sitio quedaría en HTTP y las credenciales viajarían sin cifrar.
+                sh '''
+                    set -eu
+                    valor() { grep -E "^$1=" .env | head -n1 | cut -d= -f2- || true; }
+
+                    SITE_ADDRESS=$(valor SITE_ADDRESS)
+                    ORIGENES=$(valor SPRING_CORS_ALLOWED_ORIGINS)
+
+                    case "$SITE_ADDRESS" in
+                        ""|:*) echo "SITE_ADDRESS debe ser un dominio público, no '$SITE_ADDRESS'"; exit 1 ;;
+                    esac
+
+                    case "$ORIGENES" in
+                        https://*) ;;
+                        *) echo "SPRING_CORS_ALLOWED_ORIGINS debe empezar por https://"; exit 1 ;;
+                    esac
+
+                    $COMPOSE_PROD config -q
+                '''
+            }
+        }
+
+        stage('build images') {
+            steps {
+                sh '$COMPOSE_PROD build'
+            }
+        }
+
+        stage('deploy') {
+            steps {
+                // --wait espera a que los servicios con healthcheck estén sanos; si no, falla el pipeline
+                sh '$COMPOSE_PROD up -d --remove-orphans --wait --wait-timeout 300'
+            }
+        }
+
+        stage('verify') {
+            steps {
+                sh '''
+                    set -eu
+                    valor() { grep -E "^$1=" .env | head -n1 | cut -d= -f2- || true; }
+                    DOMINIO=$(valor SITE_ADDRESS)
+
+                    $COMPOSE_PROD exec -T backend wget -q -O - http://127.0.0.1:8080/actuator/health \
+                        | grep -q '"status":"UP"'
+
+                    # Caddy obtiene el certificado en la primera petición; se reintenta un par de minutos
+                    ok=0
+                    for intento in 1 2 3 4 5 6; do
+                        if curl -fsS -o /dev/null "https://$DOMINIO/"; then
+                            ok=1
+                            break
+                        fi
+                        sleep 10
+                    done
+                    test "$ok" = 1
+                    echo "Despliegue verificado en https://$DOMINIO/"
+                '''
+            }
+        }
+    }
+
+    post {
+        failure {
+            sh '$COMPOSE_PROD ps || true; $COMPOSE_PROD logs --tail=200 || true'
+        }
+        always {
+            sh 'rm -f .env; docker image prune -f >/dev/null 2>&1 || true'
+        }
+    }
+}
