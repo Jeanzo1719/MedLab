@@ -1,6 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { IMessage, RxStomp, StompHeaders } from "@stomp/rx-stomp";
-import { Observable, map, take, timeout } from "rxjs";
+import { Observable, defer, from, ignoreElements, map, merge, take, tap, timeout } from "rxjs";
 
 import { environment } from "../../../environments/environment";
 import { SesionService } from "./sesion.service";
@@ -68,6 +68,42 @@ export class StompService {
       timeout(TIEMPO_MAXIMO_RESPUESTA_MS),
       map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T),
     );
+  }
+
+  /**
+   *
+   * envía un mensaje y devuelve la primera respuesta que llegue a otro destino,
+   * sin perderla por carrera
+   *
+   * primero se suscribe al destino de respuesta y espera el RECEIPT del broker, que
+   * confirma que la suscripción ya existe. Solo entonces envía el mensaje; así la
+   * respuesta nunca llega antes de que alguien la escuche. Si en 10 segundos no llega
+   * nada, devuelve un error
+   *
+   */
+  enviarYEsperar<T>(destinoEnvio: string, destinoRespuesta: string, encabezados: StompHeaders = {}): Observable<T> {
+    return defer((): Observable<T> => {
+      const receiptId: string = crypto.randomUUID();
+      const suscripcionConfirmada = this.cliente.asyncReceipt(receiptId);
+
+      const respuesta$: Observable<T> = this.cliente
+        .watch({
+          destination: destinoRespuesta,
+          subHeaders: (): StompHeaders => this.conSesion({ receipt: receiptId }),
+        })
+        .pipe(
+          take(1),
+          timeout(TIEMPO_MAXIMO_RESPUESTA_MS),
+          map((mensaje: IMessage): T => JSON.parse(mensaje.body) as T),
+        );
+
+      const envio$: Observable<never> = from(suscripcionConfirmada).pipe(
+        tap((): void => this.publicar(destinoEnvio, encabezados)),
+        ignoreElements(),
+      );
+
+      return merge(respuesta$, envio$);
+    });
   }
 
   /**

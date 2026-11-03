@@ -1,0 +1,209 @@
+<section class="panel vidrio" aria-label="Buscar medicamentos">
+  <header class="cabecera">
+    <p class="etiqueta">Catálogo de medicamentos</p>
+    <h1>Encuentra tu medicamento</h1>
+    <p class="ayuda">
+      Busca por nombre comercial, principio activo, farmacia o rango de precio.
+    </p>
+  </header>
+
+  <form class="formulario" (submit)="$event.preventDefault(); buscar(0)">
+    <div class="campo-texto">
+      <label class="oculto" for="busqueda-paciente">Medicamento que buscas</label>
+      <input
+        #campoTexto
+        id="busqueda-paciente"
+        type="search"
+        autocomplete="off"
+        [attr.placeholder]="
+          campo() === 'principio'
+            ? 'Ej: acetaminofén'
+            : campo() === 'nombre'
+              ? 'Ej: Dolex'
+              : 'Nombre o principio activo'
+        "
+        [value]="texto()"
+        (input)="texto.set(campoTexto.value)"
+      />
+      <button type="submit" class="boton-primario">Buscar</button>
+    </div>
+
+    <div class="chips" role="group" aria-label="Filtros de búsqueda">
+      <button
+        type="button"
+        class="chip"
+        [class.activo]="campo() === 'nombre'"
+        [attr.aria-pressed]="campo() === 'nombre'"
+        (click)="alternarCampo('nombre')"
+      >
+        Nombre comercial
+      </button>
+      <button
+        type="button"
+        class="chip"
+        [class.activo]="campo() === 'principio'"
+        [attr.aria-pressed]="campo() === 'principio'"
+        (click)="alternarCampo('principio')"
+      >
+        Principio activo
+      </button>
+      <button
+        type="button"
+        class="chip"
+        [class.activo]="filtroFarmacia()"
+        [attr.aria-pressed]="filtroFarmacia()"
+        (click)="alternarFarmacia()"
+      >
+        Farmacia
+      </button>
+      <button
+        type="button"
+        class="chip"
+        [class.activo]="filtroPrecio()"
+        [attr.aria-pressed]="filtroPrecio()"
+        (click)="alternarPrecio()"
+      >
+        Precio
+      </button>
+    </div>
+
+    @if (filtroFarmacia()) {
+      <div class="filtro-campo">
+        <label for="farmacia-paciente">Nombre de la farmacia</label>
+        <input
+          #campoFarmacia
+          id="farmacia-paciente"
+          type="text"
+          autocomplete="off"
+          placeholder="Ej: Farmatodo"
+          [value]="farmacia()"
+          (input)="farmacia.set(campoFarmacia.value)"
+        />
+      </div>
+    }
+
+    @if (filtroPrecio()) {
+      <div class="filtro-campo">
+        <span class="titulo-filtro">Rango de precio (COP)</span>
+        <div class="precios">
+          <label>
+            Desde
+            <input
+              type="number"
+              min="0"
+              inputmode="numeric"
+              placeholder="0"
+              [value]="textoPrecio(precioMin())"
+              (input)="escribirNumero($event, 'min')"
+            />
+          </label>
+          <label>
+            Hasta
+            <input
+              type="number"
+              min="0"
+              inputmode="numeric"
+              placeholder="Sin tope"
+              [value]="textoPrecio(precioMax())"
+              (input)="escribirNumero($event, 'max')"
+            />
+          </label>
+        </div>
+      </div>
+    }
+
+    <div class="orden">
+      <label for="orden-paciente">Ordenar por</label>
+      <select
+        #selectOrden
+        id="orden-paciente"
+        [value]="orden()"
+        (change)="cambiarOrden(selectOrden.value)"
+      >
+        <option value="relevancia">Relevancia</option>
+        <option value="precio">Menor precio</option>
+      </select>
+    </div>
+  </form>
+
+  <div class="resultados" aria-live="polite">
+    @if (cargando()) {
+      <p class="mensaje">Buscando medicamentos…</p>
+    } @else if (error()) {
+      <p class="mensaje mensaje-error">{{ error() }}</p>
+    } @else {
+      @let pagina = paginaResultados();
+      @if (sinResultados() && !hayCriterios()) {
+        <p class="mensaje">
+          Escribe al menos dos letras, o abre los filtros de farmacia o precio, para empezar.
+        </p>
+      } @else if (sinResultados()) {
+        <div class="vacio">
+          <p class="vacio-titulo">Sin resultados</p>
+          <p class="mensaje">
+            No encontramos medicamentos con esos criterios. Prueba con otro nombre, otra
+            farmacia o un rango de precio más amplio.
+          </p>
+          <button type="button" class="boton-secundario" (click)="limpiar()">
+            Limpiar filtros
+          </button>
+        </div>
+      } @else if (pagina) {
+        <div class="resumen">
+          <span>
+            <strong>{{ pagina.total }}</strong>
+            {{ pagina.total === 1 ? "medicamento" : "medicamentos" }}
+          </span>
+          <button type="button" class="enlace" (click)="limpiar()">Limpiar</button>
+        </div>
+
+        <ul class="lista">
+          @for (medicamento of pagina.resultados; track medicamento.id) {
+            <li>
+              <button
+                type="button"
+                class="resultado"
+                [class.activo]="seleccionado() === medicamento.id"
+                (click)="abrir(medicamento)"
+              >
+                <span class="fila-superior">
+                  <span class="nombre">{{ medicamento.nombreComercial }}</span>
+                  <span class="precio">{{ formatearPrecio(medicamento.precioMinimo) }}</span>
+                </span>
+                <span class="principio">{{ medicamento.principioActivo }}</span>
+                <span class="meta">
+                  {{ medicamento.categoria }} · {{ medicamento.presentacion }} ·
+                  {{ medicamento.formaFarmaceutica }}
+                </span>
+                <span class="farmacias">
+                  {{ medicamento.farmaciasDisponibles }}/{{ medicamento.farmaciasReportaron }}
+                  farmacias
+                </span>
+              </button>
+            </li>
+          }
+        </ul>
+
+        <footer class="paginacion">
+          <button
+            type="button"
+            class="boton-pagina"
+            [disabled]="!hayAnterior()"
+            (click)="paginaAnterior()"
+          >
+            Anterior
+          </button>
+          <span>Página {{ pagina.pagina + 1 }} de {{ pagina.totalPaginas }}</span>
+          <button
+            type="button"
+            class="boton-pagina"
+            [disabled]="!haySiguiente()"
+            (click)="paginaSiguiente()"
+          >
+            Siguiente
+          </button>
+        </footer>
+      }
+    }
+  </div>
+</section>

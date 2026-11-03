@@ -36,10 +36,10 @@ export const routes: Routes = [
         (modulo) => modulo.IniciarSesionComponent,
       ),
   },
-  // Panel del paciente (HU-2): protegido; tiene la bienvenida y el buscador de medicamentos.
+  // Panel del paciente (HU-2 y HU-3): protegido; buscador de medicamentos, mapa y detalle.
   {
     path: "paciente",
-    title: "MedLab | Mi cuenta",
+    title: "MedLab | Buscar medicamentos",
     canActivate: [requiereSesion("paciente")],
     loadComponent: () =>
       import("./features/panel-paciente/panel-paciente.component").then(

@@ -1,8 +1,10 @@
 package com.medlab.main.service;
 
+import com.medlab.main.dto.BusquedaMedicamentosDto;
 import com.medlab.main.dto.MedicamentoBusquedaDto;
 import com.medlab.main.dto.MedicamentoRequestDto;
 import com.medlab.main.dto.MedicamentoResponseDto;
+import com.medlab.main.dto.PaginaMedicamentosDto;
 import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -33,4 +35,10 @@ public interface MedicamentosService {
     List<MedicamentoResponseDto> getMedicamentoRecomendaciones(Long id);
 
     List<MedicamentoBusquedaDto> searchMedicamentosByTexto(String texto);
+
+    /**
+     * Busca medicamentos combinando texto, farmacia y rango de precio, con orden y
+     * paginación. Devuelve una página vacía si no hay criterios o coincidencias.
+     */
+    PaginaMedicamentosDto buscarMedicamentos(BusquedaMedicamentosDto filtros);
 }

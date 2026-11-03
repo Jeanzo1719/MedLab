@@ -1,6 +1,7 @@
 :host {
   display: block;
-  min-height: 100%;
+  height: 100dvh;
+  overflow: hidden;
 }
 
 .barra {
@@ -53,18 +54,122 @@ app-boton-tema {
   color: var(--color-primario);
 }
 
-.contenido {
-  display: block;
-  max-width: 72rem;
-  margin: 0 auto;
-  padding: 1.5rem 1.25rem 3rem;
+/*
+
+  el tablero ocupa todo el alto que queda debajo del encabezado. El mapa va de
+  fondo y encima flotan el buscador y el detalle
+
+*/
+.tablero {
+  position: relative;
+  height: calc(100dvh - var(--alto-encabezado));
+  overflow: hidden;
 }
 
-h1 {
-  margin: 0 0 0.5rem;
+.mapa {
+  position: absolute;
+  inset: 0;
+  /* el mapa abre su propio contexto de apilamiento: así sus controles de
+     Leaflet (z-index alto) no tapan las tarjetas flotantes */
+  z-index: 0;
 }
 
-.introduccion {
-  margin: 0 0 1.5rem;
+/* un velo suave a la izquierda para que el texto del buscador no compita con el
+   mapa */
+.tablero::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(
+    100deg,
+    light-dark(rgb(251 251 248 / 0.5), rgb(19 18 16 / 0.45)) 0%,
+    transparent 42%
+  );
+}
+
+.buscador {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 2;
+  width: min(25rem, calc(100% - 2rem));
+  height: calc(100% - 2rem);
+  max-height: 46rem;
+  animation: entrar 0.35s ease both;
+}
+
+.detalle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 3;
+  width: min(28rem, calc(100% - 2rem));
+  height: calc(100% - 2rem);
+  animation: entrar-derecha 0.28s ease both;
+}
+
+.contador-farmacias {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  z-index: 2;
+  margin: 0;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 650;
   color: var(--color-texto-secundario);
+  background-color: light-dark(rgb(255 255 255 / 0.85), rgb(28 27 24 / 0.85));
+  border: 1px solid var(--color-borde);
+  border-radius: 999px;
+  transform: translateX(-50%);
+  backdrop-filter: blur(8px);
+}
+
+/* al abrir el detalle, el contador se corre para no quedar debajo */
+.tablero:has(.detalle) .contador-farmacias {
+  left: calc(50% - 13rem);
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes entrar-derecha {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buscador,
+  .detalle {
+    animation: none;
+  }
+}
+
+@media (max-width: 62rem) {
+  .buscador {
+    top: 0.5rem;
+    left: 0.5rem;
+    width: calc(100% - 1rem);
+    height: calc(100% - 1rem);
+    max-height: none;
+  }
+
+  .detalle {
+    top: 0.5rem;
+    right: 0.5rem;
+    width: calc(100% - 1rem);
+    height: calc(100% - 1rem);
+  }
+
+  .contador-farmacias {
+    display: none;
+  }
 }

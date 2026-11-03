@@ -18,6 +18,7 @@ import com.medlab.main.dto.MedicamentoDetalleDto;
 import com.medlab.main.dto.TendenciaDisponibilidad;
 import com.medlab.main.entity.CategoriasEntity;
 import com.medlab.main.entity.DisponibilidadEntity;
+import com.medlab.main.entity.EstadoDisponibilidad;
 import com.medlab.main.entity.FarmaciasEntity;
 import com.medlab.main.entity.FormasFarmaceuticasEntity;
 import com.medlab.main.entity.MedicamentosEntity;
@@ -28,6 +29,7 @@ import com.medlab.main.repository.DisponibilidadRepository;
 import com.medlab.main.repository.MedicamentosRepository;
 import com.medlab.main.service.impl.MedicamentoDetalleServiceImpl;
 import com.medlab.main.service.impl.MensajeDisponibilidadServiceImpl;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -120,6 +122,11 @@ class MedicamentoDetalleServiceTest {
     assertEquals(TendenciaDisponibilidad.DISPONIBLE, reporte.tendencia());
     assertEquals(TendenciaDisponibilidad.DISPONIBLE.getMensaje(),
         reporte.mensajeDisponibilidad());
+    assertEquals(new BigDecimal("12500.00"), reporte.precio());
+    assertEquals(8, reporte.cantidadDisponible());
+    assertEquals(EstadoDisponibilidad.DISPONIBLE, reporte.estado());
+    // Dos votos "Si hay" de tres válidos: 67 %.
+    assertEquals(67, reporte.confianza());
   }
 
   @Test
@@ -137,8 +144,10 @@ class MedicamentoDetalleServiceTest {
     List<DisponibilidadReporteDto> reportes = servicio.getMedicamentoDetalleById(ID_MEDICAMENTO).reportes();
 
     assertEquals(TendenciaDisponibilidad.BAJO_PEDIDO, reportes.get(0).tendencia());
+    assertEquals(100, reportes.get(0).confianza());
     assertEquals(TendenciaDisponibilidad.SIN_CALIFICACIONES, reportes.get(1).tendencia());
     assertEquals("sin calificaciones aún", reportes.get(1).mensajeDisponibilidad());
+    assertEquals(0, reportes.get(1).confianza());
     verify(calificacionesRepository, times(1)).findCalificacionesRecientesByDisponibilidad(
         eq(List.of(10, 11)), eq(MensajeDisponibilidadService.CALIFICACIONES_RECIENTES));
   }
@@ -163,10 +172,16 @@ class MedicamentoDetalleServiceTest {
     FarmaciasEntity farmacia = mock(FarmaciasEntity.class);
     when(farmacia.getNombreFarmacia()).thenReturn(nombreFarmacia);
 
+    EstadoDisponibilidad estado = mock(EstadoDisponibilidad.class);
+    when(estado.getNombre()).thenReturn(EstadoDisponibilidad.DISPONIBLE);
+
     DisponibilidadEntity disponibilidad = mock(DisponibilidadEntity.class);
     when(disponibilidad.getId()).thenReturn(id);
     when(disponibilidad.getFarmacia()).thenReturn(farmacia);
     when(disponibilidad.getFechaHoraReporte()).thenReturn(LocalDateTime.now().minusHours(2));
+    when(disponibilidad.getPrecio()).thenReturn(new BigDecimal("12500.00"));
+    when(disponibilidad.getCantidadDisponible()).thenReturn(8);
+    when(disponibilidad.getEstadoDisponibilidad()).thenReturn(estado);
     return disponibilidad;
   }
 

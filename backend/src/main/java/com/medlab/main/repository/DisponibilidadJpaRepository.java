@@ -22,8 +22,9 @@ public interface DisponibilidadJpaRepository extends JpaRepository<Disponibilida
             String nombreFarmacia, String nombreEstado);
 
     /** Trae los reportes de un medicamento, del mas reciente al mas antiguo, trayendo la
-     * farmacia en la misma consulta para mostrar su nombre sin consultas extra. */
-    @EntityGraph(attributePaths = {"farmacia"})
+     * farmacia y el estado de disponibilidad en la misma consulta para mostrar sus datos sin
+     * consultas extra. */
+    @EntityGraph(attributePaths = {"farmacia", "estadoDisponibilidad"})
     List<DisponibilidadEntity> findByMedicamento_IdOrderByFechaHoraReporteDesc(Long medicamentoId);
 
     // --- Panel de la farmacia (HU-11 y HU-7) ---
